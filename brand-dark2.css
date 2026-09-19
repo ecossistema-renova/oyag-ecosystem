@@ -1,0 +1,90 @@
+/* OYAG Dark 2 · identidade visual compartilhada */
+:root{
+  --oyag-bg:#030914;
+  --oyag-bg-2:#061321;
+  --oyag-surface:#091728;
+  --oyag-surface-2:#0d2034;
+  --oyag-surface-3:#122940;
+  --oyag-text:#eef5ff;
+  --oyag-muted:#9fb3c8;
+  --oyag-line:rgba(93,151,211,.22);
+  --oyag-blue:#2ea7ff;
+  --oyag-blue-strong:#1677ff;
+  --oyag-purple:#7a5cff;
+  --oyag-cyan:#2fd4c7;
+  --oyag-gold:#f4c960;
+  --oyag-success:#36d399;
+  --oyag-danger:#ff6b7a;
+  --oyag-shadow:0 22px 64px rgba(0,0,0,.32);
+  color-scheme:dark;
+}
+html{background:var(--oyag-bg);color-scheme:dark}
+body{background:var(--oyag-bg)!important;color:var(--oyag-text)!important}
+body,button,input,select,textarea{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+h1,h2,h3,h4,strong,b{color:var(--oyag-text)}
+p,small,.muted{color:var(--oyag-muted)}
+a{color:inherit}
+.topbar,.sales-top{
+  background:rgba(3,9,20,.94)!important;
+  color:var(--oyag-text)!important;
+  border-color:var(--oyag-line)!important;
+  backdrop-filter:blur(18px);
+}
+.topbar nav a,.sales-nav a,.brand,.sales-brand{color:var(--oyag-text)!important}
+.brand small,.sales-brand small{color:var(--oyag-muted)!important}
+.brand-mark:not(img),.sales-mark{
+  width:44px!important;height:44px!important;border:0!important;border-radius:0!important;
+  background:url("./assets/oyag-approved-mark.png") center/contain no-repeat!important;
+  color:transparent!important;box-shadow:none!important;text-shadow:none!important;overflow:hidden
+}
+img.oyag-brand-symbol{background:transparent!important;object-fit:contain!important;filter:drop-shadow(0 0 14px rgba(46,167,255,.28))}
+.button.primary,.sales-btn.primary,.primary-btn,.catalog-primary,.academy-buy,.academy-buy-card{
+  background:linear-gradient(135deg,var(--oyag-blue-strong),var(--oyag-purple))!important;
+  color:#fff!important;border-color:transparent!important;
+  box-shadow:0 12px 30px rgba(22,119,255,.22)
+}
+.button.secondary,.button.ghost,.sales-btn:not(.primary),.secondary,.agenda-secondary{
+  background:var(--oyag-surface-2)!important;color:var(--oyag-text)!important;border-color:var(--oyag-line)!important
+}
+.card,.panel,.metric,.stat,.kpi,.market-card,.plan-card,.sales-card,.lead-modal-card,
+.academy-grid article,.academy-levels article,.learning-card,.structured-practice,.checkpoint,
+.requirements.card,.lesson.card,.lab.card{
+  background:var(--oyag-surface)!important;
+  color:var(--oyag-text)!important;
+  border-color:var(--oyag-line)!important;
+  box-shadow:var(--oyag-shadow)
+}
+.card p,.panel p,.metric small,.stat small,.kpi small,.market-card p,.market-card span,.market-card small,
+.plan-card p,.sales-card p,.academy-grid p,.academy-levels p,.structured-practice p,.checkpoint p{
+  color:var(--oyag-muted)!important
+}
+input,select,textarea{
+  background:#07111f!important;color:var(--oyag-text)!important;border-color:var(--oyag-line)!important;
+  caret-color:var(--oyag-blue)
+}
+input::placeholder,textarea::placeholder{color:#738ba2!important}
+input:focus,select:focus,textarea:focus{outline:3px solid rgba(46,167,255,.2)!important;outline-offset:1px}
+.market-tools input,.market-tools select{background:#07111f!important}
+.market-placeholder{background:linear-gradient(135deg,#07111f,#0c2c47)!important;color:var(--oyag-gold)!important}
+.market-card strong,.plan-price strong,.academy-price-anchor strong{color:var(--oyag-gold)!important}
+.market-price-anchor strong{color:var(--oyag-gold)!important}
+.market-price-anchor del,.academy-price-anchor del{color:#7890a6!important}
+.sales-main,.market,.academy-home,.academy-landing,.classroom,.interactive-shell{background:var(--oyag-bg)!important}
+.sales-hero,.sales-band,.sales-section,.sales-cta{background-color:var(--oyag-bg)!important}
+.sales-visual,.visual-card,.visual-note,.community-warning,.launch-offer{
+  background:linear-gradient(145deg,#071827,#0b2236)!important;border-color:var(--oyag-line)!important;color:var(--oyag-text)!important
+}
+.sales-footer,footer{background:#02070e!important;color:var(--oyag-text)!important;border-color:var(--oyag-line)!important}
+.eyebrow,.sales-eyebrow{color:var(--oyag-blue)!important}
+.tag,.chip,.plan-badge,.launch-badge{border-color:rgba(46,167,255,.3)!important}
+.sidebar,.interactive-sidebar{background:#04101d!important;border-color:var(--oyag-line)!important}
+.level-card,.academy-level-progress,.mastery-note,.instruction-box,.theory-steps>div,.command-list>div,.translated-code{
+  background:var(--oyag-surface-2)!important;border-color:var(--oyag-line)!important;color:var(--oyag-text)!important
+}
+.answer-grid button{background:var(--oyag-surface-2)!important;color:var(--oyag-text)!important;border-color:var(--oyag-line)!important}
+.answer-grid button.correct{background:rgba(54,211,153,.13)!important;color:#79efc0!important;border-color:rgba(54,211,153,.5)!important}
+.answer-grid button.incorrect{background:rgba(255,107,122,.12)!important;color:#ff9aa6!important;border-color:rgba(255,107,122,.5)!important}
+.feedback.neutral{background:var(--oyag-surface-2)!important;color:var(--oyag-text)!important}
+.feedback.success{background:rgba(54,211,153,.12)!important;color:#79efc0!important}
+.feedback.error{background:rgba(255,107,122,.12)!important;color:#ff9aa6!important}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
