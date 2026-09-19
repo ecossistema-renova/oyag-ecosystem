@@ -65,7 +65,7 @@ async function init(){
   isOwner=['owner','platform_admin'].includes(roleRow?.role);
   if(isOwner)ownerEl.classList.add('show');
 
-  const {data:outline,error:outlineError}=await sb.rpc('academy_course_outline_v2',{p_course_slug:'programacao-basico-ao-hard'});
+  const {data:outline,error:outlineError}=await sb.rpc('academy_course_outline_v3',{p_course_slug:'programacao-basico-ao-hard'});
   if(outlineError||!outline){levelsEl.innerHTML='<p>Não foi possível carregar a trilha.</p>';return}
 
   const byModule=new Map();
@@ -75,25 +75,29 @@ async function init(){
         id:row.module_id,title:row.module_title,description:row.module_description,
         position:row.module_position,required_plan:row.required_plan,status:row.module_status,
         catalog_item_id:row.catalog_item_id,price_cents:row.price_cents,currency:row.currency||'BRL',
-        has_access:Boolean(row.has_access),lessons:[]
+        has_access:Boolean(row.has_access),can_purchase:Boolean(row.can_purchase),
+        lesson_count:Number(row.lesson_count||0),mastered_count:Number(row.mastered_count||0),
+        progress_percent:Number(row.progress_percent||0),lessons:[]
       });
     }
     if(row.lesson_id)byModule.get(row.module_id).lessons.push({
-      id:row.lesson_id,slug:row.lesson_slug,title:row.lesson_title,position:row.lesson_position,status:row.lesson_status
+      id:row.lesson_id,slug:row.lesson_slug,title:row.lesson_title,position:row.lesson_position,status:row.lesson_status,
+      progress_status:row.lesson_progress_status,best_score:Number(row.lesson_best_score||0)
     });
   });
 
   const modules=[...byModule.values()].sort((a,b)=>a.position-b.position);
   levelsEl.innerHTML='';
-  const firstLockedPosition=modules.find(m=>!(isOwner||m.has_access||m.required_plan==='free'))?.position||null;
   modules.forEach(module=>{
     const canAccess=isOwner||module.has_access||module.required_plan==='free';
-    const isNextPurchasable=!canAccess&&module.position===firstLockedPosition;
+    const isNextPurchasable=!canAccess&&module.can_purchase;
     const card=document.createElement('article');
     card.className='level-card-row'+(canAccess?'':' locked');
-    const label=module.required_plan==='free'?'Gratuito':canAccess?'Liberado':money(module.price_cents,module.currency);
+    const label=module.required_plan==='free'?'Gratuito':canAccess?'Liberado':isNextPurchasable?money(module.price_cents,module.currency):'Bloqueado';
     card.innerHTML='<div class="level-meta"><span class="chip">Nível '+esc(module.position)+'</span><span class="chip '+(canAccess?'':'lock')+'">'+esc(label)+'</span>'+(isOwner?'<span class="chip lock">Proprietário</span>':'')+'</div>'+
-      '<h2>'+esc(module.title)+'</h2><p>'+esc(module.description||'')+'</p><div class="lesson-buttons"></div>'+
+      '<h2>'+esc(module.title)+'</h2><p>'+esc(module.description||'')+'</p>'+
+      '<div class="academy-level-progress"><div><span>Progresso</span><strong>'+esc(module.mastered_count)+'/'+esc(module.lesson_count)+' aulas</strong></div><div class="academy-level-progressbar"><i style="width:'+esc(module.progress_percent)+'%"></i></div><small>'+esc(module.progress_percent)+'% concluído</small></div>'+
+      '<div class="lesson-buttons"></div>'+
       (!canAccess?'<div class="locked-note">'+(isNextPurchasable?'🔒 Próximo nível da sua trilha. Compra única para liberar todas as aulas.':'🔒 Este nível será liberado para compra depois que você avançar pela trilha anterior.')+'</div>'+(isNextPurchasable?'<button class="primary academy-buy-card" type="button">Liberar por '+esc(money(module.price_cents,module.currency))+'</button>':''):'');
 
     const buttons=card.querySelector('.lesson-buttons');
@@ -101,7 +105,7 @@ async function init(){
       const b=document.createElement('button');
       b.type='button';
       b.className=canAccess?'':'lesson-locked';
-      b.innerHTML=(canAccess?'▶ ':'🔒 ')+esc(lesson.title);
+      b.innerHTML=(lesson.progress_status==='mastered'?'✓ ':canAccess?'▶ ':'🔒 ')+esc(lesson.title);
       b.onclick=()=>previewLesson(lesson,{...module,isNextPurchasable},canAccess);
       buttons.appendChild(b);
     });
@@ -110,7 +114,9 @@ async function init(){
     levelsEl.appendChild(card);
   });
 
-  const firstModule=modules.find(m=>isOwner||m.has_access||m.required_plan==='free')||modules[0];
+  const firstModule=modules.find(m=>(isOwner||m.has_access||m.required_plan==='free')&&m.mastered_count<m.lesson_count)
+    || modules.find(m=>isOwner||m.has_access||m.required_plan==='free')
+    || modules[0];
   const firstLesson=firstModule?.lessons?.[0];
   if(firstModule&&firstLesson)previewLesson(firstLesson,firstModule,isOwner||firstModule.has_access||firstModule.required_plan==='free');
 }
