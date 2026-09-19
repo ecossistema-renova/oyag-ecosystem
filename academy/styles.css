@@ -46,3 +46,11 @@
 .lesson-buttons button.lesson-locked:hover{border-color:#b9c8d3}
 @media(max-width:800px){.interactive-shell{grid-template-columns:1fr}.interactive-sidebar{position:static;height:auto}.interactive-sidebar .phases{grid-template-columns:1fr 1fr}.interactive-sidebar .level-card{margin-top:18px}}
 @media(max-width:520px){.interactive-sidebar .phases{grid-template-columns:1fr}}
+
+
+/* ===== Academy level checkout ===== */
+.academy-buy,.academy-buy-card{margin-top:12px;border:0;border-radius:12px;background:linear-gradient(135deg,#087a91,#0d506f);color:#fff;padding:11px 14px;font:800 .9rem/1.2 inherit;cursor:pointer;box-shadow:0 10px 24px rgba(7,88,107,.18);transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease}
+.academy-buy:hover,.academy-buy-card:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(7,88,107,.25)}
+.academy-buy:disabled,.academy-buy-card:disabled{opacity:.6;cursor:wait;transform:none}
+.academy-buy-card{width:100%}
+.level-card-row.locked .lesson-buttons{margin-bottom:10px}
