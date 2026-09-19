@@ -2,7 +2,9 @@ const cfg=window.OYAG_CONFIG;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey,{
  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:localStorage}
 });
-const id=new URLSearchParams(location.search).get('id');
+const qs=new URLSearchParams(location.search);
+const id=qs.get('id');
+const flow=qs.get('flow')||'marketplace';
 const statusEl=document.querySelector('#checkoutStatus');
 const summaryEl=document.querySelector('#orderSummary');
 const paymentMessage=document.querySelector('#paymentMessage');
@@ -14,6 +16,23 @@ const buyerDocumentError=document.querySelector('#buyerDocumentError');
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const money=(c,cur='BRL')=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:cur||'BRL'}).format(Number(c||0)/100);
 let session=null,guestToken=null,checkout=null,orders=[],items=[],shippingAddress=null;
+
+function applyFlowUi(){
+ if(flow!=='academy')return;
+ const brand=document.querySelector('#checkoutBrand');
+ const sub=document.querySelector('#checkoutBrandSub');
+ const back=document.querySelector('#checkoutBackLink');
+ const eyebrow=document.querySelector('#checkoutEyebrow');
+ const heading=document.querySelector('#checkoutHeading');
+ const intro=document.querySelector('#checkoutIntro');
+ if(brand)brand.href='./academy/curso.html';
+ if(sub)sub.textContent='OYAG Academy · Checkout seguro';
+ if(back){back.href='./academy/curso.html';back.textContent='← Voltar à Academy'}
+ if(eyebrow)eyebrow.textContent='OYAG ACADEMY · LIBERAÇÃO DE NÍVEL';
+ if(heading)heading.textContent='Libere seu próximo nível de aprendizagem.';
+ if(intro)intro.textContent='Pagamento único para liberar todas as aulas do nível selecionado. O acesso é ativado após a confirmação financeira.';
+}
+applyFlowUi();
 
 function onlyDigits(v){return String(v||'').replace(/\D/g,'')}
 function normalizeDocument(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,14)}
@@ -239,7 +258,7 @@ async function init(){
   return;
  }
 
- statusEl.textContent='Pedido #'+orders.map(x=>x.order_number).join(', #')+' · '+money(checkout.total_cents,checkout.currency);
+ statusEl.textContent=(flow==='academy'?'Nível selecionado · ':'Pedido #'+orders.map(x=>x.order_number).join(', #')+' · ')+money(checkout.total_cents,checkout.currency);
  renderSummary();
  await renderPayment();
 }
