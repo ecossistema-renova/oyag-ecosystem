@@ -1,10 +1,9 @@
 (function () {
   const storageKey = "oyag-theme";
   const root = document.documentElement;
-  const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   let saved = null;
   try { saved = localStorage.getItem(storageKey); } catch (_) {}
-  const initial = saved === "light" || saved === "dark" ? saved : (systemDark ? "dark" : "light");
+  const initial = saved === "light" || saved === "dark" ? saved : "dark";
   root.dataset.theme = initial;
   root.style.colorScheme = initial;
 
@@ -55,9 +54,4 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountToggle);
   else mountToggle();
 
-  if (!saved && window.matchMedia) {
-    const query = window.matchMedia("(prefers-color-scheme: dark)");
-    const sync = function (event) { setTheme(event.matches ? "dark" : "light", false); };
-    if (query.addEventListener) query.addEventListener("change", sync);
-  }
 })();
