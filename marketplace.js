@@ -22,10 +22,13 @@ function render(){
  grid.innerHTML=list.map(x=>'<article class="market-card">'+
   (x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':'<div class="market-placeholder">OYAG</div>')+
   '<div><small>'+esc(x.category||x.item_type)+'</small><h2>'+esc(x.name)+'</h2><p>'+esc(x.description||'Oferta disponível no OYAG Ecosystem.')+
-  '</p><span>'+esc(x.organization_name)+'</span><strong>'+esc(money(x.price_cents,x.currency))+'</strong>'+
+  '</p><span>'+esc(x.organization_name)+'</span>'+
+  (x.category==='OYAG Academy'&&x.promo_price_cents!=null&&x.regular_price_cents!=null?
+    '<div class="market-price-anchor"><del>'+esc(money(x.regular_price_cents,x.currency))+'</del><strong>'+esc(money(x.promo_price_cents,x.currency))+'</strong><small>Oferta de lançamento para contas qualificadas</small></div>':
+    '<strong>'+esc(money(x.price_cents,x.currency))+'</strong>')+
   (x.commercial_condition?'<em>'+esc(x.commercial_condition)+'</em>':'')+
   (x.fulfillment_type==='physical'?'<em>'+(x.shipping_mode==='fixed'?'Frete fixo: '+esc(money(x.shipping_fixed_cents,x.currency)):'Frete grátis')+'</em>':'')+
-  '<button class="button primary buy-button" type="button" data-buy="'+esc(x.id)+'">Comprar</button></div></article>').join('');
+  '<button class="button primary buy-button" type="button" data-buy="'+esc(x.id)+'">'+(x.category==='OYAG Academy'?'Acessar na Academy':'Comprar')+'</button></div></article>').join('');
 }
 
 const leadModal=document.querySelector('#leadModal');
@@ -99,6 +102,12 @@ async function startBuy(itemId){
  if(buying)return;
  const item=items.find(x=>x.id===itemId);
  if(!item){statusEl.textContent='Este produto não está disponível agora.';return}
+ if(item.category==='OYAG Academy'){
+   const {data:{session}}=await sb.auth.getSession();
+   if(session){location.assign('./academy/curso.html');return}
+   location.assign('./login.html?mode=signup&next='+encodeURIComponent('/academy/curso.html'));
+   return
+ }
  await openLeadModal(itemId);
 }
 
@@ -206,7 +215,7 @@ leadForm?.addEventListener('submit',async e=>{
 
 async function load(){
  statusEl.textContent='Carregando vitrine…';
- const r=await fetch(cfg.supabaseUrl+'/rest/v1/rpc/oyag_public_marketplace_list',{
+ const r=await fetch(cfg.supabaseUrl+'/rest/v1/rpc/oyag_public_marketplace_list_v2',{
   method:'POST',
   headers:{apikey:cfg.supabasePublishableKey,'content-type':'application/json'},
   body:'{}'
