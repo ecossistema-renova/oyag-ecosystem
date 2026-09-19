@@ -20,3 +20,29 @@
 .checkpoint-status.complete{background:#daf7eb;color:#086b4b}
 .primary:disabled{cursor:not-allowed;opacity:.58}
 @media(max-width:700px){.answer-grid{grid-template-columns:1fr}}
+
+/* ===== Reusable interactive lesson engine ===== */
+.interactive-shell{min-height:calc(100vh - 76px);display:grid;grid-template-columns:300px 1fr}
+.interactive-sidebar{background:var(--navy);color:#fff;padding:26px 24px;position:sticky;top:76px;height:calc(100vh - 76px);overflow:auto}
+.interactive-sidebar .eyebrow{color:var(--cyan)}
+.interactive-sidebar h1{font-size:1.32rem;margin:0 0 24px}
+.academy-back-inline{display:inline-flex;margin-bottom:20px;color:#b9ceda;text-decoration:none;font-size:.82rem;font-weight:800}
+.academy-back-inline:hover{color:#fff}
+.lesson-loading{min-height:420px;display:grid;place-items:center;text-align:center;color:var(--muted)}
+.lesson-loading strong{display:block;font-size:1.3rem;margin-bottom:8px}
+.lesson-loading a{display:inline-block;text-decoration:none;margin-top:12px}
+.concepts small{display:block;margin-top:5px;color:var(--muted);line-height:1.4}
+.academy-code-example{margin:12px 0 0;padding:16px 18px;border-radius:14px;background:#081923;color:#dff7ee;overflow:auto;line-height:1.55}
+.academy-code-example code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}
+.academy-console{margin-top:14px;padding:13px 15px;border-radius:12px;background:#06141d;color:#d9f5eb}
+.academy-console strong{display:block;color:var(--cyan);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em}
+.academy-console pre{margin:8px 0 0;white-space:pre-wrap;font: .84rem/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
+.structured-practice{margin-top:15px;padding:17px;border:1px solid #d9e4eb;border-radius:14px;background:#f7fafc}
+.structured-practice strong{display:block;margin-bottom:6px}
+.structured-practice p{margin:0;color:var(--muted);line-height:1.6}
+.mastery-note{margin:18px 0;padding:14px;border-left:4px solid var(--cyan);background:#edf9f7;border-radius:0 12px 12px 0}
+.mastery-note strong{display:block;color:#075c69}.mastery-note p{margin:5px 0 0;color:var(--muted)}
+.lesson-buttons button.lesson-locked{opacity:.72;cursor:pointer;background:#f5f6f8}
+.lesson-buttons button.lesson-locked:hover{border-color:#b9c8d3}
+@media(max-width:800px){.interactive-shell{grid-template-columns:1fr}.interactive-sidebar{position:static;height:auto}.interactive-sidebar .phases{grid-template-columns:1fr 1fr}.interactive-sidebar .level-card{margin-top:18px}}
+@media(max-width:520px){.interactive-sidebar .phases{grid-template-columns:1fr}}
