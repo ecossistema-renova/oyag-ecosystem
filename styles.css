@@ -155,3 +155,7 @@ img.oyag-brand-symbol{object-fit:contain!important;background:transparent!import
 .panel-note{padding:13px 14px;border-radius:13px;background:rgba(1,13,22,.38);border:1px solid rgba(255,255,255,.16)}
 .hero-panel{border-color:rgba(255,255,255,.24)}
 @media(prefers-contrast:more){.hero p,.hero span,.card.featured p,.dark p,.learning-card li,footer p{color:#fff!important}}
+
+
+/* Official social channels */
+.social-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}.social-links a{color:#dceaf1;text-decoration:none;font-size:.82rem;font-weight:800}.social-links a:hover{color:#fff;text-decoration:underline}footer p a{color:#dceaf1;text-decoration:none}footer p a:hover{text-decoration:underline;color:#fff}
