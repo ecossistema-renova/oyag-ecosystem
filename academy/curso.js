@@ -16,7 +16,11 @@ function previewLesson(lesson,module,canAccess){
     '<div class="preview-footer">'+
       (canAccess?'<a class="primary" href="./lesson.html?slug='+encodeURIComponent(lesson.slug)+'">Abrir aula</a>':
         '<div class="locked-note">🔒 Este conteúdo é liberado após a compra do nível.</div>'+
-        (module.isNextPurchasable&&module.catalog_item_id?'<button class="primary academy-buy" type="button" data-buy-module="'+esc(module.id)+'">Liberar Nível '+esc(module.position)+' por '+esc(money(module.price_cents,module.currency))+'</button>':'<span class="locked-note">Avance pelos níveis anteriores para chegar a esta etapa.</span>'))+
+        (module.isNextPurchasable&&module.catalog_item_id?'<div class="academy-price-anchor">'+
+          (module.promo_eligible&&module.promo_price_cents<module.regular_price_cents?'<del>'+esc(money(module.regular_price_cents,module.currency))+'</del>':'')+
+          '<strong>'+esc(money(module.effective_price_cents,module.currency))+'</strong>'+
+          (module.promo_eligible?'<small>Oferta de lançamento garantida pela sua conta.</small>':'<small>Preço regular.</small>')+
+        '</div><button class="primary academy-buy" type="button" data-buy-module="'+esc(module.id)+'">Liberar Nível '+esc(module.position)+' por '+esc(money(module.effective_price_cents,module.currency))+'</button>':'<span class="locked-note">Avance pelos níveis anteriores para chegar a esta etapa.</span>'))+
     '</div></div>';
   const buy=previewEl.querySelector('[data-buy-module]');
   if(buy)buy.onclick=()=>startCheckout(module,buy);
@@ -65,7 +69,7 @@ async function init(){
   isOwner=['owner','platform_admin'].includes(roleRow?.role);
   if(isOwner)ownerEl.classList.add('show');
 
-  const {data:outline,error:outlineError}=await sb.rpc('academy_course_outline_v3',{p_course_slug:'programacao-basico-ao-hard'});
+  const {data:outline,error:outlineError}=await sb.rpc('academy_course_outline_v4',{p_course_slug:'programacao-basico-ao-hard'});
   if(outlineError||!outline){levelsEl.innerHTML='<p>Não foi possível carregar a trilha.</p>';return}
 
   const byModule=new Map();
@@ -74,7 +78,14 @@ async function init(){
       byModule.set(row.module_id,{
         id:row.module_id,title:row.module_title,description:row.module_description,
         position:row.module_position,required_plan:row.required_plan,status:row.module_status,
-        catalog_item_id:row.catalog_item_id,price_cents:row.price_cents,currency:row.currency||'BRL',
+        catalog_item_id:row.catalog_item_id,
+        regular_price_cents:Number(row.regular_price_cents||0),
+        promo_price_cents:Number(row.promo_price_cents||0),
+        effective_price_cents:Number(row.effective_price_cents||row.regular_price_cents||0),
+        currency:row.currency||'BRL',
+        promo_eligible:Boolean(row.promo_eligible),
+        promo_qualification_ends_at:row.promo_qualification_ends_at,
+        promo_label:row.promo_label||'',
         has_access:Boolean(row.has_access),can_purchase:Boolean(row.can_purchase),
         lesson_count:Number(row.lesson_count||0),mastered_count:Number(row.mastered_count||0),
         progress_percent:Number(row.progress_percent||0),lessons:[]
@@ -93,12 +104,15 @@ async function init(){
     const isNextPurchasable=!canAccess&&module.can_purchase;
     const card=document.createElement('article');
     card.className='level-card-row'+(canAccess?'':' locked');
-    const label=module.required_plan==='free'?'Gratuito':canAccess?'Liberado':isNextPurchasable?money(module.price_cents,module.currency):'Bloqueado';
+    const label=module.required_plan==='free'?'Gratuito':canAccess?'Liberado':isNextPurchasable?money(module.effective_price_cents,module.currency):'Bloqueado';
     card.innerHTML='<div class="level-meta"><span class="chip">Nível '+esc(module.position)+'</span><span class="chip '+(canAccess?'':'lock')+'">'+esc(label)+'</span>'+(isOwner?'<span class="chip lock">Proprietário</span>':'')+'</div>'+
       '<h2>'+esc(module.title)+'</h2><p>'+esc(module.description||'')+'</p>'+
       '<div class="academy-level-progress"><div><span>Progresso</span><strong>'+esc(module.mastered_count)+'/'+esc(module.lesson_count)+' aulas</strong></div><div class="academy-level-progressbar"><i style="width:'+esc(module.progress_percent)+'%"></i></div><small>'+esc(module.progress_percent)+'% concluído</small></div>'+
       '<div class="lesson-buttons"></div>'+
-      (!canAccess?'<div class="locked-note">'+(isNextPurchasable?'🔒 Próximo nível da sua trilha. Compra única para liberar todas as aulas.':'🔒 Este nível será liberado para compra depois que você avançar pela trilha anterior.')+'</div>'+(isNextPurchasable?'<button class="primary academy-buy-card" type="button">Liberar por '+esc(money(module.price_cents,module.currency))+'</button>':''):'');
+      (!canAccess?'<div class="locked-note">'+(isNextPurchasable?'🔒 Próximo nível da sua trilha. Compra única para liberar todas as aulas.':'🔒 Este nível será liberado para compra depois que você avançar pela trilha anterior.')+'</div>'+
+        (module.promo_eligible&&module.promo_price_cents<module.regular_price_cents?'<div class="academy-price-anchor compact"><del>'+esc(money(module.regular_price_cents,module.currency))+'</del><strong>'+esc(money(module.promo_price_cents,module.currency))+'</strong><small>Preço de lançamento da sua conta.</small></div>':
+          (!canAccess&&module.regular_price_cents?'<div class="academy-price-anchor compact"><strong>'+esc(money(module.regular_price_cents,module.currency))+'</strong><small>Preço regular.</small></div>':''))+
+        (isNextPurchasable?'<button class="primary academy-buy-card" type="button">Liberar por '+esc(money(module.effective_price_cents,module.currency))+'</button>':''):'');
 
     const buttons=card.querySelector('.lesson-buttons');
     module.lessons.sort((a,b)=>a.position-b.position).forEach(lesson=>{
