@@ -7,6 +7,7 @@ const p=new URLSearchParams(location.search);
 const checkoutId=p.get('checkout');
 const navStatus=p.get('status')||'return';
 const returnToken=p.get('rt')||'';
+const flow=p.get('flow')||'marketplace';
 
 const title=document.querySelector('#paymentReturnTitle');
 const text=document.querySelector('#paymentReturnText');
@@ -15,7 +16,18 @@ const back=document.querySelector('#returnCheckoutLink');
 const track=document.querySelector('#trackOrderLink');
 const money=(c,cur='BRL')=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:cur}).format(Number(c||0)/100);
 
-if(checkoutId)back.href='./checkout.html?id='+encodeURIComponent(checkoutId);
+if(checkoutId)back.href='./checkout.html?id='+encodeURIComponent(checkoutId)+(flow==='academy'?'&flow=academy':'');
+if(flow==='academy'){
+ const brand=document.querySelector('#paymentReturnBrand');
+ const sub=document.querySelector('#paymentReturnBrandSub');
+ const headBack=document.querySelector('#paymentReturnBack');
+ const account=document.querySelector('#paymentReturnAccount');
+ if(brand)brand.href='./academy/curso.html';
+ if(sub)sub.textContent='OYAG Academy · Pagamento';
+ if(headBack){headBack.href='./academy/curso.html';headBack.textContent='Voltar à Academy'}
+ if(back){back.href='./academy/curso.html';back.textContent='Voltar à trilha'}
+ if(account){account.href='./academy/curso.html';account.textContent='Continuar na Academy'}
+}
 
 let trackingToken=checkoutId
   ? (sessionStorage.getItem('oyag_tracking_'+checkoutId)||localStorage.getItem('oyag_tracking_'+checkoutId))
@@ -93,7 +105,7 @@ async function refresh(){
    if(paid){
      const total=orders.reduce((a,o)=>a+Number(o.total_cents||0),0);
      title.textContent='Pagamento confirmado.';
-     text.textContent='O OYAG recebeu a confirmação financeira. Você já pode acompanhar a preparação e a entrega do pedido.';
+     text.textContent=flow==='academy'?'Pagamento confirmado. Seu nível está sendo liberado automaticamente na OYAG Academy.':'O OYAG recebeu a confirmação financeira. Você já pode acompanhar a preparação e a entrega do pedido.';
      statusEl.textContent='Pagamento confirmado · '+money(total,orders[0]?.currency||'BRL');
      applyTrackingLink();
      return true;
@@ -104,7 +116,7 @@ async function refresh(){
  if(data){
    if(data.status==='paid'||data.status==='completed'){
      title.textContent='Pagamento confirmado.';
-     text.textContent='O OYAG recebeu a confirmação financeira do provedor.';
+     text.textContent=flow==='academy'?'Pagamento confirmado. Seu acesso ao nível comprado já pode ser atualizado na sua trilha.':'O OYAG recebeu a confirmação financeira do provedor.';
      statusEl.textContent='Pagamento confirmado · '+money(data.total_cents,data.currency);
      if(!trackingToken){
        track.hidden=true;
