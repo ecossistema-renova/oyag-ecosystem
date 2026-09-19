@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Aula | OYAG Academy</title>
+  <link rel="stylesheet" href="./styles.css?v=academy-lesson-engine-20260919-02">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../config.production.js?v=prod-20260918-02"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./curso.html" aria-label="Voltar à trilha">
+    <span class="brand-mark">O</span>
+    <span><strong>OYAG Academy</strong><small>Aula interativa</small></span>
+  </a>
+  <div class="student"><span class="status-dot"></span><span><small id="modeLabel">Carregando</small><strong id="lessonStatus">Preparando aula…</strong></span></div>
+</header>
+
+<main class="interactive-shell">
+  <aside class="interactive-sidebar">
+    <a class="academy-back-inline" href="./curso.html">← Voltar à trilha</a>
+    <p class="eyebrow">Curso atual</p>
+    <h1>Programação do zero ao avançado</h1>
+
+    <div class="progress-label"><span>Progresso da aula</span><strong id="progressText">0%</strong></div>
+    <div class="progress"><span id="progressBar"></span></div>
+
+    <nav id="lessonPhases" class="phases" aria-label="Fases da aula">
+      <button class="phase active" data-scroll="theorySection"><span>1</span><div><strong>Entender</strong><small>Conceitos e exemplos</small></div></button>
+      <button class="phase" data-scroll="checkpointSection"><span>2</span><div><strong>Validar</strong><small>Checkpoint de teoria</small></div></button>
+      <button class="phase" data-scroll="labSection"><span>3</span><div><strong>Praticar</strong><small>Laboratório</small></div></button>
+      <button class="phase" data-scroll="requirementsSection"><span>4</span><div><strong>Comprovar</strong><small>Critérios de domínio</small></div></button>
+    </nav>
+
+    <div class="level-card"><span>Nível atual</span><strong id="levelLabel">—</strong><small id="moduleLabel">Carregando módulo…</small></div>
+  </aside>
+
+  <section class="classroom">
+    <div id="loadingState" class="lesson-loading">Carregando aula…</div>
+    <div id="lessonApp" hidden>
+      <div class="hero">
+        <div><p id="lessonEyebrow" class="eyebrow">Aula</p><h2 id="lessonTitle">—</h2><p id="lessonSummary">—</p></div>
+        <div class="score"><span>Critério</span><strong id="passingScore">100%</strong><small>dos requisitos essenciais</small></div>
+      </div>
+
+      <article id="theorySection" class="lesson card">
+        <div class="card-title"><span class="icon">01</span><div><p class="eyebrow">Entender</p><h3>Conceitos essenciais</h3></div></div>
+        <p id="objectiveText"></p>
+        <div id="conceptsGrid" class="concepts"></div>
+        <div id="theorySteps" class="theory-steps"></div>
+        <section class="code-explainer" id="exampleBlock">
+          <p class="eyebrow">Exemplo aplicado</p><h4 id="exampleTitle">Veja o conceito em ação</h4>
+          <pre class="academy-code-example"><code id="exampleCode"></code></pre>
+          <div class="translated-code"><p id="exampleExplanation"></p></div>
+        </section>
+      </article>
+
+      <section id="checkpointSection" class="checkpoint" aria-labelledby="checkpointTitle">
+        <p class="eyebrow">Validar</p><h4 id="checkpointTitle">Confirme o que você entendeu</h4>
+        <p>Responda ao checkpoint para liberar a prática quando a aula tiver laboratório interativo.</p>
+        <div id="quizContainer"></div>
+        <div id="checkpointStatus" class="checkpoint-status">Preparando checkpoint…</div>
+      </section>
+
+      <article id="labSection" class="lab card">
+        <div class="card-title"><span class="icon code">&lt;/&gt;</span><div><p class="eyebrow">Praticar</p><h3>Laboratório da aula</h3></div></div>
+        <p id="practiceText"></p>
+        <div class="instruction-box"><strong>O que você deve fazer</strong><p id="instructionsText"></p></div>
+        <div id="interactiveLab">
+          <label for="codeEditor">Seu código JavaScript</label>
+          <textarea id="codeEditor" spellcheck="false"></textarea>
+          <div class="lab-actions"><button id="runButton" class="primary" disabled>Conclua o checkpoint para praticar</button><button id="resetButton" class="secondary">Restaurar código</button><button id="hintButton" class="secondary">Receber uma dica</button></div>
+          <div id="feedback" class="feedback neutral" aria-live="polite"><strong>Prepare-se para testar.</strong><span>Conclua o checkpoint teórico primeiro.</span></div>
+          <div id="consolePanel" class="academy-console" hidden><strong>Console</strong><pre id="consoleOutput"></pre></div>
+        </div>
+        <div id="structuredPractice" class="structured-practice" hidden>
+          <strong>Atividade publicada</strong>
+          <p>Esta aula já está disponível na trilha. O laboratório automático desta etapa será refinado nas próximas versões; por enquanto, use a atividade proposta acima como exercício orientado.</p>
+        </div>
+      </article>
+
+      <article id="requirementsSection" class="requirements card">
+        <div class="card-title"><span class="icon">✓</span><div><p class="eyebrow">Comprovar domínio</p><h3>Critérios da aula</h3></div></div>
+        <ul id="requirementsList"></ul>
+        <div class="mastery-note"><strong>Critério de domínio</strong><p id="checkpointText"></p></div>
+        <button id="nextButton" class="next" disabled>Aula ainda não concluída 🔒</button>
+      </article>
+    </div>
+  </section>
+</main>
+
+<script src="./lesson.js?v=academy-lesson-engine-20260919-02"></script>
+</body>
+</html>
