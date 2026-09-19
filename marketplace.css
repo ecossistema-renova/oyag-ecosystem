@@ -8,3 +8,9 @@
 .shipping-grid .span-2{grid-column:1/-1}
 .shipping-note{margin:10px 0 0;font-size:.72rem;color:var(--muted);line-height:1.4}
 @media(max-width:600px){.shipping-grid{grid-template-columns:1fr}.shipping-grid .span-2{grid-column:auto}}
+
+
+.market-price-anchor{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:2px 0}
+.market-price-anchor del{color:#8b98a2;font-size:.9rem}
+.market-price-anchor strong{font-size:1.35rem;color:#0a786b}
+.market-price-anchor small{flex-basis:100%;font-size:.72rem;color:var(--muted)}
