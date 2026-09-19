@@ -229,14 +229,78 @@ async function updateShipment(order){
  document.body.classList.add('delivery-modal-open');
 }
 
+
+async function showAgenda(){
+ if(!['owner','platform_admin'].includes(role)){
+  C.innerHTML=statePanel('Agenda restrita','A gestão de horários e apresentações está disponível para perfis autorizados.');
+  return;
+ }
+ C.innerHTML='<div class="loading">Carregando agenda…</div>';
+ const {data,error}=await sb.rpc('oyag_agenda_admin_overview',{p_from:new Date().toISOString().slice(0,10),p_days:45});
+ if(error){C.innerHTML=statePanel('Não foi possível carregar a agenda',error.message);return}
+ const d=data||{},rules=Array.isArray(d.rules)?d.rules:[],apps=Array.isArray(d.appointments)?d.appointments:[],blocks=Array.isArray(d.blocks)?d.blocks:[];
+ const upcoming=apps.filter(x=>['scheduled','confirmed'].includes(x.status)&&new Date(x.scheduled_at)>new Date());
+ const confirmed=upcoming.filter(x=>x.status==='confirmed');
+ const serviceLabel=s=>({gestao_trafego:'Gestão de tráfego',redes_sociais:'Redes sociais',estrategia_marketing_vendas:'Marketing e vendas',geral:'Apresentação geral'}[s]||s||'—');
+ const dayLabel=n=>({1:'Segunda',2:'Terça',3:'Quarta',4:'Quinta',5:'Sexta',6:'Sábado',7:'Domingo'}[Number(n)]||n);
+ const dt=v=>new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short',timeZone:'America/Sao_Paulo'}).format(new Date(v));
+ C.innerHTML=
+  '<div class="agenda-toolbar"><div><p class="eyebrow">AGENDA OYAG</p><h2>Apresentações & disponibilidade</h2><p class="muted">Os horários publicados aqui alimentam a agenda pública do site oficial.</p></div><div class="agenda-toolbar-actions"><button class="catalog-primary" id="newAgendaRule">+ Horário recorrente</button><button class="agenda-secondary" id="newAgendaBlock">Bloquear período</button></div></div>'+
+  cards([['Próximas apresentações',upcoming.length,'agendadas'],['Confirmadas',confirmed.length,'com status confirmado'],['Regras ativas',rules.filter(x=>x.active).length,'faixas semanais'],['Bloqueios',blocks.length,'períodos indisponíveis']])+
+  '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">DISPONIBILIDADE</p><h2>Horários recorrentes</h2></div></div>'+
+  (rules.length?'<div class="agenda-rule-grid">'+rules.map(r=>'<article><div><span>'+esc(dayLabel(r.weekday))+'</span><strong>'+esc(String(r.start_time).slice(0,5))+'–'+esc(String(r.end_time).slice(0,5))+'</strong><small>'+esc(r.slot_minutes)+' min por apresentação · '+(r.active?'ativo':'pausado')+'</small></div><button data-delete-rule="'+esc(r.id)+'">Excluir</button></article>').join('')+'</div>':statePanel('Nenhum horário publicado','Cadastre pelo menos uma faixa recorrente para o site exibir horários disponíveis.'))+
+  '</div>'+
+  '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">APRESENTAÇÕES</p><h2>Agenda de clientes</h2></div></div>'+
+  (apps.length?'<div class="table-wrap"><table><thead><tr><th>Data</th><th>Contato</th><th>Negócio</th><th>Serviço</th><th>Status</th><th>Ação</th></tr></thead><tbody>'+
+   apps.map(a=>'<tr><td><strong>'+esc(dt(a.scheduled_at))+'</strong><br><small>'+esc(a.confirmation_code||'')+'</small></td><td><strong>'+esc(a.contact_name)+'</strong><br><small>'+esc(a.contact_email)+' · '+esc(a.contact_whatsapp)+'</small></td><td>'+esc(a.company_name||'—')+(a.company_segment?'<br><small>'+esc(a.company_segment)+'</small>':'')+'</td><td>'+esc(serviceLabel(a.service_type))+'</td><td>'+esc(a.status)+'</td><td><div class="agenda-row-actions"><button data-agenda-status="'+esc(a.id)+'" data-status="confirmed">Confirmar</button><button data-agenda-status="'+esc(a.id)+'" data-status="completed">Concluir</button><button data-agenda-status="'+esc(a.id)+'" data-status="canceled">Cancelar</button></div></td></tr>').join('')+
+   '</tbody></table></div>':statePanel('Nenhuma apresentação registrada','Quando alguém agendar pelo site oficial, a apresentação aparecerá aqui.'))+
+  '</div>';
+
+ const newRule=document.querySelector('#newAgendaRule');
+ if(newRule)newRule.onclick=async()=>{
+  const weekday=Number(prompt('Dia da semana: 1=segunda, 2=terça, 3=quarta, 4=quinta, 5=sexta, 6=sábado, 7=domingo','1'));
+  if(!weekday||weekday<1||weekday>7)return;
+  const start=(prompt('Horário inicial (HH:MM)','09:00')||'').trim();if(!start)return;
+  const end=(prompt('Horário final (HH:MM)','18:00')||'').trim();if(!end)return;
+  const minutes=Number(prompt('Duração de cada apresentação em minutos','45')||45);
+  const {error}=await sb.rpc('oyag_agenda_admin_upsert_rule',{p_id:null,p_weekday:weekday,p_start_time:start,p_end_time:end,p_slot_minutes:minutes,p_active:true});
+  if(error)alert('Não foi possível salvar: '+error.message);else showAgenda();
+ };
+
+ const newBlock=document.querySelector('#newAgendaBlock');
+ if(newBlock)newBlock.onclick=async()=>{
+  const start=prompt('Início do bloqueio (AAAA-MM-DD HH:MM)');if(!start)return;
+  const end=prompt('Fim do bloqueio (AAAA-MM-DD HH:MM)');if(!end)return;
+  const reason=prompt('Motivo (opcional)')||null;
+  const s=new Date(start.replace(' ','T'));const e=new Date(end.replace(' ','T'));
+  if(Number.isNaN(s.getTime())||Number.isNaN(e.getTime())||e<=s){alert('Período inválido.');return}
+  const {error}=await sb.rpc('oyag_agenda_admin_add_block',{p_starts_at:s.toISOString(),p_ends_at:e.toISOString(),p_reason:reason});
+  if(error)alert('Não foi possível bloquear: '+error.message);else showAgenda();
+ };
+
+ C.querySelectorAll('[data-delete-rule]').forEach(b=>b.onclick=async()=>{
+  if(!confirm('Excluir este horário recorrente?'))return;
+  const {error}=await sb.rpc('oyag_agenda_admin_delete_rule',{p_id:b.dataset.deleteRule});
+  if(error)alert(error.message);else showAgenda();
+ });
+
+ C.querySelectorAll('[data-agenda-status]').forEach(b=>b.onclick=async()=>{
+  const status=b.dataset.status;
+  if(status==='canceled'&&!confirm('Cancelar esta apresentação?'))return;
+  const {error}=await sb.rpc('oyag_agenda_admin_update_appointment',{p_id:b.dataset.agendaStatus,p_status:status,p_internal_notes:null});
+  if(error)alert(error.message);else showAgenda();
+ });
+}
+
 async function show(v){
  C.innerHTML='<div class="loading">Consultando dados do OYAG…</div>';
- const names={overview:'Início',companies:'Empresas',catalog:'Produtos e serviços',units:'Unidades',network:'Rede OYAG',performance:'Resultados',finance:'Financeiro',orders:'Pedidos e entregas',alerts:'Pendências',project:'Projetos',admin:'Configurações'};
+ const names={overview:'Início',companies:'Empresas',catalog:'Produtos e serviços',units:'Unidades',network:'Rede OYAG',performance:'Resultados',finance:'Financeiro',agenda:'Agenda',orders:'Pedidos e entregas',alerts:'Pendências',project:'Projetos',admin:'Configurações'};
  title.textContent=names[v]||'OYAG Ecosystem';
  if(v==='catalog'){await showCatalog();return}
  if(v==='project'){await showProject();return}
  if(v==='performance'){await showPerformance();return}
  if(v==='finance'){await showFinance();return}
+ if(v==='agenda'){await showAgenda();return}
  if(v==='orders'){await showOrders();return}
  if(v==='admin'){await showAdmin();return}
  if(v==='overview'){await overview();return}
