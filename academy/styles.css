@@ -54,3 +54,12 @@
 .academy-buy:disabled,.academy-buy-card:disabled{opacity:.6;cursor:wait;transform:none}
 .academy-buy-card{width:100%}
 .level-card-row.locked .lesson-buttons{margin-bottom:10px}
+
+
+/* ===== Academy learning progress ===== */
+.academy-level-progress{margin:12px 0 14px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#f8fbfc}
+.academy-level-progress>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.76rem}
+.academy-level-progress span,.academy-level-progress small{color:var(--muted)}
+.academy-level-progress strong{color:var(--ink)}
+.academy-level-progressbar{height:7px;margin:8px 0 5px;border-radius:999px;background:#e1e9ee;overflow:hidden}
+.academy-level-progressbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),#6adf99);transition:width .35s ease}
