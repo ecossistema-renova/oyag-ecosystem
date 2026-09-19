@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>OYAG Community · Área de membros</title>
+  <link rel="icon" href="./assets/oyag-approved-mark.png">
+  <link rel="stylesheet" href="./brand-dark2.css?v=dark2-20260919-01">
+  <link rel="stylesheet" href="./community-app.css?v=community-01">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./config.production.js?v=prod-20260918-02"></script>
+</head>
+<body>
+<header class="community-top">
+  <a class="community-brand" href="./dashboard.html"><img src="./assets/oyag-approved-mark.png" alt="OYAG"><span><strong>OYAG Community</strong><small>Aprender · Conectar · Aplicar</small></span></a>
+  <nav aria-label="Módulos OYAG">
+    <a href="./dashboard.html">Painel</a>
+    <a href="./academy/curso.html">Academy</a>
+    <a href="./marketplace.html">Marketplace</a>
+    <a href="./minhas-financas.html">Finance</a>
+  </nav>
+  <button id="logout" type="button">Sair</button>
+</header>
+
+<main class="community-shell">
+  <aside class="community-side">
+    <p class="eyebrow">Comunidade OYAG</p>
+    <h1>Conhecimento que vira ação.</h1>
+    <p>Compartilhe aprendizados, dúvidas e experiências com foco em desenvolvimento profissional e negócios.</p>
+    <div class="community-profile"><span>Conectado como</span><strong id="memberName">Membro OYAG</strong><small id="memberEmail"></small></div>
+    <div class="community-topics" id="topicFilters">
+      <button class="active" data-topic="">Todos</button>
+      <button data-topic="vendas">Vendas</button>
+      <button data-topic="lideranca">Liderança</button>
+      <button data-topic="marketing">Marketing</button>
+      <button data-topic="gestao">Gestão</button>
+      <button data-topic="desenvolvimento_pessoal">Desenvolvimento pessoal</button>
+      <button data-topic="programacao">Programação</button>
+    </div>
+    <div class="mentor-note">
+      <strong>Mentor IA OYAG</strong>
+      <p>A base de conhecimento do Mentor já está estruturada no ecossistema. A conversa generativa será ativada quando houver conteúdo aprovado para consulta.</p>
+    </div>
+  </aside>
+
+  <section class="community-main">
+    <section class="community-hero">
+      <div><p class="eyebrow">Feed da comunidade</p><h2>Troque conhecimento com contexto e objetivo.</h2><p>Use a comunidade para registrar aprendizados, pedir ajuda e compartilhar práticas que possam ser úteis a outros membros.</p></div>
+      <button id="newPostButton" class="community-primary" type="button">+ Nova publicação</button>
+    </section>
+
+    <section id="composer" class="community-composer" hidden>
+      <div class="composer-head"><div><p class="eyebrow">Nova publicação</p><h3>Compartilhe algo útil para a comunidade</h3></div><button id="closeComposer" type="button">×</button></div>
+      <form id="postForm">
+        <label>Tema<select id="postTopic" required><option value="geral">Geral</option><option value="vendas">Vendas</option><option value="lideranca">Liderança</option><option value="marketing">Marketing</option><option value="gestao">Gestão</option><option value="desenvolvimento_pessoal">Desenvolvimento pessoal</option><option value="programacao">Programação</option></select></label>
+        <label>Título<input id="postTitle" maxlength="160" required placeholder="Ex.: Como organizei meu processo de vendas"></label>
+        <label>Conteúdo<textarea id="postBody" maxlength="4000" required placeholder="Explique o contexto, o que você tentou e o que aprendeu ou precisa descobrir."></textarea></label>
+        <div class="composer-actions"><span id="postMessage" aria-live="polite"></span><button class="community-primary" type="submit">Publicar</button></div>
+      </form>
+    </section>
+
+    <section class="community-toolbar">
+      <span id="feedStatus">Carregando publicações…</span>
+      <button id="refreshFeed" type="button">Atualizar</button>
+    </section>
+    <section id="feed" class="community-feed"></section>
+  </section>
+</main>
+
+<script src="./community-app.js?v=community-01"></script>
+</body>
+</html>
