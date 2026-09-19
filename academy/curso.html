@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Minha Trilha | OYAG Academy</title>
+  <link rel="stylesheet" href="./styles.css?v=academy-20260919-01">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../config.production.js?v=prod-20260918-02"></script>
+  <style>
+    .course-shell{min-height:100vh;background:#f4f7fa}
+    .course-wrap{max-width:1280px;margin:auto;padding:28px 22px 60px}
+    .course-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:22px}
+    .course-head h1{margin:4px 0 0;font-size:clamp(1.8rem,4vw,3rem)}
+    .owner-preview{display:none;padding:10px 14px;border-radius:12px;background:#fff3c4;color:#5f4700;font-weight:800}
+    .owner-preview.show{display:block}
+    .course-grid{display:grid;grid-template-columns:380px 1fr;gap:18px}
+    .level-list,.lesson-preview{background:#fff;border:1px solid #dfe7ed;border-radius:20px;padding:18px}
+    .level-list{display:grid;gap:12px;align-content:start}
+    .level-card-row{border:1px solid #dfe7ed;border-radius:16px;padding:15px;background:#fff}
+    .level-card-row.locked{background:#f7f8fa}
+    .level-card-row h2{font-size:1rem;margin:4px 0 6px}
+    .level-card-row p{margin:0 0 10px;color:#637383;font-size:.9rem;line-height:1.45}
+    .level-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .chip{font-size:.72rem;font-weight:800;border-radius:999px;padding:5px 9px;background:#e8f3f5;color:#075c69}
+    .chip.lock{background:#f0edf8;color:#5b3a87}
+    .lesson-buttons{display:grid;gap:7px}
+    .lesson-buttons button{width:100%;text-align:left;border:1px solid #dfe7ed;border-radius:10px;background:#fbfcfd;padding:10px 11px;color:#102333}
+    .lesson-buttons button:hover{border-color:#0b4e73}
+    .locked-note{padding:10px;border-radius:10px;background:#eef2f5;color:#637383;font-size:.86rem}
+    .preview-empty{display:grid;place-items:center;min-height:420px;text-align:center;color:#637383}
+    .preview-body h2{margin-top:4px}.preview-body dl{display:grid;gap:12px}.preview-body dt{font-weight:800}.preview-body dd{margin:3px 0 0;color:#637383;line-height:1.55}
+    .method{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.method span{padding:7px 10px;background:#e7f6f5;border-radius:999px;font-weight:800;color:#075c69}
+    .preview-footer{margin-top:22px;padding-top:18px;border-top:1px solid #dfe7ed}
+    .preview-footer a{display:inline-block;text-decoration:none}
+    @media(max-width:900px){.course-grid{grid-template-columns:1fr}.course-head{display:block}.owner-preview{margin-top:12px}}
+  </style>
+</head>
+<body class="course-shell">
+<header class="topbar">
+  <a class="brand" href="./"><span class="brand-mark">O</span><span><strong>OYAG Academy</strong><small>Minha trilha</small></span></a>
+  <a class="secondary" href="../dashboard.html">Painel OYAG</a>
+</header>
+<main class="course-wrap">
+  <div class="course-head">
+    <div><p class="eyebrow">Programação do zero ao avançado</p><h1>Sua trilha de aprendizagem</h1></div>
+    <div id="ownerPreview" class="owner-preview">Modo proprietário: todos os níveis e aulas em prévia estão liberados.</div>
+  </div>
+  <div class="course-grid">
+    <section id="levels" class="level-list" aria-label="Níveis do curso"><p>Carregando trilha…</p></section>
+    <section id="preview" class="lesson-preview"><div class="preview-empty"><div><strong>Selecione uma aula</strong><p>Veja o objetivo, a prática e o critério de domínio da etapa.</p></div></div></section>
+  </div>
+</main>
+<script src="./curso.js?v=academy-owner-preview01"></script>
+</body>
+</html>
