@@ -16,7 +16,7 @@ function previewLesson(lesson,module,canAccess){
     '<div class="preview-footer">'+
       (canAccess?'<a class="primary" href="./lesson.html?slug='+encodeURIComponent(lesson.slug)+'">Abrir aula</a>':
         '<div class="locked-note">🔒 Este conteúdo é liberado após a compra do nível.</div>'+
-        (module.catalog_item_id?'<button class="primary academy-buy" type="button" data-buy-module="'+esc(module.id)+'">Liberar Nível '+esc(module.position)+' por '+esc(money(module.price_cents,module.currency))+'</button>':''))+
+        (module.isNextPurchasable&&module.catalog_item_id?'<button class="primary academy-buy" type="button" data-buy-module="'+esc(module.id)+'">Liberar Nível '+esc(module.position)+' por '+esc(money(module.price_cents,module.currency))+'</button>':'<span class="locked-note">Avance pelos níveis anteriores para chegar a esta etapa.</span>'))+
     '</div></div>';
   const buy=previewEl.querySelector('[data-buy-module]');
   if(buy)buy.onclick=()=>startCheckout(module,buy);
@@ -85,14 +85,16 @@ async function init(){
 
   const modules=[...byModule.values()].sort((a,b)=>a.position-b.position);
   levelsEl.innerHTML='';
+  const firstLockedPosition=modules.find(m=>!(isOwner||m.has_access||m.required_plan==='free'))?.position||null;
   modules.forEach(module=>{
     const canAccess=isOwner||module.has_access||module.required_plan==='free';
+    const isNextPurchasable=!canAccess&&module.position===firstLockedPosition;
     const card=document.createElement('article');
     card.className='level-card-row'+(canAccess?'':' locked');
     const label=module.required_plan==='free'?'Gratuito':canAccess?'Liberado':money(module.price_cents,module.currency);
     card.innerHTML='<div class="level-meta"><span class="chip">Nível '+esc(module.position)+'</span><span class="chip '+(canAccess?'':'lock')+'">'+esc(label)+'</span>'+(isOwner?'<span class="chip lock">Proprietário</span>':'')+'</div>'+
       '<h2>'+esc(module.title)+'</h2><p>'+esc(module.description||'')+'</p><div class="lesson-buttons"></div>'+
-      (!canAccess?'<div class="locked-note">🔒 Nível publicado. Compra única para liberar todas as aulas deste nível.</div><button class="primary academy-buy-card" type="button">Liberar por '+esc(money(module.price_cents,module.currency))+'</button>':'');
+      (!canAccess?'<div class="locked-note">'+(isNextPurchasable?'🔒 Próximo nível da sua trilha. Compra única para liberar todas as aulas.':'🔒 Este nível será liberado para compra depois que você avançar pela trilha anterior.')+'</div>'+(isNextPurchasable?'<button class="primary academy-buy-card" type="button">Liberar por '+esc(money(module.price_cents,module.currency))+'</button>':''):'');
 
     const buttons=card.querySelector('.lesson-buttons');
     module.lessons.sort((a,b)=>a.position-b.position).forEach(lesson=>{
@@ -100,7 +102,7 @@ async function init(){
       b.type='button';
       b.className=canAccess?'':'lesson-locked';
       b.innerHTML=(canAccess?'▶ ':'🔒 ')+esc(lesson.title);
-      b.onclick=()=>previewLesson(lesson,module,canAccess);
+      b.onclick=()=>previewLesson(lesson,{...module,isNextPurchasable},canAccess);
       buttons.appendChild(b);
     });
     const buy=card.querySelector('.academy-buy-card');
