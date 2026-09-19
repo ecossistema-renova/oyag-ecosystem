@@ -63,3 +63,12 @@
 .academy-level-progress strong{color:var(--ink)}
 .academy-level-progressbar{height:7px;margin:8px 0 5px;border-radius:999px;background:#e1e9ee;overflow:hidden}
 .academy-level-progressbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),#6adf99);transition:width .35s ease}
+
+
+/* ===== Academy launch offer anchoring ===== */
+.academy-price-anchor{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
+.academy-price-anchor del{color:#8a98a3;font-size:.9rem}
+.academy-price-anchor strong{font-size:1.45rem;color:#0b6e62}
+.academy-price-anchor small{flex-basis:100%;color:var(--muted);font-size:.76rem}
+.academy-price-anchor.compact{padding:10px 12px;border:1px solid #d9ebe6;border-radius:12px;background:#f3fbf8}
+.academy-price-anchor.compact strong{font-size:1.2rem}
