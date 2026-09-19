@@ -3,7 +3,7 @@ const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey,{auth:
 const params=new URLSearchParams(location.search);
 const slug=params.get('slug');
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-let lesson=null,moduleRow=null,theory={},starter='',quizPassed=new Set(),latestTestResults=[];
+let lesson=null,moduleRow=null,theory={},starter='',quizPassed=new Set(),latestTestResults=[],session=null,currentProgress=null,isMastered=false;
 
 const $=s=>document.querySelector(s);
 const els={
@@ -40,43 +40,123 @@ function renderTheory(){
  starter=lesson.starter_code||'';
  els.editor.value=starter;
 }
+
+async function recordProgress(score=0,theoryConfirmed=false){
+ if(!lesson?.id||!session)return null;
+ const {data,error}=await sb.rpc('academy_record_lesson_progress',{
+   p_lesson_id:lesson.id,
+   p_score:Math.max(0,Math.min(100,Math.round(Number(score)||0))),
+   p_theory_confirmed:Boolean(theoryConfirmed)
+ });
+ if(error){console.error('ACADEMY_PROGRESS_SAVE',error);return null}
+ currentProgress={
+   ...(currentProgress||{}),
+   status:data?.status||currentProgress?.status,
+   best_score:Number(data?.best_score||currentProgress?.best_score||0),
+   theory_confirmed_at:theoryConfirmed?(currentProgress?.theory_confirmed_at||new Date().toISOString()):currentProgress?.theory_confirmed_at,
+   mastered_at:data?.status==='mastered'?(currentProgress?.mastered_at||new Date().toISOString()):currentProgress?.mastered_at
+ };
+ isMastered=data?.status==='mastered'||Number(data?.best_score||0)>=Number(lesson.passing_score||100);
+ if(isMastered){
+   setProgress(100);
+   els.lessonStatus.textContent='Aula concluída';
+   els.next.disabled=false;
+   els.next.classList.add('unlocked');
+   els.next.textContent=data?.module_completed?'Nível concluído ✓ Voltar à trilha':'Aula concluída ✓ Voltar à trilha';
+   els.requirements.querySelectorAll('li').forEach(li=>li.classList.add('done'));
+   if(data?.module_completed){
+     els.feedback.className='feedback success';
+     els.feedback.innerHTML='<strong>Nível concluído!</strong><span>Você dominou todas as aulas deste nível. O próximo nível já pode ser liberado na trilha.</span>';
+   }
+ }
+ return data;
+}
+
 function renderQuiz(){
  const items=Array.isArray(theory.quiz)?theory.quiz:[];
- if(!items.length){els.quiz.innerHTML='<div class="checkpoint-status complete">Checkpoint orientado: revise o objetivo e o critério de domínio ✓</div>';els.checkpointStatus.hidden=true;quizPassed.add('auto');unlockLab();setProgress(35);return}
+ if(!items.length){
+   els.quiz.innerHTML='<div class="checkpoint-status complete">Checkpoint orientado: revise o objetivo e o critério de domínio ✓</div>';
+   els.checkpointStatus.hidden=true;quizPassed.add('auto');unlockLab();setProgress(isMastered?100:35);
+   if(!currentProgress?.theory_confirmed_at&&!isMastered)recordProgress(0,true).catch(()=>{});
+   return
+ }
  els.quiz.innerHTML=items.map((item,i)=>'<fieldset class="question" data-q="'+i+'"><legend>'+(i+1)+'. '+esc(item.question)+'</legend><div class="answer-grid">'+(item.options||[]).map((o,j)=>'<button type="button" data-option="'+j+'">'+esc(o)+'</button>').join('')+'</div><p class="question-feedback" aria-live="polite"></p></fieldset>').join('');
  els.checkpointStatus.textContent='0 de '+items.length+' conceitos confirmados';
- els.quiz.querySelectorAll('.question').forEach(fs=>fs.querySelectorAll('button').forEach(btn=>btn.onclick=()=>{
+ els.quiz.querySelectorAll('.question').forEach(fs=>fs.querySelectorAll('button').forEach(btn=>btn.onclick=async()=>{
   const i=Number(fs.dataset.q),j=Number(btn.dataset.option),item=items[i],feedback=fs.querySelector('.question-feedback');
   fs.querySelectorAll('button').forEach(b=>b.classList.remove('correct','incorrect'));
   if(j===Number(item.correct)){btn.classList.add('correct');quizPassed.add(i);feedback.className='question-feedback ok';feedback.textContent=item.success||'Correto! Conceito confirmado.'}
   else{btn.classList.add('incorrect');feedback.className='question-feedback try';feedback.textContent=item.retry||'Ainda não. Revise a explicação e tente novamente.'}
   els.checkpointStatus.textContent=quizPassed.size+' de '+items.length+' conceitos confirmados';
-  if(quizPassed.size===items.length){els.checkpointStatus.classList.add('complete');els.checkpointStatus.textContent='Teoria compreendida! Prática liberada ✓';unlockLab()}
+  if(quizPassed.size===items.length){
+    els.checkpointStatus.classList.add('complete');
+    els.checkpointStatus.textContent='Teoria compreendida! Prática liberada ✓';
+    unlockLab();
+    await recordProgress(0,true);
+  }
   updateProgress();
- }));
+ })));
 }
+
 function unlockLab(){
  const tests=theory.evaluator?.tests||[];
- if(tests.length&&starter){els.run.disabled=false;els.run.textContent='Executar e avaliar'}
- else{
-   els.interactiveLab.hidden=true;els.structuredPractice.hidden=false;
-   els.next.disabled=false;els.next.classList.add('unlocked');els.next.textContent='Aula publicada ✓ Voltar à trilha';
-   setProgress(100);
+ if(tests.length&&starter){
+   els.run.disabled=false;
+   els.run.textContent='Executar e avaliar';
+ }else{
+   els.interactiveLab.hidden=true;
+   els.structuredPractice.hidden=false;
+   els.next.disabled=false;
+   els.next.classList.add('unlocked');
+   els.next.textContent=isMastered?'Aula concluída ✓ Voltar à trilha':'Marcar aula como concluída';
+   if(!isMastered)setProgress(Math.max(65,Number(currentProgress?.best_score||0)));
  }
 }
+
 function renderRequirements(){
  const tests=theory.evaluator?.tests||[];
- if(!tests.length){els.requirements.innerHTML='<li class="done"><span></span>Objetivo da aula identificado</li><li class="done"><span></span>Atividade prática publicada</li><li><span></span>Laboratório automático será refinado em versão futura</li>';return}
+ if(!tests.length){
+   els.requirements.innerHTML='<li class="done"><span></span>Objetivo da aula identificado</li><li class="done"><span></span>Atividade prática publicada</li><li class="'+(isMastered?'done':'')+'"><span></span>Conclusão registrada na trilha</li>';
+   return
+ }
  els.requirements.innerHTML=tests.map((t,i)=>'<li data-test-index="'+i+'"><span></span>'+esc(t.label||('Requisito '+(i+1)))+'</li>').join('');
 }
+
 function updateProgress(){
+ if(isMastered){setProgress(100);return}
  const qItems=Array.isArray(theory.quiz)?theory.quiz.length:0;
- const quizPct=qItems?Math.min(35,(quizPassed.size/qItems)*35):35;
+ const quizPct=currentProgress?.theory_confirmed_at?35:(qItems?Math.min(35,(quizPassed.size/qItems)*35):35);
  const tests=theory.evaluator?.tests||[];
  const passed=latestTestResults.filter(Boolean).length;
- const testPct=tests.length?(passed/tests.length)*65:0;
+ const currentScore=Math.max(Number(currentProgress?.best_score||0),tests.length?(passed/tests.length)*100:0);
+ const testPct=tests.length?(currentScore/100)*65:30;
  setProgress(quizPct+testPct);
 }
+
+function applyExistingProgress(){
+ if(!currentProgress)return;
+ const items=Array.isArray(theory.quiz)?theory.quiz:[];
+ if(currentProgress.theory_confirmed_at){
+   items.forEach((_,i)=>quizPassed.add(i));
+   if(items.length){
+     els.checkpointStatus.classList.add('complete');
+     els.checkpointStatus.textContent='Teoria já confirmada ✓';
+   }
+   unlockLab();
+ }
+ if(isMastered){
+   setProgress(100);
+   els.lessonStatus.textContent='Aula concluída';
+   els.requirements.querySelectorAll('li').forEach(li=>li.classList.add('done'));
+   els.next.disabled=false;
+   els.next.classList.add('unlocked');
+   els.next.textContent='Aula concluída ✓ Voltar à trilha';
+   const tests=theory.evaluator?.tests||[];
+   if(tests.length&&starter){els.run.disabled=false;els.run.textContent='Executar novamente'}
+ }
+ updateProgress();
+}
+
 function evaluateInWorker(source,tests){
  return new Promise(resolve=>{
   const workerCode='self.onmessage=e=>{const source=e.data.source,tests=e.data.tests,logs=[];try{const console={log:(...a)=>logs.push(a.map(x=>{try{return typeof x===\'string\'?x:JSON.stringify(x)}catch{return String(x)}}).join(\' \'))};const fetch=undefined,XMLHttpRequest=undefined,WebSocket=undefined,EventSource=undefined;const results=(function(){\"use strict\";'+source+';return tests.map(t=>{try{return !!eval(t.expression)}catch(e){return false}})})();self.postMessage({ok:true,results,logs})}catch(err){self.postMessage({ok:false,error:err.message||String(err),results:tests.map(()=>false),logs})}}';
@@ -86,6 +166,7 @@ function evaluateInWorker(source,tests){
   worker.postMessage({source,tests});
  });
 }
+
 async function runLab(){
  const tests=theory.evaluator?.tests||[];
  els.run.disabled=true;els.run.textContent='Avaliando…';
@@ -94,14 +175,23 @@ async function runLab(){
  latestTestResults.forEach((ok,i)=>{const li=els.requirements.querySelector('[data-test-index="'+i+'"]');if(li)li.classList.toggle('done',!!ok)});
  els.consolePanel.hidden=!(result.logs&&result.logs.length);els.consoleOutput.textContent=(result.logs||[]).join('\n');
  const passed=latestTestResults.filter(Boolean).length,ok=tests.length>0&&passed===tests.length;
+ const score=tests.length?Math.round((passed/tests.length)*100):0;
  els.feedback.className='feedback '+(ok?'success':'error');
  els.feedback.innerHTML=ok?'<strong>Domínio comprovado!</strong><span>Seu código passou por todos os requisitos desta aula.</span>':'<strong>'+passed+' de '+tests.length+' requisitos atendidos.</strong><span>Revise o código e tente novamente.</span>';
- if(ok){els.next.disabled=false;els.next.classList.add('unlocked');els.next.textContent='Aula concluída ✓ Voltar à trilha';els.lessonStatus.textContent='Aula concluída'}
- updateProgress();els.run.disabled=false;els.run.textContent='Executar e avaliar';
+ const saved=await recordProgress(score,true);
+ if(ok&&saved){
+   els.next.disabled=false;
+   els.next.classList.add('unlocked');
+   els.next.textContent=saved.module_completed?'Nível concluído ✓ Voltar à trilha':'Aula concluída ✓ Voltar à trilha';
+   els.lessonStatus.textContent='Aula concluída';
+ }
+ updateProgress();els.run.disabled=false;els.run.textContent=isMastered?'Executar novamente':'Executar e avaliar';
 }
+
 async function init(){
  if(!slug){els.loading.textContent='Aula não informada.';return}
- const {data:{session}}=await sb.auth.getSession();
+ const auth=await sb.auth.getSession();
+ session=auth?.data?.session||null;
  if(!session){location.replace('../login.html?next='+encodeURIComponent('/academy/lesson.html?slug='+slug));return}
  const {data:roleRow}=await sb.from('platform_roles').select('role').eq('user_id',session.user.id).maybeSingle();
  const isOwner=roleRow?.role==='owner'||roleRow?.role==='platform_admin';
@@ -112,12 +202,28 @@ async function init(){
    return;
  }
  lesson=data;moduleRow=data.module||{};theory=data.theory||{};
- els.lessonStatus.textContent=isOwner?'Prévia completa':'Em estudo';
- renderTheory();renderQuiz();renderRequirements();
+ const {data:progressRow}=await sb.from('academy_lesson_progress')
+   .select('status,best_score,theory_confirmed_at,mastered_at,last_activity_at')
+   .eq('user_id',session.user.id).eq('lesson_id',lesson.id).maybeSingle();
+ currentProgress=progressRow||null;
+ isMastered=currentProgress?.status==='mastered'||Number(currentProgress?.best_score||0)>=Number(lesson.passing_score||100);
+ els.lessonStatus.textContent=isMastered?'Aula concluída':isOwner?'Prévia completa':'Em estudo';
+ renderTheory();renderQuiz();renderRequirements();applyExistingProgress();
  els.loading.hidden=true;els.app.hidden=false;
  document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>document.querySelector('#'+b.dataset.scroll)?.scrollIntoView({behavior:'smooth',block:'start'}));
- els.run.onclick=runLab;els.reset.onclick=()=>{els.editor.value=starter;els.feedback.className='feedback neutral';els.feedback.innerHTML='<strong>Código restaurado.</strong><span>Você pode tentar novamente.</span>';els.consolePanel.hidden=true};
+ els.run.onclick=runLab;
+ els.reset.onclick=()=>{els.editor.value=starter;els.feedback.className='feedback neutral';els.feedback.innerHTML='<strong>Código restaurado.</strong><span>Você pode tentar novamente.</span>';els.consolePanel.hidden=true};
  els.hint.onclick=()=>{els.feedback.className='feedback neutral';els.feedback.innerHTML='<strong>Dica do Mentor OYAG</strong><span>'+esc(theory.hint||'Volte ao objetivo, divida o problema em partes menores e valide uma parte de cada vez.')+'</span>'};
- els.next.onclick=()=>location.href='./curso.html';
+ els.next.onclick=async()=>{
+   if(isMastered){location.href='./curso.html';return}
+   const tests=theory.evaluator?.tests||[];
+   if(tests.length)return;
+   els.next.disabled=true;els.next.textContent='Salvando progresso…';
+   const saved=await recordProgress(100,true);
+   if(saved){location.href='./curso.html';return}
+   els.next.disabled=false;els.next.textContent='Marcar aula como concluída';
+   els.feedback.className='feedback error';
+   els.feedback.innerHTML='<strong>Não foi possível salvar agora.</strong><span>Tente novamente antes de sair da aula.</span>';
+ };
 }
 init();
