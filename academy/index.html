@@ -12,7 +12,7 @@
   <meta property="og:description" content="Aprenda programação por níveis, pratique em cada etapa e avance quando comprovar domínio.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://oyag.cledemilsonoliveira.com/academy/">
-  <link rel="stylesheet" href="./styles.css?v=academy-20260919-01">
+  <link rel="stylesheet" href="./styles.css?v=academy-launch-offer-20260919-05">
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -40,7 +40,22 @@
     .academy-levels article strong{display:block;color:#f1c86a;margin-bottom:8px}
     .academy-faq{margin-top:50px;display:grid;gap:10px}
     .academy-faq details{padding:16px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff09}
-    .academy-social{margin-top:56px;padding-top:24px;border-top:1px solid #ffffff20;display:flex;gap:14px;flex-wrap:wrap}.academy-social a{color:#fff;text-decoration:none;font-weight:800}.academy-social a:hover{text-decoration:underline}@media(max-width:750px){.academy-grid,.academy-levels{grid-template-columns:1fr}.academy-landing{padding:50px 18px}}
+    .launch-offer{margin:34px 0 54px;padding:26px;border:1px solid #f1c86a66;border-radius:22px;background:linear-gradient(135deg,#14293a,#0a3949);box-shadow:0 18px 50px #00000024}
+    .launch-offer-top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+    .launch-offer h2{margin:5px 0 10px;font-size:clamp(1.7rem,4vw,2.7rem)}
+    .launch-offer p{color:#c8dae3;line-height:1.6;max-width:780px}
+    .launch-badge{white-space:nowrap;padding:9px 12px;border-radius:999px;background:#f1c86a;color:#071b2b;font-weight:900;font-size:.78rem}
+    .launch-countdown{margin:18px 0 22px;display:flex;gap:9px;flex-wrap:wrap}
+    .launch-countdown span{padding:9px 12px;border-radius:10px;background:#ffffff10;border:1px solid #ffffff18;font-weight:800}
+    .offer-prices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+    .offer-price{padding:14px;border:1px solid #ffffff1f;border-radius:14px;background:#ffffff0a}
+    .offer-price small,.offer-price del,.offer-price strong{display:block}
+    .offer-price small{color:#a9c0cc;font-weight:800}
+    .offer-price del{color:#91a6b1;margin:7px 0 2px}
+    .offer-price strong{font-size:1.35rem;color:#f1c86a}
+    .offer-price.free strong{color:#79e6b1}
+    .launch-terms{font-size:.78rem;color:#a9c0cc!important;margin:14px 0 0!important}
+    .academy-social{margin-top:56px;padding-top:24px;border-top:1px solid #ffffff20;display:flex;gap:14px;flex-wrap:wrap}.academy-social a{color:#fff;text-decoration:none;font-weight:800}.academy-social a:hover{text-decoration:underline}@media(max-width:750px){.academy-grid,.academy-levels,.offer-prices{grid-template-columns:1fr}.academy-landing{padding:50px 18px}.launch-offer-top{display:block}.launch-badge{display:inline-block;margin-top:8px}}
   </style>
 </head>
 <body class="academy-home">
@@ -57,6 +72,38 @@
     <a class="secondary" href="../login.html?mode=signup&next=/academy/curso.html">Criar conta grátis</a>
     <a class="secondary" href="./curso.html">Acessar minha trilha</a>
   </div>
+
+
+  <section class="launch-offer" aria-labelledby="launchOfferTitle">
+    <div class="launch-offer-top">
+      <div>
+        <p class="eyebrow">Oferta de lançamento OYAG Academy</p>
+        <h2 id="launchOfferTitle">Crie sua conta até 31/10/2026 e garanta os preços promocionais na sua trilha.</h2>
+        <p>Esta condição é exclusiva para contas OYAG Academy criadas dentro do período de lançamento. Depois que sua conta se qualifica, os valores promocionais abaixo ficam vinculados à sua progressão pelos níveis.</p>
+      </div>
+      <span class="launch-badge">Condição limitada</span>
+    </div>
+    <div id="launchCountdown" class="launch-countdown" aria-live="polite">
+      <span>Calculando tempo restante…</span>
+    </div>
+    <div class="offer-prices" aria-label="Preços de lançamento por nível">
+      <article class="offer-price free"><small>Nível 1 · Fundamentos</small><strong>Grátis</strong></article>
+      <article class="offer-price"><small>Nível 2 · JavaScript</small><del>R$ 39,90</del><strong>R$ 19,90</strong></article>
+      <article class="offer-price"><small>Nível 3 · Desenvolvimento Web</small><del>R$ 49,90</del><strong>R$ 29,90</strong></article>
+      <article class="offer-price"><small>Nível 4 · Git & GitHub</small><del>R$ 49,90</del><strong>R$ 29,90</strong></article>
+      <article class="offer-price"><small>Nível 5 · APIs</small><del>R$ 59,90</del><strong>R$ 39,90</strong></article>
+      <article class="offer-price"><small>Nível 6 · Banco de Dados</small><del>R$ 69,90</del><strong>R$ 49,90</strong></article>
+      <article class="offer-price"><small>Nível 7 · Autenticação e Segurança</small><del>R$ 69,90</del><strong>R$ 49,90</strong></article>
+      <article class="offer-price"><small>Nível 8 · Full Stack</small><del>R$ 79,90</del><strong>R$ 59,90</strong></article>
+      <article class="offer-price"><small>Nível 9 · SaaS e Automação</small><del>R$ 89,90</del><strong>R$ 69,90</strong></article>
+      <article class="offer-price"><small>Nível 10 · Projeto Profissional OYAG</small><del>R$ 149,00</del><strong>R$ 89,90</strong></article>
+    </div>
+    <div class="academy-actions">
+      <a class="primary" href="../login.html?mode=signup&next=/academy/curso.html">Garantir minha conta grátis</a>
+      <a class="secondary" href="../login.html?next=/academy/curso.html">Já tenho conta</a>
+    </div>
+    <p class="launch-terms">Prazo real da campanha: 31/10/2026 às 23:59 (horário de Brasília). Contas criadas após esse prazo seguem os preços regulares.</p>
+  </section>
 
   <section class="academy-grid" aria-label="Metodologia OYAG Academy">
     <article><span>01</span><h2>Entenda</h2><p>Aprenda conceitos de programação com explicações progressivas e exemplos próximos da realidade.</p></article>
@@ -90,5 +137,22 @@
     <a href="https://www.facebook.com/Oyagecossistem/" target="_blank" rel="noopener noreferrer">Facebook</a>
   </div>
 </main>
+<script>
+(function(){
+  const el=document.querySelector('#launchCountdown');
+  if(!el)return;
+  const end=new Date('2026-11-01T02:59:59Z');
+  function tick(){
+    const ms=end-Date.now();
+    if(ms<=0){el.innerHTML='<span>Período de qualificação encerrado</span>';return}
+    const total=Math.floor(ms/1000);
+    const d=Math.floor(total/86400);
+    const h=Math.floor((total%86400)/3600);
+    const m=Math.floor((total%3600)/60);
+    el.innerHTML='<span>'+d+' dias</span><span>'+h+' horas</span><span>'+m+' min</span><span>para criar sua conta</span>';
+  }
+  tick();setInterval(tick,60000);
+})();
+</script>
 </body>
 </html>
