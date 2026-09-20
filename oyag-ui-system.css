@@ -1,0 +1,139 @@
+/* OYAG UI SYSTEM v1.0
+   Fonte única de verdade visual do painel.
+   Não editar cores diretamente em telas/componentes: usar estes tokens.
+*/
+:root{
+  --ui-version:"OYAG UI v1.0";
+  --ui-font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+  --ui-primary:#1677ff;
+  --ui-primary-2:#7a5cff;
+  --ui-accent:#19c7d4;
+  --ui-success:#168f6b;
+  --ui-warning:#9a6500;
+  --ui-danger:#b53a4c;
+
+  --ui-radius-sm:10px;
+  --ui-radius-md:14px;
+  --ui-radius-lg:20px;
+  --ui-shadow-sm:0 8px 24px rgba(10,30,50,.08);
+  --ui-shadow-md:0 16px 44px rgba(10,30,50,.11);
+
+  --ui-bg:#edf3f8;
+  --ui-surface:#ffffff;
+  --ui-surface-2:#f6f9fc;
+  --ui-surface-3:#eaf1f7;
+  --ui-text:#102535;
+  --ui-text-strong:#081f31;
+  --ui-text-muted:#526b7d;
+  --ui-border:#cfdee8;
+  --ui-focus:rgba(22,119,255,.28);
+  --ui-overlay:rgba(4,16,28,.66);
+  --ui-nav:#ffffff;
+  --ui-nav-text:#17334a;
+  --ui-nav-muted:#5c7487;
+}
+
+html[data-theme="dark"]{
+  --ui-bg:#030914;
+  --ui-surface:#091728;
+  --ui-surface-2:#0d2034;
+  --ui-surface-3:#122940;
+  --ui-text:#eef5ff;
+  --ui-text-strong:#ffffff;
+  --ui-text-muted:#a8bdd0;
+  --ui-border:#27445f;
+  --ui-focus:rgba(46,167,255,.34);
+  --ui-overlay:rgba(0,3,8,.80);
+  --ui-nav:#04101d;
+  --ui-nav-text:#edf6ff;
+  --ui-nav-muted:#9bb2c5;
+  --ui-shadow-sm:0 10px 30px rgba(0,0,0,.24);
+  --ui-shadow-md:0 20px 58px rgba(0,0,0,.36);
+}
+
+html,body{font-family:var(--ui-font)}
+body{background:var(--ui-bg)!important;color:var(--ui-text)!important}
+.workspace{background:var(--ui-bg)!important;color:var(--ui-text)!important}
+.workspace>header{background:color-mix(in srgb,var(--ui-surface) 94%,transparent)!important;border-color:var(--ui-border)!important}
+.workspace h1,.workspace h2,.workspace h3,.workspace h4,
+.workspace strong,.workspace b{color:var(--ui-text-strong)!important}
+.workspace p,.workspace small,.workspace .muted,
+.workspace .metric span,.workspace .metric small,
+.workspace .catalog-body p,.workspace .catalog-body small,
+.workspace .activity-row span,.workspace .operation-row span{color:var(--ui-text-muted)!important}
+
+.panel,.metric,.catalog-card,.kanban-col,.task,.integration-grid>div,
+.delivery-modal-card,.auth-card,.ui-preview-card,.ui-token-card{
+  background:var(--ui-surface)!important;
+  color:var(--ui-text)!important;
+  border-color:var(--ui-border)!important;
+  box-shadow:var(--ui-shadow-sm)!important;
+}
+
+input,select,textarea,
+.delivery-field input,.delivery-field select,.delivery-field textarea{
+  background:var(--ui-surface)!important;
+  color:var(--ui-text)!important;
+  border-color:var(--ui-border)!important;
+}
+input::placeholder,textarea::placeholder{color:var(--ui-text-muted)!important;opacity:.82}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:3px solid var(--ui-focus)!important;outline-offset:2px
+}
+
+aside{background:var(--ui-nav)!important;color:var(--ui-nav-text)!important;border-color:var(--ui-border)!important}
+aside .oyag-logo,aside .oyag-logo b,aside nav button,aside nav a{color:var(--ui-nav-text)!important}
+aside .ecosystem-back,aside .nav-group-label,aside nav button:not(.active){color:var(--ui-nav-muted)!important}
+aside nav button.active{color:#fff!important;background:linear-gradient(100deg,var(--ui-primary),var(--ui-primary-2))!important}
+html[data-theme="light"] aside nav button.active{color:#fff!important}
+html[data-theme="dark"] aside nav button.active{background:linear-gradient(100deg,rgba(22,119,255,.45),rgba(122,92,255,.30))!important}
+
+.catalog-primary,.project-actions .primary,.ui-primary{
+  background:linear-gradient(135deg,var(--ui-primary),var(--ui-primary-2))!important;
+  color:#fff!important;border-color:transparent!important
+}
+.catalog-actions button,.project-actions button,.task-actions button,.ui-secondary,
+.mobile-menu-toggle,.delivery-close{
+  background:var(--ui-surface-2)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important
+}
+.status-published{background:#dcf8ef!important;color:#086b4f!important}
+.status-paused{background:#fff0c9!important;color:#704900!important}
+html[data-theme="dark"] .status-published{background:#12372f!important;color:#8af0c8!important}
+html[data-theme="dark"] .status-paused{background:#3a2c0d!important;color:#ffd980!important}
+
+/* Módulo Interface & Tema */
+.ui-system{display:grid;gap:16px}
+.ui-system-hero{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.ui-system-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:color-mix(in srgb,var(--ui-primary) 12%,var(--ui-surface));color:var(--ui-primary);font-size:.72rem;font-weight:900}
+.ui-system-lock{padding:10px 12px;border-radius:12px;background:var(--ui-surface-2);border:1px solid var(--ui-border);font-size:.76rem;color:var(--ui-text-muted)}
+.ui-system-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ui-preview-card{border:1px solid var(--ui-border);border-radius:var(--ui-radius-lg);padding:18px}
+.ui-preview-card.active{outline:3px solid var(--ui-focus)}
+.ui-preview-swatch{border-radius:14px;overflow:hidden;border:1px solid var(--ui-border);margin:12px 0}
+.ui-preview-swatch .bar{height:34px;background:#07192d}
+.ui-preview-swatch.light{background:#edf3f8}.ui-preview-swatch.light .surface{margin:14px;padding:14px;background:#fff;color:#102535;border:1px solid #cfdee8;border-radius:12px}
+.ui-preview-swatch.dark{background:#030914}.ui-preview-swatch.dark .surface{margin:14px;padding:14px;background:#091728;color:#eef5ff;border:1px solid #27445f;border-radius:12px}
+.ui-preview-swatch .surface strong,.ui-preview-swatch .surface small{display:block;color:inherit!important}.ui-preview-swatch .surface small{opacity:.78}
+.ui-token-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ui-token-card{padding:14px;border:1px solid var(--ui-border);border-radius:14px}
+.ui-token-card i{display:block;width:100%;height:34px;border-radius:9px;margin-bottom:9px;border:1px solid var(--ui-border)}
+.ui-token-card strong,.ui-token-card small{display:block}
+.ui-token-card small{margin-top:3px}
+.ui-contrast-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ui-contrast-item{padding:14px;border-radius:14px;border:1px solid var(--ui-border);background:var(--ui-surface-2)}
+.ui-contrast-item b{display:block;margin-bottom:4px}.ui-contrast-pass{color:var(--ui-success)!important}
+.ui-system-actions{display:flex;gap:10px;flex-wrap:wrap}
+.ui-system-actions button{border:1px solid var(--ui-border);border-radius:12px;padding:11px 14px;font-weight:850;cursor:pointer}
+.ui-rule-list{margin:8px 0 0;padding-left:18px;color:var(--ui-text-muted);line-height:1.65}
+
+@media(max-width:900px){
+ .ui-system-grid{grid-template-columns:1fr}
+ .ui-token-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ui-contrast-grid{grid-template-columns:1fr}
+}
+@media(max-width:540px){
+ .ui-system-hero{display:grid}
+ .ui-token-grid{grid-template-columns:1fr}
+ .ui-system-actions{display:grid}.ui-system-actions button{width:100%}
+}
