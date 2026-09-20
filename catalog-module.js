@@ -69,7 +69,7 @@
       '<label><span>Entrega</span><select name="fulfillment_type"><option value="physical">Produto físico</option><option value="digital">Produto digital</option><option value="service">Serviço</option></select></label>'+
       '<label data-shipping-mode><span>Frete</span><select name="shipping_mode"><option value="free">Grátis</option><option value="fixed">Valor fixo</option></select></label>'+
       '<label data-shipping-fixed><span>Frete fixo (R$)</span><input name="shipping_fixed" inputmode="decimal" placeholder="12,90"></label>'+
-      '<label class="span-2"><span>Link de destino (opcional)</span><input name="destination_url" placeholder="./academy/curso.html?..."><small>Útil para produtos digitais que abrem uma área interna em vez de checkout.</small></label>'+
+
       '</div><div class="catalog-promo-preview" id="catalogPromoPreview"><span>Promoção</span><strong>Nenhuma promoção configurada</strong><small>Ao informar preço promocional, o desconto será calculado automaticamente.</small></div>'+
       '<div class="catalog-form-error" id="catalogFormError" aria-live="polite"></div>'+
       '<footer class="catalog-modal-actions"><button type="button" class="ui-secondary" data-catalog-close>Cancelar</button><button type="submit" class="catalog-primary" id="catalogSave">Salvar produto</button></footer>'+
@@ -132,7 +132,6 @@
     f.market_state.value=item?.market_state||''; f.market_city.value=item?.market_city||'';
     f.fulfillment_type.value=item?.fulfillment_type||(f.item_type.value==='service'?'service':'physical');
     f.shipping_mode.value=item?.shipping_mode||'free'; f.shipping_fixed.value=centsToInput(item?.shipping_fixed_cents);
-    f.destination_url.value=item?.destination_url||'';
     f.promo_ends_at.value=item?.promo_ends_at?new Date(new Date(item.promo_ends_at).getTime()-new Date(item.promo_ends_at).getTimezoneOffset()*60000).toISOString().slice(0,16):'';
     updatePreview();updatePromo();syncType();syncLocation();
   }
@@ -170,8 +169,7 @@
       p_commercial_condition:f.commercial_condition.value.trim()||null,p_status:f.status.value,
       p_fulfillment_type:f.fulfillment_type.value,p_shipping_mode:f.fulfillment_type.value==='physical'?f.shipping_mode.value:'free',
       p_shipping_fixed_cents:f.fulfillment_type.value==='physical'&&f.shipping_mode.value==='fixed'?shipping:0,
-      p_market_scope:f.market_scope.value,p_market_state:f.market_state.value||null,p_market_city:f.market_city.value.trim()||null,
-      p_destination_url:f.destination_url.value.trim()||null
+      p_market_scope:f.market_scope.value,p_market_state:f.market_state.value||null,p_market_city:f.market_city.value.trim()||null
     };
     const {error}=await ctx.sb.rpc('oyag_manage_catalog_item_v2',args);
     btn.disabled=false;btn.textContent=editing?'Salvar alterações':'Cadastrar produto';
