@@ -82,7 +82,9 @@ function renderQuiz(){
  }
  els.quiz.innerHTML=items.map((item,i)=>'<fieldset class="question" data-q="'+i+'"><legend>'+(i+1)+'. '+esc(item.question)+'</legend><div class="answer-grid">'+(item.options||[]).map((o,j)=>'<button type="button" data-option="'+j+'">'+esc(o)+'</button>').join('')+'</div><p class="question-feedback" aria-live="polite"></p></fieldset>').join('');
  els.checkpointStatus.textContent='0 de '+items.length+' conceitos confirmados';
- els.quiz.querySelectorAll('.question').forEach(fs=>fs.querySelectorAll('button').forEach(btn=>btn.onclick=async()=>{
+ els.quiz.querySelectorAll('.question').forEach(fs=>{
+  fs.querySelectorAll('button').forEach(btn=>{
+   btn.onclick=async()=>{
   const i=Number(fs.dataset.q),j=Number(btn.dataset.option),item=items[i],feedback=fs.querySelector('.question-feedback');
   fs.querySelectorAll('button').forEach(b=>b.classList.remove('correct','incorrect'));
   if(j===Number(item.correct)){btn.classList.add('correct');quizPassed.add(i);feedback.className='question-feedback ok';feedback.textContent=item.success||'Correto! Conceito confirmado.'}
@@ -94,8 +96,10 @@ function renderQuiz(){
     unlockLab();
     await recordProgress(0,true);
   }
-  updateProgress();
- })));
+    updateProgress();
+   };
+  });
+ });
 }
 
 function unlockLab(){
