@@ -139,3 +139,28 @@
   .payment-selector button{animation:none!important}
   .payment-selector button:before{animation:none!important;display:none}
 }
+
+
+/* Purchase legal consent · 2026-09-20 */
+.checkout-legal-box{
+  margin:16px 0 14px;
+  padding:14px 15px;
+  border:1px solid rgba(93,151,211,.18);
+  border-radius:14px;
+  background:rgba(8,21,37,.72);
+  color:#b6c7d6;
+  font-size:.78rem;
+  line-height:1.5
+}
+.checkout-legal-consent{
+  display:grid;
+  grid-template-columns:20px minmax(0,1fr);
+  gap:9px;
+  align-items:start;
+  cursor:pointer
+}
+.checkout-legal-consent input{
+  width:18px;height:18px;margin-top:2px;accent-color:#2ea7ff
+}
+.checkout-legal-box a{color:#82d0ff}
+.checkout-legal-box>small{display:block;margin-top:9px;color:#8499aa}
