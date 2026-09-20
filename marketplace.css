@@ -15,3 +15,31 @@
 .market-price-anchor del{color:#8b98a2;font-size:.9rem}
 .market-price-anchor strong{font-size:1.35rem;color:#0a786b}
 .market-price-anchor small{flex-basis:100%;font-size:.72rem;color:var(--muted)}
+
+
+/* Marketplace mobile premium · 2026-09-20 */
+.market-card{
+  position:relative;border-color:rgba(93,151,211,.18);
+  box-shadow:0 16px 48px rgba(0,0,0,.12);
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease
+}
+.market-card:hover{transform:translateY(-4px);border-color:rgba(46,167,255,.35);box-shadow:0 24px 64px rgba(0,0,0,.18)}
+.market-card img{transition:transform .4s ease,filter .3s ease}
+.market-card:hover img{transform:scale(1.025);filter:saturate(1.05)}
+@media(max-width:600px){
+  html,body{max-width:100%;overflow-x:hidden}
+  .market{padding:28px 14px 74px}
+  .market-hero h1{font-size:clamp(2rem,10vw,2.65rem);line-height:1.02}
+  .market-tools{gap:9px;margin:25px 0 16px}
+  .market-tools input,.market-tools select{min-height:48px;font-size:16px;border-radius:12px}
+  .market-grid{gap:13px}
+  .market-card{border-radius:18px;overflow:hidden}
+  .market-card img,.market-placeholder{height:auto;aspect-ratio:16/10}
+  .market-card>div{padding:18px}
+  .market-card .button,.market-card button{width:100%;min-height:46px}
+  .lead-modal{padding:8px;padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(8px,env(safe-area-inset-bottom))}
+  .lead-modal-card{width:100%;max-height:calc(100dvh - 16px);padding:20px 14px;border-radius:18px}
+  .lead-modal-card input:not([type=checkbox]){font-size:16px;min-height:48px}
+  .shipping-fields{padding:12px}
+}
+@media(hover:none),(pointer:coarse){.market-card:hover{transform:none}.market-card:hover img{transform:none}}
