@@ -2,8 +2,9 @@ const cfg=window.OYAG_CONFIG;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:localStorage}});
 const params=new URLSearchParams(location.search);
 const slug=params.get('slug');
+const requestedCourse=params.get('course')||'';
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-let lesson=null,moduleRow=null,theory={},starter='',quizPassed=new Set(),latestTestResults=[],session=null,currentProgress=null,isMastered=false;
+let lesson=null,moduleRow=null,courseRow=null,theory={},starter='',quizPassed=new Set(),latestTestResults=[],session=null,currentProgress=null,isMastered=false,practicePassed=false,practiceStartedAt=0;
 
 const $=s=>document.querySelector(s);
 const els={
@@ -14,12 +15,15 @@ const els={
  structuredPractice:$('#structuredPractice'),editor:$('#codeEditor'),run:$('#runButton'),reset:$('#resetButton'),hint:$('#hintButton'),
  feedback:$('#feedback'),requirements:$('#requirementsList'),checkpointText:$('#checkpointText'),next:$('#nextButton'),
  progressText:$('#progressText'),progressBar:$('#progressBar'),consolePanel:$('#consolePanel'),consoleOutput:$('#consoleOutput'),
- modeLabel:$('#modeLabel'),lessonStatus:$('#lessonStatus'),levelLabel:$('#levelLabel'),moduleLabel:$('#moduleLabel'),passingScore:$('#passingScore')
+ modeLabel:$('#modeLabel'),lessonStatus:$('#lessonStatus'),levelLabel:$('#levelLabel'),moduleLabel:$('#moduleLabel'),passingScore:$('#passingScore'),
+ courseTitle:$('#courseTitleLabel'),backToCourse:$('#backToCourse'),structuredPracticeTitle:$('#structuredPracticeTitle'),structuredPracticeIntro:$('#structuredPracticeIntro'),practiceRunner:$('#practiceRunner')
 };
 
 function setProgress(p){const n=Math.max(0,Math.min(100,Math.round(p)));els.progressText.textContent=n+'%';els.progressBar.style.width=n+'%'}
 function renderTheory(){
  document.title=lesson.title+' | OYAG Academy';
+ if(els.courseTitle)els.courseTitle.textContent=courseRow?.title||'OYAG Academy';
+ if(els.backToCourse)els.backToCourse.href='./curso.html?course='+encodeURIComponent(courseRow?.slug||requestedCourse||'programacao-basico-ao-hard');
  els.title.textContent=lesson.title;
  els.summary.textContent=theory.summary||theory.objective||'Aula prática da OYAG Academy.';
  els.eyebrow.textContent='Nível '+moduleRow.position+' · Aula '+lesson.position;
@@ -58,6 +62,7 @@ async function recordProgress(score=0,theoryConfirmed=false){
  };
  isMastered=data?.status==='mastered'||Number(data?.best_score||0)>=Number(lesson.passing_score||100);
  if(isMastered){
+   practicePassed=true;
    setProgress(100);
    els.lessonStatus.textContent='Aula concluída';
    els.next.disabled=false;
@@ -108,19 +113,89 @@ function unlockLab(){
    els.run.disabled=false;
    els.run.textContent='Executar e avaliar';
  }else{
-   els.interactiveLab.hidden=true;
-   els.structuredPractice.hidden=false;
-   els.next.disabled=false;
-   els.next.classList.add('unlocked');
-   els.next.textContent=isMastered?'Aula concluída ✓ Voltar à trilha':'Marcar aula como concluída';
-   if(!isMastered)setProgress(Math.max(65,Number(currentProgress?.best_score||0)));
+   renderPracticeRunner();
+ }
+}
+
+
+function editDistance(a,b){
+ a=String(a||'');b=String(b||'');
+ const prev=Array.from({length:b.length+1},(_,i)=>i),cur=new Array(b.length+1);
+ for(let i=1;i<=a.length;i++){cur[0]=i;for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));for(let j=0;j<=b.length;j++)prev[j]=cur[j]}
+ return prev[b.length];
+}
+function setPracticePassed(message){
+ practicePassed=true;
+ const req=els.requirements?.querySelector('[data-practice-req]');if(req)req.classList.add('done');
+ if(!isMastered){
+   els.next.disabled=false;els.next.classList.add('unlocked');els.next.textContent='Concluir aula e registrar domínio';
+   setProgress(Math.max(90,Number(currentProgress?.best_score||0)));
+ }
+ const status=els.practiceRunner?.querySelector('[data-practice-status]');
+ if(status){status.className='practice-status success';status.textContent=message||'Prática validada ✓'}
+ updateProgress();
+}
+function renderPracticeRunner(){
+ els.interactiveLab.hidden=true;
+ els.structuredPractice.hidden=false;
+ const mode=theory.practice_mode||'structured',cfg=theory.practice_config||{};
+ if(els.structuredPracticeTitle)els.structuredPracticeTitle.textContent=mode==='typing'?'Desafio de digitação':mode==='shortcut'?'Desafio de atalho':'Prática na ferramenta';
+ if(els.structuredPracticeIntro)els.structuredPracticeIntro.textContent=mode==='typing'?'Digite o texto sem colar e alcance os critérios mínimos.':mode==='shortcut'?'Ative a captura e execute a combinação solicitada.':'Execute a tarefa na ferramenta indicada e valide seu próprio resultado com o checklist.';
+ if(isMastered){practicePassed=true}
+ if(mode==='typing'){
+   const target=String(cfg.target_text||theory.practice||'Pratique com atenção e precisão.');
+   const minAccuracy=Number(cfg.min_accuracy||90),targetWpm=Number(cfg.target_wpm||15);
+   els.practiceRunner.innerHTML='<div class="typing-target"><small>Texto-alvo</small><p>'+esc(target)+'</p></div><div class="practice-metrics"><span>Meta: <strong>'+esc(targetWpm)+' PPM</strong></span><span>Precisão: <strong>'+esc(minAccuracy)+'%</strong></span></div><label for="typingInput">Digite aqui</label><textarea id="typingInput" class="typing-input" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><div class="practice-actions"><button type="button" class="primary" id="validateTyping">Avaliar digitação</button></div><p class="practice-status" data-practice-status>Comece a digitar para iniciar a medição.</p>';
+   const input=els.practiceRunner.querySelector('#typingInput');
+   input.addEventListener('paste',e=>{e.preventDefault();const s=els.practiceRunner.querySelector('[data-practice-status]');s.className='practice-status error';s.textContent='Colar está desativado nesta prática.'});
+   input.addEventListener('input',()=>{if(!practiceStartedAt)practiceStartedAt=Date.now()},{once:true});
+   els.practiceRunner.querySelector('#validateTyping').onclick=()=>{
+     const typed=input.value,elapsed=Math.max(1,(Date.now()-(practiceStartedAt||Date.now()))/60000);
+     const words=typed.trim()?typed.trim().split(/\s+/).length:0,wpm=Math.round(words/elapsed);
+     const maxLen=Math.max(target.length,typed.length,1),accuracy=Math.max(0,Math.round((1-editDistance(target,typed))/maxLen*100));
+     const status=els.practiceRunner.querySelector('[data-practice-status]');
+     status.textContent='Resultado: '+wpm+' PPM · '+accuracy+'% de precisão.';
+     if(accuracy>=minAccuracy&&wpm>=targetWpm){setPracticePassed('Meta atingida: '+wpm+' PPM · '+accuracy+'% de precisão ✓')}
+     else{status.className='practice-status error';status.textContent+=' Revise e tente novamente até atingir as duas metas.'}
+   };
+ }else if(mode==='shortcut'){
+   const combo=String(cfg.shortcut||'Ctrl/Cmd+A'),purpose=String(cfg.purpose||'Executar o atalho');
+   const expected=(combo.match(/\+([A-Za-z])$/)||[])[1]?.toLowerCase()||'a';
+   els.practiceRunner.innerHTML='<div class="shortcut-card"><span>'+esc(purpose)+'</span><strong>'+esc(combo)+'</strong><small>Use Ctrl no Windows/Linux ou Cmd no macOS.</small></div><button type="button" class="primary" id="shortcutCapture">Ativar captura do atalho</button><p class="practice-status" data-practice-status>A captura ainda não foi ativada.</p>';
+   const btn=els.practiceRunner.querySelector('#shortcutCapture'),status=els.practiceRunner.querySelector('[data-practice-status]');
+   let active=false;
+   const handler=e=>{
+     if(!active)return;
+     if(e.ctrlKey||e.metaKey)e.preventDefault();
+     const ok=(e.ctrlKey||e.metaKey)&&String(e.key).toLowerCase()===expected;
+     if(ok){active=false;document.removeEventListener('keydown',handler,true);btn.textContent='Atalho reconhecido ✓';setPracticePassed('Atalho '+combo+' reconhecido corretamente ✓')}
+     else{status.className='practice-status error';status.textContent='Combinação recebida, mas ainda não corresponde a '+combo+'. Tente novamente.'}
+   };
+   btn.onclick=()=>{active=true;status.className='practice-status';status.textContent='Captura ativa. Execute '+combo+' agora.';document.addEventListener('keydown',handler,true)};
+ }else{
+   const checklist=Array.isArray(cfg.checklist)&&cfg.checklist.length?cfg.checklist:[
+     'Executei a atividade proposta na ferramenta indicada.',
+     'Revisei o resultado comparando com o objetivo da aula.',
+     'Consigo explicar o que fiz e repetir o processo.'
+   ];
+   const prompt=cfg.reflection_prompt||'Em uma frase, descreva o que você fez.';
+   els.practiceRunner.innerHTML='<div class="practice-checklist">'+checklist.map((item,i)=>'<label><input type="checkbox" data-practice-check="'+i+'"><span>'+esc(item)+'</span></label>').join('')+'</div><label for="practiceReflection">'+esc(prompt)+'</label><textarea id="practiceReflection" class="practice-reflection" maxlength="500" placeholder="Registre sua verificação em poucas palavras."></textarea><div class="practice-actions"><button type="button" class="primary" id="validateStructured">Validar prática</button></div><p class="practice-status" data-practice-status>Conclua os itens e registre sua revisão.</p>';
+   els.practiceRunner.querySelector('#validateStructured').onclick=()=>{
+     const checks=[...els.practiceRunner.querySelectorAll('[data-practice-check]')],reflection=els.practiceRunner.querySelector('#practiceReflection').value.trim(),status=els.practiceRunner.querySelector('[data-practice-status]');
+     if(checks.every(c=>c.checked)&&reflection.length>=12)setPracticePassed('Checklist concluído e prática validada ✓');
+     else{status.className='practice-status error';status.textContent='Marque todos os itens e escreva uma breve revisão com pelo menos 12 caracteres.'}
+   };
+ }
+ if(isMastered){
+   setPracticePassed('Esta prática já foi concluída anteriormente ✓');
+   els.next.textContent='Aula concluída ✓ Voltar à trilha';
  }
 }
 
 function renderRequirements(){
  const tests=theory.evaluator?.tests||[];
  if(!tests.length){
-   els.requirements.innerHTML='<li class="done"><span></span>Objetivo da aula identificado</li><li class="done"><span></span>Atividade prática publicada</li><li class="'+(isMastered?'done':'')+'"><span></span>Conclusão registrada na trilha</li>';
+   els.requirements.innerHTML='<li class="done"><span></span>Objetivo da aula identificado</li><li data-practice-req class="'+(practicePassed?'done':'')+'"><span></span>Atividade prática validada</li><li class="'+(isMastered?'done':'')+'"><span></span>Conclusão registrada na trilha</li>';
    return
  }
  els.requirements.innerHTML=tests.map((t,i)=>'<li data-test-index="'+i+'"><span></span>'+esc(t.label||('Requisito '+(i+1)))+'</li>').join('');
@@ -133,7 +208,7 @@ function updateProgress(){
  const tests=theory.evaluator?.tests||[];
  const passed=latestTestResults.filter(Boolean).length;
  const currentScore=Math.max(Number(currentProgress?.best_score||0),tests.length?(passed/tests.length)*100:0);
- const testPct=tests.length?(currentScore/100)*65:30;
+ const testPct=tests.length?(currentScore/100)*65:(practicePassed?65:0);
  setProgress(quizPct+testPct);
 }
 
@@ -149,6 +224,7 @@ function applyExistingProgress(){
    unlockLab();
  }
  if(isMastered){
+   practicePassed=true;
    setProgress(100);
    els.lessonStatus.textContent='Aula concluída';
    els.requirements.querySelectorAll('li').forEach(li=>li.classList.add('done'));
@@ -393,16 +469,16 @@ async function init(){
  if(!slug){els.loading.textContent='Aula não informada.';return}
  const auth=await sb.auth.getSession();
  session=auth?.data?.session||null;
- if(!session){location.replace('../login.html?next='+encodeURIComponent('/academy/lesson.html?slug='+slug));return}
+ if(!session){location.replace('../login.html?next='+encodeURIComponent('/academy/lesson.html?slug='+slug+(requestedCourse?'&course='+requestedCourse:'')));return}
  const {data:roleRow}=await sb.from('platform_roles').select('role').eq('user_id',session.user.id).maybeSingle();
  const isOwner=roleRow?.role==='owner'||roleRow?.role==='platform_admin';
  els.modeLabel.textContent=isOwner?'Modo proprietário':'Aluno';
  const {data,error}=await sb.rpc('academy_get_lesson',{p_slug:slug});
  if(error||!data){
-   els.loading.innerHTML='<strong>Aula indisponível.</strong><p>Este nível ainda não está liberado para sua conta.</p><a class="primary" href="./curso.html">Voltar à trilha</a>';
+   els.loading.innerHTML='<strong>Aula indisponível.</strong><p>Este nível ainda não está liberado para sua conta.</p><a class="primary" href="./curso.html?course='+encodeURIComponent(requestedCourse||'programacao-basico-ao-hard')+'">Voltar à trilha</a>';
    return;
  }
- lesson=data;moduleRow=data.module||{};theory=data.theory||{};
+ lesson=data;moduleRow=data.module||{};courseRow=data.course||{};theory=data.theory||{};
  const {data:progressRow}=await sb.from('academy_lesson_progress')
    .select('status,best_score,theory_confirmed_at,mastered_at,last_activity_at')
    .eq('user_id',session.user.id).eq('lesson_id',lesson.id).maybeSingle();
@@ -416,13 +492,15 @@ async function init(){
  els.reset.onclick=()=>{els.editor.value=starter;els.feedback.className='feedback neutral';els.feedback.innerHTML='<strong>Código restaurado.</strong><span>Você pode tentar novamente.</span>';els.consolePanel.hidden=true};
  els.hint.onclick=()=>{els.feedback.className='feedback neutral';els.feedback.innerHTML='<strong>Dica do Mentor OYAG</strong><span>'+esc(theory.hint||'Volte ao objetivo, divida o problema em partes menores e valide uma parte de cada vez.')+'</span>'};
  els.next.onclick=async()=>{
-   if(isMastered){location.href='./curso.html';return}
+   const courseUrl='./curso.html?course='+encodeURIComponent(courseRow?.slug||requestedCourse||'programacao-basico-ao-hard');
+   if(isMastered){location.href=courseUrl;return}
    const tests=theory.evaluator?.tests||[];
    if(tests.length)return;
+   if(!practicePassed){els.feedback.className='feedback error';els.feedback.innerHTML='<strong>Prática ainda não validada.</strong><span>Conclua o exercício prático antes de registrar domínio.</span>';return}
    els.next.disabled=true;els.next.textContent='Salvando progresso…';
    const saved=await recordProgress(100,true);
-   if(saved){location.href='./curso.html';return}
-   els.next.disabled=false;els.next.textContent='Marcar aula como concluída';
+   if(saved){location.href=courseUrl;return}
+   els.next.disabled=false;els.next.textContent='Concluir aula e registrar domínio';
    els.feedback.className='feedback error';
    els.feedback.innerHTML='<strong>Não foi possível salvar agora.</strong><span>Tente novamente antes de sair da aula.</span>';
  };
