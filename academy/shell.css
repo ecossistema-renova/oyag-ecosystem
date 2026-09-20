@@ -1,0 +1,21 @@
+/* Shared OYAG Academy navigation shell */
+.academy-global-nav{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:nowrap;margin-left:auto}
+.academy-global-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 11px;border-radius:10px;text-decoration:none;font-size:.78rem;font-weight:800;white-space:nowrap;border:1px solid rgba(16,35,51,.12);background:rgba(255,255,255,.72);color:#102333;transition:.18s ease}
+.academy-global-nav a:hover{transform:translateY(-1px);border-color:rgba(11,78,115,.35);background:#fff}
+.academy-global-nav a[data-primary="true"]{background:#071b2b;color:#fff;border-color:#071b2b}
+.academy-home .academy-global-nav a{background:#ffffff0d;color:#e8f4fb;border-color:#ffffff20}
+.academy-home .academy-global-nav a:hover{background:#ffffff18;border-color:#ffffff3a}
+.academy-home .academy-global-nav a[data-primary="true"]{background:#68e1d0;color:#05202a;border-color:#68e1d0}
+.academy-nav-mobile-site{display:none}
+@media(max-width:1050px){
+  .academy-global-nav a[data-priority="low"]{display:none}
+}
+@media(max-width:760px){
+  .academy-global-nav{gap:6px}
+  .academy-global-nav a{padding:7px 9px;font-size:.72rem}
+  .academy-global-nav a[data-priority="medium"]{display:none}
+}
+@media(max-width:560px){
+  .academy-global-nav a:not([data-site-link]){display:none}
+  .academy-global-nav a[data-site-link]{display:inline-flex}
+}
