@@ -161,13 +161,163 @@ function applyExistingProgress(){
  updateProgress();
 }
 
+const LAB_LIMITS=Object.freeze({
+ sourceChars:12000,
+ maxTests:24,
+ expressionChars:600,
+ maxLogs:30,
+ logLineChars:600,
+ timeoutMs:1500
+});
+
 function evaluateInWorker(source,tests){
+ source=String(source||'');
+ const safeTests=(Array.isArray(tests)?tests:[]).slice(0,LAB_LIMITS.maxTests).map(t=>({
+   expression:String(t?.expression||'').slice(0,LAB_LIMITS.expressionChars)
+ }));
+ if(source.length>LAB_LIMITS.sourceChars){
+   return Promise.resolve({
+     ok:false,
+     error:'O código ultrapassou o limite seguro de '+LAB_LIMITS.sourceChars+' caracteres.',
+     results:safeTests.map(()=>false),
+     logs:[]
+   });
+ }
+
  return new Promise(resolve=>{
-  const workerCode='self.onmessage=e=>{const source=e.data.source,tests=e.data.tests,logs=[];try{const console={log:(...a)=>logs.push(a.map(x=>{try{return typeof x===\'string\'?x:JSON.stringify(x)}catch{return String(x)}}).join(\' \'))};const fetch=undefined,XMLHttpRequest=undefined,WebSocket=undefined,EventSource=undefined;const results=(function(){\"use strict\";'+source+';return tests.map(t=>{try{return !!eval(t.expression)}catch(e){return false}})})();self.postMessage({ok:true,results,logs})}catch(err){self.postMessage({ok:false,error:err.message||String(err),results:tests.map(()=>false),logs})}}';
-  const blob=new Blob([workerCode],{type:'text/javascript'}),url=URL.createObjectURL(blob),worker=new Worker(url);
-  const timer=setTimeout(()=>{worker.terminate();URL.revokeObjectURL(url);resolve({ok:false,error:'Tempo limite excedido.',results:tests.map(()=>false),logs:[]})},1400);
-  worker.onmessage=e=>{clearTimeout(timer);worker.terminate();URL.revokeObjectURL(url);resolve(e.data)};
-  worker.postMessage({source,tests});
+   const channelName='oyag-lab-sandbox-v1';
+   const requestToken=crypto.randomUUID();
+   const iframe=document.createElement('iframe');
+   iframe.setAttribute('sandbox','allow-scripts');
+   iframe.setAttribute('aria-hidden','true');
+   iframe.setAttribute('title','Ambiente isolado de execução do laboratório');
+   iframe.referrerPolicy='no-referrer';
+   iframe.tabIndex=-1;
+   iframe.style.cssText='position:fixed;width:1px;height:1px;left:-10000px;top:-10000px;border:0;opacity:0;pointer-events:none';
+
+   const frameSource=`<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob:; worker-src blob:; connect-src 'none'; img-src 'none'; media-src 'none'; font-src 'none'; style-src 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'"></head><body><script>
+   (()=> {
+     const CHANNEL='oyag-lab-sandbox-v1';
+     let activeWorker=null;
+     addEventListener('message',event=>{
+       if(event.source!==parent)return;
+       const msg=event.data;
+       if(!msg||msg.channel!==CHANNEL||!msg.token||typeof msg.source!=='string'||!Array.isArray(msg.tests))return;
+       if(activeWorker){try{activeWorker.terminate()}catch{} activeWorker=null}
+
+       const workerCode=\`
+       self.onmessage=function(event){
+         const replyPort=event.ports&&event.ports[0];
+         if(!replyPort)return;
+         const payload=event.data||{};
+         const source=String(payload.source||'');
+         const tests=Array.isArray(payload.tests)?payload.tests:[];
+         const maxLogs=Math.max(1,Math.min(50,Number(payload.maxLogs)||30));
+         const maxLine=Math.max(80,Math.min(1000,Number(payload.maxLine)||600));
+         const logs=[];
+         const safeValue=value=>{
+           try{
+             if(typeof value==='string')return value.slice(0,maxLine);
+             const serialized=JSON.stringify(value);
+             return String(serialized===undefined?value:serialized).slice(0,maxLine);
+           }catch{return String(value).slice(0,maxLine)}
+         };
+         const write=(...args)=>{
+           if(logs.length>=maxLogs)return;
+           logs.push(args.map(safeValue).join(' ').slice(0,maxLine));
+         };
+         const safeConsole=Object.freeze({log:write,info:write,warn:write,error:write});
+         try{
+           const runner=new Function(
+             'console','tests','fetch','XMLHttpRequest','WebSocket','EventSource','Worker','SharedWorker','BroadcastChannel','importScripts','caches','indexedDB','localStorage','sessionStorage',
+             '"use strict";\\n'+source+';\\nreturn tests.map(function(t){try{return !!eval(String(t.expression||"false"))}catch(_){return false}});'
+           );
+           const results=runner(
+             safeConsole,tests,
+             undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined
+           );
+           replyPort.postMessage({ok:true,results:Array.isArray(results)?results.map(Boolean):tests.map(()=>false),logs});
+         }catch(err){
+           replyPort.postMessage({ok:false,error:String(err&&err.message||err).slice(0,300),results:tests.map(()=>false),logs});
+         }
+       };
+       \`;
+
+       const blob=new Blob([workerCode],{type:'text/javascript'});
+       const workerUrl=URL.createObjectURL(blob);
+       const worker=new Worker(workerUrl);
+       activeWorker=worker;
+       const resultChannel=new MessageChannel();
+       let finished=false;
+       const finish=payload=>{
+         if(finished)return;
+         finished=true;
+         clearTimeout(timer);
+         try{worker.terminate()}catch{}
+         URL.revokeObjectURL(workerUrl);
+         activeWorker=null;
+         parent.postMessage({channel:CHANNEL,token:msg.token,payload},'*');
+       };
+       resultChannel.port1.onmessage=e=>finish(e.data);
+       const timer=setTimeout(()=>finish({
+         ok:false,
+         error:'Tempo limite excedido.',
+         results:msg.tests.map(()=>false),
+         logs:[]
+       }),Math.max(500,Math.min(2200,Number(msg.timeoutMs)||1500)));
+       worker.postMessage({
+         source:msg.source,
+         tests:msg.tests,
+         maxLogs:msg.maxLogs,
+         maxLine:msg.maxLine
+       },[resultChannel.port2]);
+     });
+   })();
+   <\/script></body></html>`;
+
+   let settled=false;
+   const cleanup=()=>{
+     window.removeEventListener('message',onMessage);
+     clearTimeout(parentTimer);
+     iframe.remove();
+   };
+   const finish=result=>{
+     if(settled)return;
+     settled=true;
+     cleanup();
+     resolve(result);
+   };
+   const onMessage=event=>{
+     if(event.source!==iframe.contentWindow)return;
+     const msg=event.data;
+     if(!msg||msg.channel!==channelName||msg.token!==requestToken)return;
+     finish(msg.payload||{ok:false,error:'Resposta inválida do ambiente isolado.',results:safeTests.map(()=>false),logs:[]});
+   };
+   window.addEventListener('message',onMessage);
+   const parentTimer=setTimeout(()=>finish({
+     ok:false,
+     error:'O ambiente isolado não respondeu a tempo.',
+     results:safeTests.map(()=>false),
+     logs:[]
+   }),LAB_LIMITS.timeoutMs+900);
+
+   iframe.addEventListener('load',()=>{
+     try{
+       iframe.contentWindow.postMessage({
+         channel:channelName,
+         token:requestToken,
+         source,
+         tests:safeTests,
+         maxLogs:LAB_LIMITS.maxLogs,
+         maxLine:LAB_LIMITS.logLineChars,
+         timeoutMs:LAB_LIMITS.timeoutMs
+       },'*');
+     }catch{
+       finish({ok:false,error:'Falha ao iniciar o ambiente isolado.',results:safeTests.map(()=>false),logs:[]});
+     }
+   },{once:true});
+   iframe.srcdoc=frameSource;
+   document.body.appendChild(iframe);
  });
 }
 
