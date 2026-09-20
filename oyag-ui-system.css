@@ -306,3 +306,33 @@ html[data-theme="light"] .interactive-shell{background:var(--ui-bg)!important}
 html[data-theme="dark"] .academy-home,
 html[data-theme="dark"] .course-shell,
 html[data-theme="dark"] .interactive-shell{background:var(--ui-bg)!important}
+
+
+/* ===== Academy contrast completion pass ===== */
+.status-dot{background:var(--ui-accent)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--ui-accent) 18%,transparent)!important}
+.progress{background:var(--ui-surface-3)!important}
+.progress span{background:linear-gradient(90deg,var(--ui-primary),var(--ui-accent))!important}
+.academy-definition>span,.featured-course .badge{
+  display:inline-flex!important;align-items:center!important;
+  background:color-mix(in srgb,var(--ui-primary) 12%,var(--ui-surface))!important;
+  color:var(--ui-primary)!important;border:1px solid color-mix(in srgb,var(--ui-primary) 24%,var(--ui-border))!important
+}
+.featured-course .badge{background:linear-gradient(135deg,var(--ui-primary),var(--ui-primary-2))!important;color:#fff!important;border-color:transparent!important}
+.instruction-box code{background:var(--ui-surface)!important;color:var(--ui-text-strong)!important;border:1px solid var(--ui-border)}
+.question legend,label{color:var(--ui-text-strong)!important}
+.question-feedback.ok{color:var(--ui-success)!important}.question-feedback.try{color:var(--ui-danger)!important}
+.academy-price-anchor.compact{background:var(--ui-surface-2)!important;border-color:var(--ui-border)!important}
+.lab-sandbox-note{background:var(--ui-surface-2)!important;border-color:var(--ui-border)!important;color:var(--ui-text-muted)!important}
+.lab-sandbox-note strong{color:var(--ui-primary)!important}
+.practice-status{border:1px solid var(--ui-border)}
+.academy-home .academy-links strong,.academy-home .academy-note strong{color:var(--ui-text-strong)!important}
+
+/* Typography previews in Interface & Tema */
+.ui-type-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ui-type-card{padding:14px;border:1px solid var(--ui-border);border-radius:14px;background:var(--ui-surface)}
+.ui-type-card span{display:block;color:var(--ui-text-muted);font-size:var(--ui-text-xs);margin-bottom:8px}
+.ui-type-card strong{display:block;color:var(--ui-text-strong)!important}
+.ui-type-card[data-role="small"] strong{font-size:var(--ui-text-sm)}
+.ui-type-card[data-role="body"] strong{font-size:var(--ui-text-md)}
+.ui-type-card[data-role="title"] strong{font-size:var(--ui-title-sm)}
+@media(max-width:700px){.ui-type-grid{grid-template-columns:1fr}}
