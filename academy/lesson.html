@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://epbhiygonpkzlmbbsyqv.supabase.co wss://epbhiygonpkzlmbbsyqv.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' blob: data:;">
   <meta name="robots" content="noindex,nofollow">
   <title>Aula | OYAG Academy</title>
-  <link rel="stylesheet" href="./styles.css?v=academy-progress-20260919-04">
+  <link rel="stylesheet" href="./styles.css?v=academy-sandbox-20260920-02">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../config.production.js?v=prod-20260918-02"></script>
 <link rel="stylesheet" href="../brand-dark2.css?v=dark2-system-01">
@@ -71,7 +72,8 @@
         <div class="instruction-box"><strong>O que você deve fazer</strong><p id="instructionsText"></p></div>
         <div id="interactiveLab">
           <label for="codeEditor">Seu código JavaScript</label>
-          <textarea id="codeEditor" spellcheck="false"></textarea>
+          <textarea id="codeEditor" spellcheck="false" maxlength="12000" autocomplete="off" autocapitalize="off"></textarea>
+          <div class="lab-sandbox-note" role="note"><strong>Ambiente isolado.</strong><span>O código desta prática roda em uma caixa de segurança separada, sem acesso à sua sessão, ao conteúdo da página ou à rede.</span></div>
           <div class="lab-actions"><button id="runButton" class="primary" disabled>Conclua o checkpoint para praticar</button><button id="resetButton" class="secondary">Restaurar código</button><button id="hintButton" class="secondary">Receber uma dica</button></div>
           <div id="feedback" class="feedback neutral" aria-live="polite"><strong>Prepare-se para testar.</strong><span>Conclua o checkpoint teórico primeiro.</span></div>
           <div id="consolePanel" class="academy-console" hidden><strong>Console</strong><pre id="consoleOutput"></pre></div>
@@ -92,6 +94,6 @@
   </section>
 </main>
 
-<script src="./lesson.js?v=academy-lesson-fix-20260920-01"></script>
+<script src="./lesson.js?v=academy-sandbox-20260920-02"></script>
 </body>
 </html>
