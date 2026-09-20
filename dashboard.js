@@ -497,57 +497,12 @@ function notice(){return '<div class="panel"><h2>Ambiente protegido</h2><p>Ambie
 window.addEventListener('error',()=>{if(C&&/Carregando|Consultando/.test(C.textContent))C.innerHTML=statePanel('Não foi possível iniciar o painel','Recarregue a página. Se continuar, o erro será tratado no ambiente publicado.')});
 init().catch(err=>{console.error('OYAG_INIT',err);C.innerHTML=statePanel('Não foi possível iniciar o painel','O ambiente encontrou uma falha de inicialização. Tente novamente.')});
 
-async function catalogOrganizations(){
- const {data,error}=await sb.from('organizations').select('id,name,status').eq('status','active').order('name');
- if(error)throw error; return data||[];
-}
 async function showCatalog(){
- C.innerHTML='<div class="loading">Carregando catálogo…</div>';
- const [orgsRes,itemsRes]=await Promise.all([catalogOrganizations(),sb.from('oyag_catalog_items').select('id,organization_id,item_type,fulfillment_type,shipping_mode,shipping_fixed_cents,name,description,image_url,category,price_cents,currency,commercial_condition,status,updated_at').neq('status','archived').order('updated_at',{ascending:false})]);
- if(itemsRes.error){C.innerHTML=statePanel('Não foi possível carregar o catálogo',itemsRes.error.message);return}
- const orgs=orgsRes,items=itemsRes.data||[];
- C.innerHTML='<div class="catalog-toolbar"><div><p class="eyebrow">CATÁLOGO</p><h2>Produtos & Serviços</h2><p class="muted">Cadastre e publique ofertas no Marketplace OYAG.</p></div><button class="catalog-primary" id="newCatalogItem">+ Novo produto ou serviço</button></div>'+
- (items.length?'<div class="catalog-grid">'+items.map(x=>'<article class="catalog-card">'+(x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':'<div class="catalog-image">OYAG</div>')+'<div class="catalog-body"><div class="catalog-meta"><span>'+esc(x.item_type==='service'?'Serviço':'Produto')+'</span><b class="status-'+esc(x.status)+'">'+esc(x.status)+'</b></div><h3>'+esc(x.name)+'</h3><p>'+esc(x.description||'Sem descrição')+'</p><strong>'+formatMoney(x.price_cents,x.currency)+'</strong><small>'+esc(orgs.find(o=>o.id===x.organization_id)?.name||'Empresa')+'</small><div class="catalog-actions"><button data-edit-catalog="'+x.id+'">Editar</button><button data-archive-catalog="'+x.id+'">Arquivar</button></div></div></article>').join('')+'</div>':statePanel('Seu catálogo está vazio','Cadastre o primeiro produto ou serviço.'));
- document.querySelector('#newCatalogItem').onclick=()=>catalogForm(null,orgs);
- C.querySelectorAll('[data-edit-catalog]').forEach(b=>b.onclick=()=>catalogForm(items.find(x=>x.id===b.dataset.editCatalog),orgs));
- C.querySelectorAll('[data-archive-catalog]').forEach(b=>b.onclick=()=>archiveCatalog(b.dataset.archiveCatalog));
-}
-async function catalogForm(item,orgs){
- if(!orgs.length){alert('Cadastre uma empresa antes de criar produtos.');return}
- const org=item?.organization_id||orgs[0].id;
- const type=(prompt('Tipo: product para produto ou service para serviço',item?.item_type||'product')||'').trim().toLowerCase();if(!type)return;
- const fulfillment=type==='service'
-  ? 'service'
-  : (prompt('Entrega: physical para produto físico ou digital para produto digital',item?.fulfillment_type||'physical')||'').trim().toLowerCase();
- if(!fulfillment)return;
- let shippingMode='free',shippingFixedCents=0;
- if(fulfillment==='physical'){
-  shippingMode=(prompt('Frete: free para grátis ou fixed para valor fixo',item?.shipping_mode||'free')||'').trim().toLowerCase();
-  if(!['free','fixed'].includes(shippingMode)){alert('Use free ou fixed para o frete nesta etapa.');return}
-  if(shippingMode==='fixed'){
-   const freightText=prompt('Valor do frete fixo em reais (ex.: 12,90):',item?.shipping_fixed_cents!=null?(Number(item.shipping_fixed_cents)/100).toFixed(2).replace('.',','):'');
-   if(freightText===null)return;
-   const freightParsed=Number(freightText.replace('.','').replace(',','.'));
-   if(!Number.isFinite(freightParsed)||freightParsed<=0){alert('Valor de frete inválido.');return}
-   shippingFixedCents=Math.round(freightParsed*100);
-  }
+ if(!window.OYAG_CATALOG){
+   C.innerHTML=statePanel('Módulo de catálogo indisponível','Recarregue a página para carregar Produtos & Serviços.');
+   return;
  }
- const name=prompt('Nome:',item?.name||'');if(!name?.trim())return;
- const description=prompt('Descrição:',item?.description||'')||'';
- const category=prompt('Categoria:',item?.category||'')||'';
- const priceText=prompt('Preço em reais (ex.: 49,90):',item?.price_cents!=null?(Number(item.price_cents)/100).toFixed(2).replace('.',','):'');
- if(priceText===null)return;
- const parsed=Number(priceText.replace('.','').replace(',','.'));if(!Number.isFinite(parsed)||parsed<0){alert('Preço inválido.');return}
- const image=prompt('URL da imagem (opcional):',item?.image_url||'')||'';
- const condition=prompt('Condição comercial:',item?.commercial_condition||'Pagamento único')||'';
- const status=(prompt('Status: draft, published ou paused',item?.status||'draft')||'').trim().toLowerCase();if(!status)return;
- const args={p_action:item?'update':'create',p_item_id:item?.id||null,p_organization_id:org,p_item_type:type,p_name:name.trim(),p_description:description,p_image_url:image,p_category:category,p_price_cents:Math.round(parsed*100),p_commercial_condition:condition,p_status:status,p_fulfillment_type:fulfillment,p_shipping_mode:shippingMode,p_shipping_fixed_cents:shippingFixedCents};
- const {error}=await sb.rpc('oyag_manage_catalog_item',args);if(error){alert('Não foi possível salvar: '+error.message);return}await showCatalog();
-}
-async function archiveCatalog(id){
- if(!confirm('Arquivar este item? Ele deixará de aparecer no Marketplace.'))return;
- const {error}=await sb.rpc('oyag_manage_catalog_item',{p_action:'archive',p_item_id:id});
- if(error)alert('Não foi possível arquivar: '+error.message);else showCatalog();
+ await window.OYAG_CATALOG.mount({sb,root:C,esc,formatMoney,session,role});
 }
 
 async function showAdmin(){
