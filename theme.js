@@ -53,9 +53,11 @@
     render(button, root.dataset.theme);
 
     const publicActions = document.querySelector(".topbar .actions, .topbar .header-actions");
+    const academyNav = document.querySelector(".academy-global-nav, [data-academy-nav]");
     const workspaceUser = document.querySelector(".workspace > header .user, .workspace header .user");
     const authCard = document.querySelector(".auth-card");
     if (publicActions) publicActions.prepend(button);
+    else if (academyNav) academyNav.prepend(button);
     else if (workspaceUser && workspaceUser.parentElement) workspaceUser.parentElement.insertBefore(button, workspaceUser);
     else if (authCard) authCard.prepend(button);
     else document.body.prepend(button);
