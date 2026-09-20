@@ -172,3 +172,38 @@ img.oyag-brand-symbol{object-fit:contain!important;background:transparent!import
 .contact-card .contact-address{font-size:.82rem;overflow-wrap:anywhere}
 @media(max-width:1180px){.contact-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.contact-grid{grid-template-columns:1fr}.contact-card{min-height:0}}
+
+
+/* OYAG contact modal */
+html.oyag-contact-open,html.oyag-contact-open body{overflow:hidden}
+.oyag-contact-modal[hidden]{display:none}
+.oyag-contact-modal{position:fixed;inset:0;z-index:1000000;display:grid;place-items:center;padding:20px}
+.oyag-contact-backdrop{position:absolute;inset:0;background:rgba(2,8,18,.76);backdrop-filter:blur(8px)}
+.oyag-contact-dialog{position:relative;z-index:1;width:min(760px,100%);max-height:min(88vh,820px);overflow:auto;border-radius:26px;padding:30px;background:#fff;color:#102535;border:1px solid rgba(46,167,255,.18);box-shadow:0 34px 100px rgba(0,0,0,.34)}
+.oyag-contact-close{position:absolute;top:14px;right:16px;width:40px;height:40px;border:0;border-radius:50%;background:#edf5fb;color:#18364c;font-size:1.7rem;line-height:1;cursor:pointer}
+.oyag-contact-head h2{margin:0 0 8px;font-size:clamp(1.8rem,4vw,2.7rem);letter-spacing:-.035em}
+.oyag-contact-head>p:last-child{margin:0 0 22px;color:#607383}
+.oyag-contact-form{display:grid;gap:16px}
+.oyag-contact-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.oyag-contact-form label{display:grid;gap:7px;font-size:.82rem;font-weight:850;color:#29465b}
+.oyag-contact-form label small{font-weight:650;color:#7b8d9b}
+.oyag-contact-form input,.oyag-contact-form textarea{width:100%;border:1px solid #d6e4ec;border-radius:12px;padding:12px 13px;background:#f9fcfe;color:#102535;font:600 .92rem/1.45 Inter,system-ui,sans-serif;outline:none;transition:.18s}
+.oyag-contact-form textarea{resize:vertical;min-height:130px}
+.oyag-contact-form input:focus,.oyag-contact-form textarea:focus{border-color:#2ea7ff;box-shadow:0 0 0 3px rgba(46,167,255,.13);background:#fff}
+.oyag-contact-destination{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px;border-radius:12px;background:#eef7ff;border:1px solid #d7eaff}
+.oyag-contact-destination span{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#1677ff}
+.oyag-contact-destination strong{font-size:.86rem;overflow-wrap:anywhere;text-align:right}
+.oyag-contact-actions{display:flex;gap:10px;flex-wrap:wrap}
+.oyag-contact-submit:disabled{opacity:.68;cursor:wait;transform:none}
+.oyag-contact-status{min-height:22px;font-size:.86rem;color:#607383}
+.oyag-contact-status.success{padding:11px 13px;border-radius:11px;background:#e9f9f4;color:#0c6b54;border:1px solid #bcebdc}
+.oyag-contact-status.error{padding:11px 13px;border-radius:11px;background:#fff1f1;color:#9b2e2e;border:1px solid #ffd0d0}
+.oyag-contact-privacy{color:#7b8d9b;line-height:1.45}
+.oyag-contact-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+html[data-theme="dark"] .oyag-contact-dialog{background:#081524;color:#eaf2ff;border-color:rgba(82,145,214,.28)}
+html[data-theme="dark"] .oyag-contact-head>p:last-child,html[data-theme="dark"] .oyag-contact-form label,html[data-theme="dark"] .oyag-contact-privacy{color:#a9bbce}
+html[data-theme="dark"] .oyag-contact-form input,html[data-theme="dark"] .oyag-contact-form textarea{background:#0d1e31;color:#eef5ff;border-color:#24415c}
+html[data-theme="dark"] .oyag-contact-destination{background:#0d2339;border-color:#1d4a70}
+html[data-theme="dark"] .oyag-contact-destination strong{color:#eaf2ff}
+html[data-theme="dark"] .oyag-contact-close{background:#10283f;color:#eaf2ff}
+@media(max-width:680px){.oyag-contact-modal{padding:10px}.oyag-contact-dialog{padding:24px 16px 20px;border-radius:20px;max-height:94vh}.oyag-contact-row{grid-template-columns:1fr}.oyag-contact-actions{display:grid}.oyag-contact-actions .button{width:100%}.oyag-contact-destination{display:grid;gap:5px}.oyag-contact-destination strong{text-align:left}}
