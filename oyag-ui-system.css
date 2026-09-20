@@ -92,8 +92,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 }
 
 .shell>aside{background:var(--ui-nav)!important;color:var(--ui-nav-text)!important;border-color:var(--ui-border)!important}
-.shell>aside .oyag-logo,aside .oyag-logo b,aside nav button,aside nav a{color:var(--ui-nav-text)!important}
-.shell>aside .ecosystem-back,aside .nav-group-label,aside nav button:not(.active){color:var(--ui-nav-muted)!important}
+.shell>aside .oyag-logo,.shell>aside .oyag-logo b,.shell>aside nav button,.shell>aside nav a{color:var(--ui-nav-text)!important}
+.shell>aside .ecosystem-back,.shell>aside .nav-group-label,.shell>aside nav button:not(.active){color:var(--ui-nav-muted)!important}
 .shell>aside nav button.active{color:#fff!important;background:linear-gradient(100deg,var(--ui-primary),var(--ui-primary-2))!important}
 html[data-theme="light"] .shell>aside nav button.active{color:#fff!important}
 html[data-theme="dark"] .shell>aside nav button.active{background:linear-gradient(100deg,rgba(22,119,255,.45),rgba(122,92,255,.30))!important}
