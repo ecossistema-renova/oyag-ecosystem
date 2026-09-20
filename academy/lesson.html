@@ -10,13 +10,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../config.production.js?v=prod-20260918-02"></script>
 <link rel="stylesheet" href="../brand-dark2.css?v=dark2-system-01">
+<link rel="stylesheet" href="./shell.css?v=academy-shell-20260920-01">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="./curso.html" aria-label="Voltar à trilha">
+  <a class="brand" href="./" aria-label="Voltar à OYAG Academy">
     <img class="brand-mark oyag-brand-symbol" src="../assets/oyag-approved-mark.png" alt="OYAG">
     <span><strong>OYAG Academy</strong><small>Aula interativa</small></span>
   </a>
+  <nav data-academy-nav="lesson" aria-label="Navegação global da Academy"></nav>
   <div class="student"><span class="status-dot"></span><span><small id="modeLabel">Carregando</small><strong id="lessonStatus">Preparando aula…</strong></span></div>
 </header>
 
@@ -95,5 +97,6 @@
 </main>
 
 <script src="./lesson.js?v=academy-server-verify-20260920-03"></script>
+<script src="./shell.js?v=academy-shell-20260920-01"></script>
 </body>
 </html>
