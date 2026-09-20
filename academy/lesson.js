@@ -321,19 +321,66 @@ function evaluateInWorker(source,tests){
  });
 }
 
+async function verifyLabProgress(source){
+ if(!lesson?.id||!session?.access_token)return null;
+ const r=await fetch(cfg.supabaseUrl+'/functions/v1/academy-verify-lab',{
+  method:'POST',
+  cache:'no-store',
+  headers:{
+   apikey:cfg.supabasePublishableKey,
+   authorization:'Bearer '+session.access_token,
+   'content-type':'application/json'
+  },
+  body:JSON.stringify({lesson_id:lesson.id,source:String(source||'')})
+ });
+ const data=await r.json().catch(()=>({}));
+ if(!r.ok||!data?.ok){
+   console.error('ACADEMY_LAB_VERIFY',data);
+   return null;
+ }
+ return data;
+}
+
 async function runLab(){
  const tests=theory.evaluator?.tests||[];
  els.run.disabled=true;els.run.textContent='Avaliando…';
- const result=await evaluateInWorker(els.editor.value,tests);
+ const source=els.editor.value;
+ const result=await evaluateInWorker(source,tests);
  latestTestResults=result.results||tests.map(()=>false);
  latestTestResults.forEach((ok,i)=>{const li=els.requirements.querySelector('[data-test-index="'+i+'"]');if(li)li.classList.toggle('done',!!ok)});
  els.consolePanel.hidden=!(result.logs&&result.logs.length);els.consoleOutput.textContent=(result.logs||[]).join('\n');
- const passed=latestTestResults.filter(Boolean).length,ok=tests.length>0&&passed===tests.length;
+ const passed=latestTestResults.filter(Boolean).length,localOk=tests.length>0&&passed===tests.length;
  const score=tests.length?Math.round((passed/tests.length)*100):0;
- els.feedback.className='feedback '+(ok?'success':'error');
- els.feedback.innerHTML=ok?'<strong>Domínio comprovado!</strong><span>Seu código passou por todos os requisitos desta aula.</span>':'<strong>'+passed+' de '+tests.length+' requisitos atendidos.</strong><span>Revise o código e tente novamente.</span>';
- const saved=await recordProgress(score,true);
- if(ok&&saved){
+ els.feedback.className='feedback '+(localOk?'neutral':'error');
+ els.feedback.innerHTML=localOk
+   ?'<strong>Testes locais aprovados.</strong><span>Validando a conclusão com o servidor…</span>'
+   :'<strong>'+passed+' de '+tests.length+' requisitos atendidos.</strong><span>Revise o código e tente novamente.</span>';
+
+ let saved=null;
+ if(localOk){
+   const verified=await verifyLabProgress(source);
+   if(verified?.passed&&verified?.progress){
+     saved=verified.progress;
+     currentProgress={
+       ...(currentProgress||{}),
+       status:saved.status||currentProgress?.status,
+       best_score:Number(saved.best_score||currentProgress?.best_score||0),
+       theory_confirmed_at:currentProgress?.theory_confirmed_at||new Date().toISOString(),
+       mastered_at:saved.status==='mastered'?(currentProgress?.mastered_at||new Date().toISOString()):currentProgress?.mastered_at
+     };
+     isMastered=saved.status==='mastered'||Number(saved.best_score||0)>=Number(lesson.passing_score||100);
+     els.feedback.className='feedback success';
+     els.feedback.innerHTML='<strong>Domínio comprovado!</strong><span>Seu código foi validado no ambiente seguro e a conclusão foi registrada.</span>';
+     setProgress(100);
+   }else{
+     els.feedback.className='feedback error';
+     els.feedback.innerHTML='<strong>A validação segura não confirmou a conclusão.</strong><span>Revise o código e execute novamente.</span>';
+   }
+ }else{
+   await recordProgress(0,true);
+ }
+
+ if(isMastered&&saved){
    els.next.disabled=false;
    els.next.classList.add('unlocked');
    els.next.textContent=saved.module_completed?'Nível concluído ✓ Voltar à trilha':'Aula concluída ✓ Voltar à trilha';
