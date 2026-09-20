@@ -1,6 +1,9 @@
 (function () {
   const storageKey = "oyag-theme";
+  const standardKey = "oyag-ui-standard";
+  const standard = "OYAG UI v1.0";
   const root = document.documentElement;
+  root.dataset.uiStandard = "oyag-v1";
   let saved = null;
   try { saved = localStorage.getItem(storageKey); } catch (_) {}
   const initial = saved === "light" || saved === "dark" ? saved : "dark";
@@ -29,7 +32,14 @@
     document.querySelectorAll(".theme-toggle").forEach(function (button) {
       render(button, theme);
     });
-    window.dispatchEvent(new CustomEvent("oyag:themechange", { detail: { theme: theme } }));
+    window.dispatchEvent(new CustomEvent("oyag:themechange", { detail: { theme: theme, standard: standard } }));
+  }
+
+  function restoreStandard(theme) {
+    const next = theme === "light" ? "light" : "dark";
+    try { localStorage.setItem(standardKey, standard); } catch (_) {}
+    setTheme(next, true);
+    window.dispatchEvent(new CustomEvent("oyag:uistandard", { detail: { standard: standard, theme: next } }));
   }
 
   function mountToggle() {
@@ -50,6 +60,15 @@
     else if (authCard) authCard.prepend(button);
     else document.body.prepend(button);
   }
+
+  window.OYAG_THEME = Object.freeze({
+    standard: standard,
+    getTheme: function(){ return root.dataset.theme || "dark"; },
+    setTheme: function(theme){ if(theme === "light" || theme === "dark") setTheme(theme, true); },
+    restoreStandard: restoreStandard
+  });
+
+  try { if (!localStorage.getItem(standardKey)) localStorage.setItem(standardKey, standard); } catch (_) {}
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountToggle);
   else mountToggle();
