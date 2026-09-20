@@ -36,3 +36,27 @@
   .pix-qr{max-width:190px}
   .boleto-line{overflow-wrap:anywhere;word-break:break-word}
 }
+
+
+/* Guest checkout recovery UI · 2026-09-20 */
+.payment-selector button:disabled{
+  opacity:.5;
+  filter:saturate(.55);
+  cursor:not-allowed
+}
+.checkout-recovery{
+  display:grid;
+  gap:10px;
+  padding:18px;
+  border:1px solid rgba(46,167,255,.18);
+  border-radius:16px;
+  background:rgba(46,167,255,.045)
+}
+.checkout-recovery strong{font-size:1.05rem}
+.checkout-recovery p{margin:0;color:var(--muted);line-height:1.55}
+.checkout-recovery>div{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
+@media(max-width:600px){
+  .checkout-recovery{padding:15px}
+  .checkout-recovery>div{display:grid;grid-template-columns:1fr;width:100%}
+  .checkout-recovery .button{width:100%;min-height:46px}
+}
