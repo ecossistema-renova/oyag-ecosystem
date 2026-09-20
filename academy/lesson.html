@@ -24,9 +24,9 @@
 
 <main class="interactive-shell">
   <aside class="interactive-sidebar">
-    <a class="academy-back-inline" href="./curso.html">← Voltar à trilha</a>
+    <a id="backToCourse" class="academy-back-inline" href="./curso.html">← Voltar à trilha</a>
     <p class="eyebrow">Curso atual</p>
-    <h1>Programação do zero ao avançado</h1>
+    <h1 id="courseTitleLabel">OYAG Academy</h1>
 
     <div class="progress-label"><span>Progresso da aula</span><strong id="progressText">0%</strong></div>
     <div class="progress"><span id="progressBar"></span></div>
@@ -81,8 +81,9 @@
           <div id="consolePanel" class="academy-console" hidden><strong>Console</strong><pre id="consoleOutput"></pre></div>
         </div>
         <div id="structuredPractice" class="structured-practice" hidden>
-          <strong>Atividade publicada</strong>
-          <p>Esta aula já está disponível na trilha. O laboratório automático desta etapa será refinado nas próximas versões; por enquanto, use a atividade proposta acima como exercício orientado.</p>
+          <strong id="structuredPracticeTitle">Prática orientada</strong>
+          <p id="structuredPracticeIntro">Execute a atividade e valide o resultado.</p>
+          <div id="practiceRunner"></div>
         </div>
       </article>
 
@@ -96,7 +97,7 @@
   </section>
 </main>
 
-<script src="./lesson.js?v=academy-server-verify-20260920-03"></script>
+<script src="./lesson.js?v=academy-practical-engine-20260920-01"></script>
 <script src="./shell.js?v=academy-shell-20260920-01"></script>
 </body>
 </html>
