@@ -168,7 +168,7 @@
       }
 
       status.className = "oyag-contact-status success";
-      status.innerHTML = `<strong>Mensagem enviada!</strong> Recebemos seu contato para ${escapeHtml(CHANNELS[activeChannel].label)}.`;
+      status.innerHTML = result.email_sent ? `<strong>Mensagem enviada!</strong> Seu contato foi registrado no OYAG e encaminhado para ${escapeHtml(CHANNELS[activeChannel].label)}.` : `<strong>Mensagem registrada!</strong> Seu contato já entrou no pipeline OYAG. A notificação por e-mail deste formulário ainda não está ativa.`;
       form.reset();
       setMailto();
       submit.textContent = "Mensagem enviada ✓";
