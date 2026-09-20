@@ -20,7 +20,7 @@ mobileMenuToggle?.addEventListener('click',()=>{
 mobileMenuBackdrop?.addEventListener('click',closeMobileMenu);
 window.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu()});
 window.addEventListener('resize',()=>{if(window.innerWidth>800)closeMobileMenu()});
-async function init(){const {data}=await sb.auth.getSession();session=data.session;if(!session){location.replace('./login.html');return}document.querySelector('#userEmail').textContent=session.user.email;const {data:r}=await sb.from('platform_roles').select('role').eq('user_id',session.user.id).maybeSingle();role=r?.role||'usuário';document.querySelector('#role').textContent=role==='owner'?'Conta Dono':role;const internal=document.querySelector('#internalProjectNav');if(internal&&!['owner','platform_admin'].includes(role))internal.remove();await loadUserProjects();show('overview')}document.querySelector('#logout').onclick=async()=>{await sb.auth.signOut();location.replace('./')};const dev=document.querySelector('#developerInfo');if(dev)dev.onclick=()=>{C.innerHTML='<div class="panel developer-profile"><p class="eyebrow">DESENVOLVIMENTO</p><h2>OYAG Ecosystem</h2><p><b>Cledemilson Oliveira de Assis</b></p><p class="muted">Responsável pelo produto e desenvolvimento do ecossistema.</p></div>';title.textContent='Desenvolvedor'};function activateView(v){document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMobileMenu();show(v)}
+async function init(){const {data}=await sb.auth.getSession();session=data.session;if(!session){location.replace('./login.html');return}document.querySelector('#userEmail').textContent=session.user.email;const {data:r}=await sb.from('platform_roles').select('role').eq('user_id',session.user.id).maybeSingle();role=r?.role||'usuário';document.querySelector('#role').textContent=role==='owner'?'Conta Dono':role;const internal=document.querySelector('#internalProjectNav');if(internal&&!['owner','platform_admin'].includes(role))internal.remove();const leadsNav=document.querySelector('#leadsNav');if(leadsNav&&!['owner','admin','platform_admin'].includes(role))leadsNav.remove();await loadUserProjects();show('overview')}document.querySelector('#logout').onclick=async()=>{await sb.auth.signOut();location.replace('./')};const dev=document.querySelector('#developerInfo');if(dev)dev.onclick=()=>{C.innerHTML='<div class="panel developer-profile"><p class="eyebrow">DESENVOLVIMENTO</p><h2>OYAG Ecosystem</h2><p><b>Cledemilson Oliveira de Assis</b></p><p class="muted">Responsável pelo produto e desenvolvimento do ecossistema.</p></div>';title.textContent='Desenvolvedor'};function activateView(v){document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMobileMenu();show(v)}
 document.querySelector('#nav').onclick=e=>{const b=e.target.closest('button[data-view]');if(!b)return;activateView(b.dataset.view)};
 const mobileBottomNav=document.querySelector('#mobileBottomNav');
 if(mobileBottomNav)mobileBottomNav.onclick=e=>{const more=e.target.closest('[data-more]');if(more){openMobileMenu();return}const b=e.target.closest('button[data-view]');if(b)activateView(b.dataset.view)};const cards=(items)=>'<div class="grid">'+items.map(x=>'<article class="metric"><span>'+esc(x[0])+'</span><strong>'+esc(x[1])+'</strong><small>'+esc(x[2]||'')+'</small></article>').join('')+'</div>';async function count(table,filter){let q=sb.from(table).select('*',{count:'exact',head:true});if(filter)q=filter(q);const {count,error}=await q;return error?'—':count}async function showFinance(){
@@ -293,11 +293,42 @@ async function showAgenda(){
  });
 }
 
+
+async function showLeads(){
+ C.innerHTML='<div class="loading">Carregando pipeline de leads…</div>';
+ if(!['owner','admin','platform_admin'].includes(role)){C.innerHTML=statePanel('Acesso restrito','O pipeline está disponível apenas para perfis administrativos autorizados.');return}
+ const {data,error}=await sb.rpc('oyag_admin_leads_overview',{p_limit:200});
+ if(error){C.innerHTML=statePanel('Não foi possível carregar o pipeline','Tente novamente.');return}
+ const d=data||{},k=d.kpis||{},channels=d.contact_channels||{},rows=Array.isArray(d.recent)?d.recent:[];
+ const channelLabel=v=>({contato:'Contato',comercial:'Comercial',suporte:'Suporte',financeiro:'Financeiro',parcerias:'Parcerias',signup:'Cadastro'}[v]||v||'—');
+ const stageLabel=v=>({lead:'Lead',checkout_started:'Checkout iniciado',checkout_abandoned:'Checkout abandonado',customer:'Cliente',inactive:'Inativo'}[v]||v||'—');
+ C.innerHTML=
+ cards([
+  ['Total de leads',k.total_leads||0,'base unificada'],
+  ['Contatos do site',k.website_contact_leads||0,'leads com formulário'],
+  ['Cadastros',k.signups||0,'contas criadas'],
+  ['Checkouts iniciados',k.checkout_started||0,'intenção de compra'],
+  ['Clientes',k.customers||0,'pagamento confirmado']
+ ])+
+ '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">ORIGEM DOS CONTATOS</p><h2>Canais que estão trazendo oportunidades</h2></div></div>'+
+ cards([
+  ['Contato',channels.contato||0,'formulário'],
+  ['Comercial',channels.comercial||0,'formulário'],
+  ['Suporte',channels.suporte||0,'formulário'],
+  ['Financeiro',channels.financeiro||0,'formulário'],
+  ['Parcerias',channels.parcerias||0,'formulário']
+ ])+'</div>'+
+ '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">PIPELINE</p><h2>Leads recentes</h2><p class="muted">A mesma pessoa é atualizada pelo e-mail, preservando a jornada entre contato, cadastro, checkout e compra.</p></div></div>'+
+ (rows.length?'<div class="table-wrap"><table><thead><tr><th>Lead</th><th>Contato</th><th>Etapa</th><th>Canal / origem</th><th>Interesse</th><th>Atualizado</th></tr></thead><tbody>'+
+ rows.map(x=>'<tr><td><b>'+esc(x.full_name||'—')+'</b><br><small>'+esc(x.email||'—')+'</small></td><td>'+esc(x.whatsapp||'—')+'</td><td>'+esc(stageLabel(x.lifecycle_stage))+'</td><td>'+esc(channelLabel(x.last_pipeline_channel||x.last_contact_channel)||x.source||'—')+'<br><small>'+esc(x.source||'—')+'</small></td><td>'+esc(x.product_name||x.last_contact_subject||'—')+'</td><td>'+esc(formatDate(x.updated_at))+'</td></tr>').join('')+
+ '</tbody></table></div>':statePanel('Nenhum lead ainda','Novos contatos, cadastros e checkouts aparecerão aqui.'))+'</div>';
+}
+
 async function show(v){
  C.innerHTML='<div class="loading">Consultando dados do OYAG…</div>';
- const names={overview:'Início',companies:'Empresas',catalog:'Produtos e serviços',units:'Unidades',network:'Rede OYAG',performance:'Resultados',finance:'Financeiro',agenda:'Agenda',orders:'Pedidos e entregas',alerts:'Pendências',project:'Projetos',admin:'Configurações'};
+ const names={overview:'Início',companies:'Empresas',catalog:'Produtos e serviços',units:'Unidades',network:'Rede OYAG',leads:'Leads & Pipeline',performance:'Resultados',finance:'Financeiro',agenda:'Agenda',orders:'Pedidos e entregas',alerts:'Pendências',project:'Projetos',admin:'Configurações'};
  title.textContent=names[v]||'OYAG Ecosystem';
- if(v==='catalog'){await showCatalog();return}
+ if(v==='catalog'){await showCatalog();return}\n if(v==='leads'){await showLeads();return}
  if(v==='project'){await showProject();return}
  if(v==='performance'){await showPerformance();return}
  if(v==='finance'){await showFinance();return}
