@@ -17,6 +17,24 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 const money=(c,cur='BRL')=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:cur||'BRL'}).format(Number(c||0)/100);
 let session=null,guestToken=null,checkout=null,orders=[],items=[],shippingAddress=null;
 
+function setPaymentControls(enabled){
+ const buttons=paymentSelector?.querySelectorAll('button[data-method]')||[];
+ buttons.forEach(btn=>{
+  const method=btn.dataset.method;
+  btn.disabled=!enabled||method==='boleto';
+ });
+ if(buyerDocumentInput)buyerDocumentInput.disabled=!enabled;
+}
+
+function showCheckoutRecovery(message){
+ statusEl.textContent=message;
+ summaryEl.innerHTML='<div class="checkout-recovery"><strong>Não foi possível abrir o resumo deste pedido.</strong><p>Seu pedido foi criado, mas esta tela não conseguiu validar a sessão da compra.</p><div><button type="button" class="button primary" id="checkoutRetry">Tentar novamente</button><a class="button secondary" href="./marketplace.html">Voltar à vitrine</a></div></div>';
+ paymentMessage.className='payment-message error';
+ paymentMessage.textContent='O pagamento fica bloqueado até o resumo do pedido ser carregado com segurança.';
+ setPaymentControls(false);
+ document.querySelector('#checkoutRetry')?.addEventListener('click',()=>location.reload());
+}
+
 function applyFlowUi(){
  if(flow!=='academy')return;
  const brand=document.querySelector('#checkoutBrand');
@@ -197,19 +215,20 @@ async function tryAsaasCheckout(method,paymentWindow=null){
 
 async function renderPayment(){
  paymentProviderLabel.textContent='Asaas';
+ setPaymentControls(true);
  const boleto=paymentSelector?.querySelector('[data-method="boleto"]');
  if(boleto)boleto.disabled=true;
 
  if(orders.length!==1){
   paymentMessage.textContent='O carrinho multiempresa será liberado quando as contas vendedoras estiverem prontas para split.';
-  paymentSelector?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  setPaymentControls(false);
   return;
  }
  const order=orders[0];
  if(['paid','preparing','shipped','delivered','awaiting_confirmation','completed'].includes(order.status)||order.payment_status==='approved'){
   paymentMessage.className='payment-message ok';
   paymentMessage.textContent='Pagamento confirmado. O pedido já está registrado no OYAG.';
-  paymentSelector?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  setPaymentControls(false);
   return;
  }
 
@@ -238,7 +257,8 @@ async function renderPayment(){
 }
 
 async function init(){
- if(!id){statusEl.textContent='Pedido não informado.';return}
+ setPaymentControls(false);
+ if(!id){showCheckoutRecovery('Pedido não informado.');return}
  guestToken=getStoredGuestToken();
  const auth=await sb.auth.getSession();
  session=auth?.data?.session||null;
@@ -247,14 +267,12 @@ async function init(){
   if(guestToken)await loadGuest();
   else if(session)await loadAuthenticated();
   else{
-   statusEl.textContent='Esta sessão de compra não está disponível. Volte à vitrine e inicie uma nova compra.';
-   paymentSelector?.querySelectorAll('button').forEach(b=>b.disabled=true);
+   showCheckoutRecovery('Esta sessão de compra não está disponível. Volte à vitrine e inicie uma nova compra.');
    return;
   }
  }catch(e){
   console.error('OYAG_CHECKOUT_LOAD',e);
-  statusEl.textContent='Não foi possível carregar este pedido. Volte à vitrine e tente novamente.';
-  paymentSelector?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  showCheckoutRecovery('Não foi possível carregar este pedido. Tente novamente.');
   return;
  }
 
