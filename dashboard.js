@@ -328,7 +328,8 @@ async function show(v){
  C.innerHTML='<div class="loading">Consultando dados do OYAG…</div>';
  const names={overview:'Início',companies:'Empresas',catalog:'Produtos e serviços',units:'Unidades',network:'Rede OYAG',leads:'Leads & Pipeline',performance:'Resultados',finance:'Financeiro',agenda:'Agenda',orders:'Pedidos e entregas',alerts:'Pendências',project:'Projetos',admin:'Configurações'};
  title.textContent=names[v]||'OYAG Ecosystem';
- if(v==='catalog'){await showCatalog();return}\n if(v==='leads'){await showLeads();return}
+ if(v==='catalog'){await showCatalog();return}
+ if(v==='leads'){await showLeads();return}
  if(v==='project'){await showProject();return}
  if(v==='performance'){await showPerformance();return}
  if(v==='finance'){await showFinance();return}
