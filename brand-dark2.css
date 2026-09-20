@@ -88,3 +88,30 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(46,167,255,.2)!im
 .feedback.success{background:rgba(54,211,153,.12)!important;color:#79efc0!important}
 .feedback.error{background:rgba(255,107,122,.12)!important;color:#ff9aa6!important}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+/* ===== Dark 2 coverage pass · ecosystem-wide ===== */
+.checkout-page,.tracking-page,.market,.sales-main,.community-shell,.academy-home,.academy-landing{background:var(--oyag-bg)!important;color:var(--oyag-text)!important}
+.checkout-card,.payment-card,.payment-action,.buyer-identification,.shipping-review,
+.tracking-loading,.tracking-empty,.tracking-card,.tracking-grid>div,.shipment-meta span,.tracking-note,.receipt-confirm-box,
+.market-card,.lead-modal-card,.plan-card,.sales-card,.sales-step,.community-post,.community-composer,.community-profile,.mentor-note{
+  background:var(--oyag-surface)!important;color:var(--oyag-text)!important;border-color:var(--oyag-line)!important;box-shadow:var(--oyag-shadow)
+}
+.checkout-heading p,.checkout-status,.payment-message,.buyer-identification small,.shipping-review span,.shipping-review p,
+.tracking-head p,.tracking-order-head p,.tracking-grid span,.tracking-item span,.tracking-event p,.tracking-event time,.tracking-note,
+.market-card p,.market-card span,.market-card small,.lead-product,.lead-privacy,
+.sales-section-head p,.sales-card p,.sales-step p,.plan-copy,.community-post .post-body{
+  color:var(--oyag-muted)!important
+}
+.payment-selector button,.post-actions button,.community-toolbar button,.composer-head button{
+  background:var(--oyag-surface-2)!important;color:var(--oyag-text)!important;border-color:var(--oyag-line)!important
+}
+.payment-selector button.active{background:linear-gradient(135deg,var(--oyag-blue-strong),var(--oyag-purple))!important;color:#fff!important;border-color:transparent!important}
+.secure-note,.payment-methods-note span,.status-pill,.tracking-pill,.receipt-confirm-box,.structured-practice{
+  background:var(--oyag-surface-2)!important;color:var(--oyag-muted)!important;border-color:var(--oyag-line)!important
+}
+.sales-section,.sales-cta,.sales-band{color:var(--oyag-text)!important}
+.sales-section{background:transparent!important}
+.sales-cta,.sales-band{background:linear-gradient(145deg,#071827,#0b2236)!important;border:1px solid var(--oyag-line)!important}
+.sales-top .sales-btn:not(.primary),.topbar .button.ghost,.topbar .secondary{background:var(--oyag-surface-2)!important}
+@media(max-width:760px){.topbar,.sales-top{backdrop-filter:blur(16px)}}
