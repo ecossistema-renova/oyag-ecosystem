@@ -13,6 +13,7 @@
   <meta property="og:url" content="https://oyag.cledemilsonoliveira.com/academy/">
   <link rel="stylesheet" href="./styles.css?v=academy-hub-20260920-01">
   <link rel="stylesheet" href="../brand-dark2.css?v=dark2-system-01">
+  <link rel="stylesheet" href="./shell.css?v=academy-shell-20260920-01">
   <style>
     .academy-home{min-height:100vh;background:linear-gradient(135deg,#06111e,#082b40 58%,#0b4e73);color:#fff}
     .academy-home .topbar{position:sticky;top:0;z-index:10;background:rgba(5,15,26,.92);backdrop-filter:blur(16px);border-bottom:1px solid #ffffff12}
@@ -75,11 +76,7 @@
 <body class="academy-home">
 <header class="topbar">
   <a class="brand" href="./" aria-label="OYAG Academy"><img class="brand-mark oyag-brand-symbol" src="../assets/oyag-approved-mark.png" alt="OYAG"><span><strong>OYAG Academy</strong><small>Aprender · Praticar · Comprovar · Evoluir</small></span></a>
-  <nav class="academy-nav" aria-label="Navegação da Academy">
-    <a class="secondary" href="https://cledemilsonoliveira.com/">Site oficial</a>
-    <a class="secondary" href="https://cledemilsonoliveira.com/conteudos/">Conteúdos gratuitos</a>
-    <a class="secondary" href="../desktop/">OYAG Ecosystem</a>
-  </nav>
+  <nav data-academy-nav="home" aria-label="Navegação global da Academy"></nav>
 </header>
 
 <main class="academy-landing">
@@ -167,5 +164,6 @@
     </div>
   </section>
 </main>
+<script src="./shell.js?v=academy-shell-20260920-01"></script>
 </body>
 </html>
