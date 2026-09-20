@@ -20,7 +20,7 @@ mobileMenuToggle?.addEventListener('click',()=>{
 mobileMenuBackdrop?.addEventListener('click',closeMobileMenu);
 window.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu()});
 window.addEventListener('resize',()=>{if(window.innerWidth>800)closeMobileMenu()});
-async function init(){const {data}=await sb.auth.getSession();session=data.session;if(!session){location.replace('./login.html');return}document.querySelector('#userEmail').textContent=session.user.email;const {data:r}=await sb.from('platform_roles').select('role').eq('user_id',session.user.id).maybeSingle();role=r?.role||'usuário';document.querySelector('#role').textContent=role==='owner'?'Conta Dono':role;const internal=document.querySelector('#internalProjectNav');if(internal&&!['owner','platform_admin'].includes(role))internal.remove();const leadsNav=document.querySelector('#leadsNav');if(leadsNav&&!['owner','admin','platform_admin'].includes(role))leadsNav.remove();await loadUserProjects();show('overview')}document.querySelector('#logout').onclick=async()=>{await sb.auth.signOut();location.replace('./')};const dev=document.querySelector('#developerInfo');if(dev)dev.onclick=()=>{C.innerHTML='<div class="panel developer-profile"><p class="eyebrow">DESENVOLVIMENTO</p><h2>OYAG Ecosystem</h2><p><b>Cledemilson Oliveira de Assis</b></p><p class="muted">Responsável pelo produto e desenvolvimento do ecossistema.</p></div>';title.textContent='Desenvolvedor'};function activateView(v){document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMobileMenu();show(v)}
+async function init(){const {data}=await sb.auth.getSession();session=data.session;if(!session){location.replace('./login.html');return}document.querySelector('#userEmail').textContent=session.user.email;const {data:r}=await sb.from('platform_roles').select('role').eq('user_id',session.user.id).maybeSingle();role=r?.role||'usuário';document.querySelector('#role').textContent=role==='owner'?'Conta Dono':role;const internal=document.querySelector('#internalProjectNav');if(internal&&!['owner','platform_admin'].includes(role))internal.remove();const interfaceNav=document.querySelector('#interfaceNav');if(interfaceNav&&!['owner','platform_admin'].includes(role))interfaceNav.remove();const leadsNav=document.querySelector('#leadsNav');if(leadsNav&&!['owner','admin','platform_admin'].includes(role))leadsNav.remove();await loadUserProjects();show('overview')}document.querySelector('#logout').onclick=async()=>{await sb.auth.signOut();location.replace('./')};const dev=document.querySelector('#developerInfo');if(dev)dev.onclick=()=>{C.innerHTML='<div class="panel developer-profile"><p class="eyebrow">DESENVOLVIMENTO</p><h2>OYAG Ecosystem</h2><p><b>Cledemilson Oliveira de Assis</b></p><p class="muted">Responsável pelo produto e desenvolvimento do ecossistema.</p></div>';title.textContent='Desenvolvedor'};function activateView(v){document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMobileMenu();show(v)}
 document.querySelector('#nav').onclick=e=>{const b=e.target.closest('button[data-view]');if(!b)return;activateView(b.dataset.view)};
 const mobileBottomNav=document.querySelector('#mobileBottomNav');
 if(mobileBottomNav)mobileBottomNav.onclick=e=>{const more=e.target.closest('[data-more]');if(more){openMobileMenu();return}const b=e.target.closest('button[data-view]');if(b)activateView(b.dataset.view)};const cards=(items)=>'<div class="grid">'+items.map(x=>'<article class="metric"><span>'+esc(x[0])+'</span><strong>'+esc(x[1])+'</strong><small>'+esc(x[2]||'')+'</small></article>').join('')+'</div>';async function count(table,filter){let q=sb.from(table).select('*',{count:'exact',head:true});if(filter)q=filter(q);const {count,error}=await q;return error?'—':count}async function showFinance(){
@@ -324,9 +324,53 @@ async function showLeads(){
  '</tbody></table></div>':statePanel('Nenhum lead ainda','Novos contatos, cadastros e checkouts aparecerão aqui.'))+'</div>';
 }
 
+function uiTokenCard(label,value,color){
+ return '<article class="ui-token-card"><i style="background:'+esc(color)+'"></i><strong>'+esc(label)+'</strong><small>'+esc(value)+'</small></article>';
+}
+async function showInterface(){
+ if(!['owner','platform_admin'].includes(role)){
+  C.innerHTML=statePanel('Acesso restrito','O padrão visual do sistema está disponível apenas para a Conta Dono e administradores globais autorizados.');
+  return;
+ }
+ const current=window.OYAG_THEME?.getTheme?.()||document.documentElement.dataset.theme||'dark';
+ C.innerHTML='<section class="ui-system">'+
+  '<div class="panel ui-system-hero"><div><p class="eyebrow">PADRÃO VISUAL OFICIAL</p><h2>Interface & Tema</h2><p class="muted">Fonte única de verdade para cores, contraste, superfícies, botões e componentes do OYAG Ecosystem.</p><span class="ui-system-badge">✓ OYAG UI v1.0 ativo</span></div><div class="ui-system-lock"><strong>🔒 Padrão protegido</strong><br>Alterações visuais passam por versão do UI System; telas individuais não devem definir paletas próprias.</div></div>'+
+  '<div class="ui-system-grid">'+
+   '<article class="ui-preview-card '+(current==='light'?'active':'')+'" data-theme-preview="light"><div class="panel-heading"><div><p class="eyebrow">VARIANTE</p><h3>Tema claro</h3></div><span class="ui-system-badge">'+(current==='light'?'Ativo':'Disponível')+'</span></div><div class="ui-preview-swatch light"><div class="bar"></div><div class="surface"><strong>Texto principal</strong><small>Texto secundário com contraste padronizado</small></div></div><button class="ui-secondary" type="button" data-ui-theme="light">Usar tema claro</button></article>'+
+   '<article class="ui-preview-card '+(current==='dark'?'active':'')+'" data-theme-preview="dark"><div class="panel-heading"><div><p class="eyebrow">VARIANTE</p><h3>Tema escuro</h3></div><span class="ui-system-badge">'+(current==='dark'?'Ativo':'Disponível')+'</span></div><div class="ui-preview-swatch dark"><div class="bar"></div><div class="surface"><strong>Texto principal</strong><small>Texto secundário com contraste padronizado</small></div></div><button class="ui-secondary" type="button" data-ui-theme="dark">Usar tema escuro</button></article>'+
+  '</div>'+
+  '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">DESIGN TOKENS</p><h2>Paleta controlada pelo sistema</h2><p class="muted">As páginas devem usar tokens; valores diretos ficam restritos ao arquivo do UI System.</p></div></div><div class="ui-token-grid">'+
+   uiTokenCard('Ação primária','--ui-primary','#1677ff')+
+   uiTokenCard('Acento','--ui-accent','#19c7d4')+
+   uiTokenCard('Sucesso','--ui-success','#168f6b')+
+   uiTokenCard('Alerta','--ui-warning','#9a6500')+
+   uiTokenCard('Erro','--ui-danger','#b53a4c')+
+   uiTokenCard('Fundo claro','--ui-bg','#edf3f8')+
+   uiTokenCard('Superfície clara','--ui-surface','#ffffff')+
+   uiTokenCard('Fundo escuro','--ui-bg dark','#030914')+
+  '</div></div>'+
+  '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">CONTRASTE</p><h2>Critérios mínimos do OYAG UI</h2></div></div><div class="ui-contrast-grid">'+
+   '<div class="ui-contrast-item"><b class="ui-contrast-pass">✓ Texto principal</b><span>Alto contraste em superfícies claras e escuras.</span></div>'+
+   '<div class="ui-contrast-item"><b class="ui-contrast-pass">✓ Texto secundário</b><span>Não pode usar cinza apagado que comprometa a leitura.</span></div>'+
+   '<div class="ui-contrast-item"><b class="ui-contrast-pass">✓ Estados interativos</b><span>Foco, hover, ativo, sucesso, alerta e erro usam tokens oficiais.</span></div>'+
+  '</div></div>'+
+  '<div class="panel"><p class="eyebrow">GOVERNANÇA DE INTERFACE</p><h2>Regras do padrão</h2><ul class="ui-rule-list"><li>Não alterar cores diretamente em uma tela para resolver um caso isolado.</li><li>Novo componente deve reutilizar os tokens e padrões já existentes.</li><li>Mudança estrutural de identidade exige nova versão: v1.1, v1.2 ou v2.0.</li><li>Tema claro e escuro fazem parte do mesmo produto e precisam manter a mesma hierarquia visual.</li><li>Antes de publicar uma mudança visual global, validar painel, Marketplace, Academy e mobile.</li></ul><div class="ui-system-actions"><button class="ui-primary" type="button" id="uiRestoreStandard">Restaurar padrão OYAG UI v1.0</button></div></div>'+
+ '</section>';
+
+ C.querySelectorAll('[data-ui-theme]').forEach(b=>b.onclick=()=>{
+   window.OYAG_THEME?.setTheme?.(b.dataset.uiTheme);
+   showInterface();
+ });
+ const restore=C.querySelector('#uiRestoreStandard');
+ if(restore)restore.onclick=()=>{
+   window.OYAG_THEME?.restoreStandard?.('dark');
+   showInterface();
+ };
+}
+
 async function show(v){
  C.innerHTML='<div class="loading">Consultando dados do OYAG…</div>';
- const names={overview:'Início',companies:'Empresas',catalog:'Produtos e serviços',units:'Unidades',network:'Rede OYAG',leads:'Leads & Pipeline',performance:'Resultados',finance:'Financeiro',agenda:'Agenda',orders:'Pedidos e entregas',alerts:'Pendências',project:'Projetos',admin:'Configurações'};
+ const names={overview:'Início',companies:'Empresas',catalog:'Produtos e serviços',units:'Unidades',network:'Rede OYAG',leads:'Leads & Pipeline',performance:'Resultados',finance:'Financeiro',agenda:'Agenda',orders:'Pedidos e entregas',alerts:'Pendências',project:'Projetos',interface:'Interface & Tema',admin:'Configurações'};
  title.textContent=names[v]||'OYAG Ecosystem';
  if(v==='catalog'){await showCatalog();return}
  if(v==='leads'){await showLeads();return}
@@ -335,6 +379,7 @@ async function show(v){
  if(v==='finance'){await showFinance();return}
  if(v==='agenda'){await showAgenda();return}
  if(v==='orders'){await showOrders();return}
+ if(v==='interface'){await showInterface();return}
  if(v==='admin'){await showAdmin();return}
  if(v==='overview'){await overview();return}
  const map={companies:'organizations',units:'oyag_owner_unit_overview',network:'oyag_affiliate_memberships',alerts:'oyag_operational_alerts'};
