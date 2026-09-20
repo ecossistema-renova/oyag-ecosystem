@@ -349,6 +349,11 @@ async function showInterface(){
    uiTokenCard('Superfície clara','--ui-surface','#ffffff')+
    uiTokenCard('Fundo escuro','--ui-bg dark','#030914')+
   '</div></div>'+
+  '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">TIPOGRAFIA</p><h2>Escala oficial de texto</h2><p class="muted">Tamanho, peso e contraste são definidos por função. As telas não devem criar tamanhos isolados.</p></div></div><div class="ui-type-grid">'+
+   '<article class="ui-type-card" data-role="small"><span>Texto pequeno · --ui-text-sm</span><strong>Informação auxiliar e metadados</strong></article>'+
+   '<article class="ui-type-card" data-role="body"><span>Texto padrão · --ui-text-md</span><strong>Conteúdo de leitura e descrições</strong></article>'+
+   '<article class="ui-type-card" data-role="title"><span>Título · --ui-title-sm</span><strong>Título de card e seção</strong></article>'+
+  '</div></div>'+
   '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">CONTRASTE</p><h2>Critérios mínimos do OYAG UI</h2></div></div><div class="ui-contrast-grid">'+
    '<div class="ui-contrast-item"><b class="ui-contrast-pass">✓ Texto principal</b><span>Alto contraste em superfícies claras e escuras.</span></div>'+
    '<div class="ui-contrast-item"><b class="ui-contrast-pass">✓ Texto secundário</b><span>Não pode usar cinza apagado que comprometa a leitura.</span></div>'+
