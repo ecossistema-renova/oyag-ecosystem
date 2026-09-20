@@ -7,28 +7,65 @@ if(!localStorage.getItem(legacySessionKey)&&sessionStorage.getItem(legacySession
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey,{
  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:localStorage}
 });
-const grid=document.querySelector('#marketGrid'),statusEl=document.querySelector('#marketStatus'),searchEl=document.querySelector('#search'),catEl=document.querySelector('#category'),orderEl=document.querySelector('#order');
+const grid=document.querySelector('#marketGrid'),statusEl=document.querySelector('#marketStatus'),searchEl=document.querySelector('#search'),catEl=document.querySelector('#category'),stateEl=document.querySelector('#regionState'),cityEl=document.querySelector('#regionCity'),orderEl=document.querySelector('#order');
 let items=[],buying=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const money=(c,cur)=>c==null?'Consulte':new Intl.NumberFormat('pt-BR',{style:'currency',currency:cur||'BRL'}).format(Number(c)/100);
 
+const UFS=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+UFS.forEach(uf=>stateEl?.insertAdjacentHTML('beforeend','<option value="'+uf+'">'+uf+'</option>'));
+try{
+ const savedState=localStorage.getItem('oyag-market-state')||'',savedCity=localStorage.getItem('oyag-market-city')||'';
+ if(stateEl)stateEl.value=savedState;if(cityEl)cityEl.value=savedCity;
+}catch(_){}
+
+function regionRank(x){
+ const state=stateEl?.value||'',city=(cityEl?.value||'').trim().toLowerCase();
+ if(!state)return x.is_featured?0:1;
+ if(x.market_scope==='local'&&x.market_state===state&&(!city||String(x.market_city||'').toLowerCase()===city))return 0;
+ if(x.market_scope==='state'&&x.market_state===state)return 1;
+ if(x.market_scope==='national'||x.market_scope==='digital')return 2;
+ if(x.market_state===state)return 2;
+ return 3;
+}
+function locationLabel(x){
+ if(x.market_scope==='digital')return 'Online · todo o Brasil';
+ if(x.market_scope==='national')return 'Atendimento nacional';
+ if(x.market_scope==='state')return x.market_state?'Atende '+x.market_state:'Atendimento estadual';
+ if(x.market_scope==='local')return [x.market_city,x.market_state].filter(Boolean).join(' / ')||'Atendimento local';
+ return '';
+}
+function discountPct(x){
+ const r=Number(x.regular_price_cents),p=Number(x.promo_price_cents);
+ return r>0&&p>=0&&p<r?Math.round((1-p/r)*100):0;
+}
 function render(){
  const q=searchEl.value.trim().toLowerCase(),c=catEl.value;
- let list=items.filter(x=>(!q||[x.name,x.description,x.organization_name].some(v=>String(v||'').toLowerCase().includes(q)))&&(!c||x.category===c));
- if(orderEl.value==='price_asc')list.sort((a,b)=>(a.price_cents??Infinity)-(b.price_cents??Infinity));
- else if(orderEl.value==='price_desc')list.sort((a,b)=>(b.price_cents??-1)-(a.price_cents??-1));
- else list.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
- statusEl.textContent=list.length?list.length+' oferta(s) encontrada(s)':'Nenhuma oferta publicada no momento.';
- grid.innerHTML=list.map(x=>'<article class="market-card">'+
-  (x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':'<div class="market-placeholder">OYAG</div>')+
-  '<div><small>'+esc(x.category||x.item_type)+'</small><h2>'+esc(x.name)+'</h2><p>'+esc(x.description||'Oferta disponível no OYAG Ecosystem.')+
-  '</p><span>'+esc(x.organization_name)+'</span>'+
-  (x.category==='OYAG Academy'&&x.promo_price_cents!=null&&x.regular_price_cents!=null?
-    '<div class="market-price-anchor"><del>'+esc(money(x.regular_price_cents,x.currency))+'</del><strong>'+esc(money(x.promo_price_cents,x.currency))+'</strong><small>Oferta de lançamento para contas qualificadas</small></div>':
-    '<strong>'+esc(money(x.price_cents,x.currency))+'</strong>')+
-  (x.commercial_condition?'<em>'+esc(x.commercial_condition)+'</em>':'')+
-  (x.fulfillment_type==='physical'?'<em>'+(x.shipping_mode==='fixed'?'Frete fixo: '+esc(money(x.shipping_fixed_cents,x.currency)):'Frete grátis')+'</em>':'')+
-  '<button class="button primary buy-button" type="button" data-buy="'+esc(x.id)+'">'+(x.category==='OYAG Academy'?'Acessar na Academy':'Comprar')+'</button></div></article>').join('');
+ let list=items.filter(x=>(!q||[x.name,x.description,x.organization_name,x.market_city,x.market_state].some(v=>String(v||'').toLowerCase().includes(q)))&&(!c||x.category===c));
+ list.sort((a,b)=>{
+   const rr=regionRank(a)-regionRank(b);if(rr)return rr;
+   if(Boolean(a.is_featured)!==Boolean(b.is_featured))return a.is_featured?-1:1;
+   if(orderEl.value==='price_asc')return (a.price_cents??Infinity)-(b.price_cents??Infinity);
+   if(orderEl.value==='price_desc')return (b.price_cents??-1)-(a.price_cents??-1);
+   return a.name.localeCompare(b.name,'pt-BR');
+ });
+ const state=stateEl?.value||'';
+ statusEl.textContent=list.length?list.length+' oferta(s) encontrada(s)'+(state?' · '+state+' priorizado':''):'Nenhuma oferta publicada no momento.';
+ grid.innerHTML=list.map(x=>{
+  const pct=discountPct(x),promo=x.promo_price_cents!=null;
+  return '<article class="market-card">'+
+   '<div class="market-media">'+(x.image_url?'<img src="'+esc(x.image_url)+'" alt="'+esc(x.name)+'">':'<div class="market-placeholder">OYAG</div>')+
+   '<div class="market-badges">'+(x.is_featured?'<span class="market-badge featured">Destaque</span>':'')+(pct?'<span class="market-badge promo">-'+pct+'%</span>':'')+(x.promo_label?'<span class="market-badge free">'+esc(x.promo_label)+'</span>':'')+'</div></div>'+
+   '<div><small>'+esc(x.category||x.item_type)+'</small><h2>'+esc(x.name)+'</h2><p>'+esc(x.description||'Oferta disponível no OYAG Ecosystem.')+
+   '</p><span>'+esc(x.organization_name)+'</span>'+
+   (promo&&x.regular_price_cents!=null?
+     '<div class="market-price-anchor"><del>'+esc(money(x.regular_price_cents,x.currency))+'</del><strong>'+esc(money(x.promo_price_cents,x.currency))+'</strong><small>'+(x.promo_ends_at?'Oferta por tempo limitado':'Condição promocional')+'</small></div>':
+     '<strong>'+esc(money(x.price_cents,x.currency))+'</strong>')+
+   (locationLabel(x)?'<em class="market-location">⌖ '+esc(locationLabel(x))+'</em>':'')+
+   (x.commercial_condition?'<em>'+esc(x.commercial_condition)+'</em>':'')+
+   (x.fulfillment_type==='physical'?'<em>'+(x.shipping_mode==='fixed'?'Frete fixo: '+esc(money(x.shipping_fixed_cents,x.currency)):'Frete grátis')+'</em>':'')+
+   '<button class="button primary buy-button" type="button" data-buy="'+esc(x.id)+'">'+(x.destination_url?'Acessar':x.category==='OYAG Academy'?'Acessar na Academy':'Comprar')+'</button></div></article>';
+ }).join('');
 }
 
 const leadModal=document.querySelector('#leadModal');
@@ -102,10 +139,18 @@ async function startBuy(itemId){
  if(buying)return;
  const item=items.find(x=>x.id===itemId);
  if(!item){statusEl.textContent='Este produto não está disponível agora.';return}
+ if(item.destination_url){
+   const {data:{session}}=await sb.auth.getSession();
+   const target=item.destination_url;
+   if(session){location.assign(target);return}
+   const next=target.startsWith('./')?'/'+target.slice(2):target;
+   location.assign('./login.html?mode=signup&next='+encodeURIComponent(next));
+   return
+ }
  if(item.category==='OYAG Academy'){
    const {data:{session}}=await sb.auth.getSession();
-   if(session){location.assign('./academy/curso.html');return}
-   location.assign('./login.html?mode=signup&next='+encodeURIComponent('/academy/curso.html'));
+   if(session){location.assign('./academy/');return}
+   location.assign('./login.html?mode=signup&next='+encodeURIComponent('/academy/'));
    return
  }
  await openLeadModal(itemId);
@@ -215,7 +260,7 @@ leadForm?.addEventListener('submit',async e=>{
 
 async function load(){
  statusEl.textContent='Carregando vitrine…';
- const r=await fetch(cfg.supabaseUrl+'/rest/v1/rpc/oyag_public_marketplace_list_v2',{
+ const r=await fetch(cfg.supabaseUrl+'/rest/v1/rpc/oyag_public_marketplace_list_v3',{
   method:'POST',
   headers:{apikey:cfg.supabasePublishableKey,'content-type':'application/json'},
   body:'{}'
@@ -238,5 +283,5 @@ async function load(){
  }
 }
 grid.addEventListener('click',e=>{const b=e.target.closest('[data-buy]');if(b)startBuy(b.dataset.buy)});
-[searchEl,catEl,orderEl].forEach(x=>x.addEventListener('input',render));
+[searchEl,catEl,stateEl,cityEl,orderEl].filter(Boolean).forEach(x=>x.addEventListener('input',()=>{try{if(stateEl)localStorage.setItem('oyag-market-state',stateEl.value||'');if(cityEl)localStorage.setItem('oyag-market-city',cityEl.value.trim())}catch(_){}render()}));
 load();
