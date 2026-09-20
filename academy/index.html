@@ -4,156 +4,167 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="index,follow">
-  <title>OYAG Academy | Curso de Programação do Zero ao Avançado</title>
-  <meta name="description" content="Aprenda programação do zero ao avançado com aulas práticas, exercícios de código, progressão por níveis e domínio comprovado na OYAG Academy.">
-  <meta name="keywords" content="curso de programação, programação para iniciantes, aprender JavaScript, aulas de programação, curso de programação online, exercícios de código, OYAG Academy">
+  <title>OYAG Academy | Formação prática em tecnologia e ferramentas digitais</title>
+  <meta name="description" content="A OYAG Academy reúne trilhas práticas para aprender programação e, futuramente, ferramentas como Excel, Word e PowerPoint com exercícios, checkpoints e progressão por domínio.">
   <link rel="canonical" href="https://oyag.cledemilsonoliveira.com/academy/">
-  <meta property="og:title" content="OYAG Academy | Aprenda Programação na Prática">
-  <meta property="og:description" content="Aprenda programação por níveis, pratique em cada etapa e avance quando comprovar domínio.">
+  <meta property="og:title" content="OYAG Academy | Aprenda usando a ferramenta de verdade">
+  <meta property="og:description" content="Cursos práticos com explicação, exercício, validação e progressão. Programação é a formação principal; novas trilhas de produtividade estão em planejamento.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://oyag.cledemilsonoliveira.com/academy/">
-  <link rel="stylesheet" href="./styles.css?v=academy-launch-offer-20260919-05">
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"Course",
-    "name":"Programação do Zero ao Avançado — OYAG Academy",
-    "description":"Formação prática em programação com progressão por níveis, exercícios de código e domínio comprovado.",
-    "provider":{"@type":"Organization","name":"OYAG Academy","url":"https://oyag.cledemilsonoliveira.com/academy/","sameAs":["https://www.instagram.com/oyagecossistem/","https://www.youtube.com/channel/UCOuyVAZPvCYKIXzoAKfDK6g","https://www.facebook.com/Oyagecossistem/"]},
-    "educationalLevel":"Iniciante ao avançado",
-    "inLanguage":"pt-BR"
-  }
-  </script>
+  <link rel="stylesheet" href="./styles.css?v=academy-hub-20260920-01">
+  <link rel="stylesheet" href="../brand-dark2.css?v=dark2-system-01">
   <style>
-    .academy-home{min-height:100vh;background:linear-gradient(135deg,#061b2b,#0b4e73);color:#fff}
-    .academy-home .topbar{color:#102333}
-    .academy-landing{max-width:1120px;margin:auto;padding:80px 24px}
-    .academy-landing h1{font-size:clamp(2.5rem,6vw,5rem);line-height:1;margin:8px 0 20px}
-    .academy-landing .lead{max-width:800px;color:#c9d9e2;font-size:1.1rem;line-height:1.65}
-    .academy-actions{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0 55px}
+    .academy-home{min-height:100vh;background:linear-gradient(135deg,#06111e,#082b40 58%,#0b4e73);color:#fff}
+    .academy-home .topbar{position:sticky;top:0;z-index:10;background:rgba(5,15,26,.92);backdrop-filter:blur(16px);border-bottom:1px solid #ffffff12}
+    .academy-home .topbar .brand{color:#fff}
+    .academy-home .topbar .secondary{color:#e8f4fb}
+    .academy-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .academy-nav a{text-decoration:none}
+    .academy-landing{max-width:1180px;margin:auto;padding:72px 24px 80px}
+    .academy-hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:34px;align-items:center}
+    .academy-landing h1{font-size:clamp(2.5rem,6vw,5rem);line-height:1.02;margin:8px 0 20px;max-width:900px}
+    .academy-landing .lead{max-width:820px;color:#c9d9e2;font-size:1.12rem;line-height:1.7}
+    .academy-actions{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0}
     .academy-actions a{text-decoration:none}
-    .academy-grid,.academy-levels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .academy-grid article,.academy-levels article{padding:22px;border:1px solid #ffffff24;border-radius:18px;background:#ffffff0c}
-    .academy-grid p,.academy-levels p{color:#bdd0da;line-height:1.55}
-    .academy-section{margin-top:58px}
-    .academy-section h2{font-size:clamp(1.8rem,4vw,2.8rem);margin:8px 0 18px}
-    .academy-levels article strong{display:block;color:#f1c86a;margin-bottom:8px}
-    .academy-faq{margin-top:50px;display:grid;gap:10px}
-    .academy-faq details{padding:16px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff09}
-    .launch-offer{margin:34px 0 54px;padding:26px;border:1px solid #f1c86a66;border-radius:22px;background:linear-gradient(135deg,#14293a,#0a3949);box-shadow:0 18px 50px #00000024}
-    .launch-offer-top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
-    .launch-offer h2{margin:5px 0 10px;font-size:clamp(1.7rem,4vw,2.7rem)}
-    .launch-offer p{color:#c8dae3;line-height:1.6;max-width:780px}
-    .launch-badge{white-space:nowrap;padding:9px 12px;border-radius:999px;background:#f1c86a;color:#071b2b;font-weight:900;font-size:.78rem}
-    .launch-countdown{margin:18px 0 22px;display:flex;gap:9px;flex-wrap:wrap}
-    .launch-countdown span{padding:9px 12px;border-radius:10px;background:#ffffff10;border:1px solid #ffffff18;font-weight:800}
-    .offer-prices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
-    .offer-price{padding:14px;border:1px solid #ffffff1f;border-radius:14px;background:#ffffff0a}
-    .offer-price small,.offer-price del,.offer-price strong{display:block}
-    .offer-price small{color:#a9c0cc;font-weight:800}
-    .offer-price del{color:#91a6b1;margin:7px 0 2px}
-    .offer-price strong{font-size:1.35rem;color:#f1c86a}
-    .offer-price.free strong{color:#79e6b1}
-    .launch-terms{font-size:.78rem;color:#a9c0cc!important;margin:14px 0 0!important}
-    .academy-social{margin-top:56px;padding-top:24px;border-top:1px solid #ffffff20;display:flex;gap:14px;flex-wrap:wrap}.academy-social a{color:#fff;text-decoration:none;font-weight:800}.academy-social a:hover{text-decoration:underline}@media(max-width:750px){.academy-grid,.academy-levels,.offer-prices{grid-template-columns:1fr}.academy-landing{padding:50px 18px}.launch-offer-top{display:block}.launch-badge{display:inline-block;margin-top:8px}}
+    .academy-definition{padding:24px;border:1px solid #ffffff22;border-radius:22px;background:linear-gradient(180deg,#ffffff10,#ffffff08);box-shadow:0 22px 60px #0005}
+    .academy-definition span{display:inline-block;padding:6px 10px;border-radius:999px;background:#68e1d022;color:#82efe0;font-weight:900;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
+    .academy-definition h2{font-size:1.45rem;margin:14px 0 10px}
+    .academy-definition p{color:#c4d6df;line-height:1.6;margin:0}
+    .academy-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:48px}
+    .academy-flow article{padding:18px;border:1px solid #ffffff1c;border-radius:16px;background:#ffffff08}
+    .academy-flow strong{display:block;margin:8px 0 5px}
+    .academy-flow span{color:#73e4d5;font-weight:900}
+    .academy-flow p{margin:0;color:#b8ccd7;line-height:1.5;font-size:.92rem}
+    .academy-section{margin-top:62px}
+    .academy-section-head{max-width:820px;margin-bottom:20px}
+    .academy-section-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:7px 0 10px}
+    .academy-section-head p{color:#bfd0d9;line-height:1.6}
+    .featured-course{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;padding:28px;border:1px solid #60e5d55a;border-radius:24px;background:linear-gradient(135deg,#0b3147,#0d5268);box-shadow:0 18px 55px #0004}
+    .featured-course .badge{display:inline-block;padding:7px 10px;border-radius:999px;background:#6ce7d7;color:#05202a;font-weight:900;font-size:.76rem;text-transform:uppercase;letter-spacing:.06em}
+    .featured-course h3{font-size:clamp(1.7rem,4vw,2.8rem);margin:13px 0 10px}
+    .featured-course p{color:#d1e1e8;line-height:1.65}
+    .featured-course ul{display:grid;gap:8px;padding-left:20px;color:#e9f5f8}
+    .course-status{padding:22px;border-radius:18px;background:#061a28;border:1px solid #ffffff1b}
+    .course-status strong{display:block;font-size:2rem;color:#79e6b1;margin:8px 0}
+    .course-status p{font-size:.92rem;margin:0;color:#b8ccd7}
+    .catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .catalog-card{padding:22px;border:1px solid #ffffff1c;border-radius:18px;background:#ffffff08;min-height:230px;display:flex;flex-direction:column}
+    .catalog-card .status{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#f1c86a}
+    .catalog-card h3{font-size:1.35rem;margin:10px 0 8px}
+    .catalog-card p{color:#bcd0da;line-height:1.58;margin:0 0 16px}
+    .catalog-card small{margin-top:auto;color:#8fa9b6}
+    .academy-note{margin-top:22px;padding:18px;border-left:3px solid #65e1d1;background:#ffffff08;border-radius:0 14px 14px 0;color:#caddE5;line-height:1.6}
+    .academy-links{margin-top:58px;padding:24px;border:1px solid #ffffff1a;border-radius:20px;background:#ffffff08;display:flex;justify-content:space-between;gap:22px;align-items:center}
+    .academy-links p{margin:6px 0 0;color:#bcd0da;line-height:1.5}
+    .academy-links .academy-actions{margin:0}
+    @media(max-width:900px){
+      .academy-hero,.featured-course{grid-template-columns:1fr}
+      .academy-flow{grid-template-columns:1fr 1fr}
+      .catalog-grid{grid-template-columns:1fr 1fr}
+      .academy-links{display:block}
+      .academy-links .academy-actions{margin-top:18px}
+    }
+    @media(max-width:620px){
+      .academy-landing{padding:46px 17px 64px}
+      .academy-flow,.catalog-grid{grid-template-columns:1fr}
+      .academy-nav{gap:6px}
+      .academy-nav a{font-size:.84rem}
+    }
   </style>
-<link rel="stylesheet" href="../brand-dark2.css?v=dark2-system-01">
 </head>
 <body class="academy-home">
 <header class="topbar">
-  <a class="brand" href="../desktop/"><img class="brand-mark oyag-brand-symbol" src="../assets/oyag-approved-mark.png" alt="OYAG"><span><strong>OYAG Academy</strong><small>Aprender · Praticar · Evoluir</small></span></a>
-  <a class="secondary" href="../desktop/">Voltar ao OYAG Ecosystem</a>
+  <a class="brand" href="./" aria-label="OYAG Academy"><img class="brand-mark oyag-brand-symbol" src="../assets/oyag-approved-mark.png" alt="OYAG"><span><strong>OYAG Academy</strong><small>Aprender · Praticar · Comprovar · Evoluir</small></span></a>
+  <nav class="academy-nav" aria-label="Navegação da Academy">
+    <a class="secondary" href="https://cledemilsonoliveira.com/">Site oficial</a>
+    <a class="secondary" href="https://cledemilsonoliveira.com/conteudos/">Conteúdos gratuitos</a>
+    <a class="secondary" href="../desktop/">OYAG Ecosystem</a>
+  </nav>
 </header>
+
 <main class="academy-landing">
-  <p class="eyebrow">Curso de programação online • do zero ao avançado</p>
-  <h1>Aprenda programação praticando de verdade — e avance por domínio.</h1>
-  <p class="lead">A OYAG Academy combina explicação simples, exercícios práticos, checkpoints de compreensão e progressão por níveis. Você começa pelos fundamentos e avança conforme comprova que entendeu e consegue aplicar o conteúdo.</p>
-  <div class="academy-actions">
-    <a class="primary" href="./aula-demo.html">Experimentar aula gratuita</a>
-    <a class="secondary" href="../login.html?mode=signup&next=/academy/curso.html">Criar conta grátis</a>
-    <a class="secondary" href="./curso.html">Acessar minha trilha</a>
-  </div>
-
-
-  <section class="launch-offer" aria-labelledby="launchOfferTitle">
-    <div class="launch-offer-top">
-      <div>
-        <p class="eyebrow">Oferta de lançamento OYAG Academy</p>
-        <h2 id="launchOfferTitle">Crie sua conta até 31/10/2026 e garanta os preços promocionais na sua trilha.</h2>
-        <p>Esta condição é exclusiva para contas OYAG Academy criadas dentro do período de lançamento. Depois que sua conta se qualifica, os valores promocionais abaixo ficam vinculados à sua progressão pelos níveis.</p>
+  <section class="academy-hero">
+    <div>
+      <p class="eyebrow">OYAG Academy · formação prática</p>
+      <h1>Aprenda fazendo — usando a ferramenta de verdade.</h1>
+      <p class="lead">A OYAG Academy é a área de formação do OYAG Ecosystem. Aqui o aluno não entra apenas para assistir conteúdo: entende o conceito, pratica no computador ou celular, passa por checkpoints e avança conforme demonstra domínio.</p>
+      <div class="academy-actions">
+        <a class="primary" href="https://cledemilsonoliveira.com/curso-programacao/">Conhecer o curso principal</a>
+        <a class="secondary" href="./curso.html">Entrar na minha trilha</a>
+        <a class="secondary" href="../login.html?mode=signup&next=/academy/curso.html">Criar conta grátis</a>
       </div>
-      <span class="launch-badge">Condição limitada</span>
     </div>
-    <div id="launchCountdown" class="launch-countdown" aria-live="polite">
-      <span>Calculando tempo restante…</span>
-    </div>
-    <div class="offer-prices" aria-label="Preços de lançamento por nível">
-      <article class="offer-price free"><small>Nível 1 · Fundamentos</small><strong>Grátis</strong></article>
-      <article class="offer-price"><small>Nível 2 · JavaScript</small><del>R$ 39,90</del><strong>R$ 19,90</strong></article>
-      <article class="offer-price"><small>Nível 3 · Desenvolvimento Web</small><del>R$ 49,90</del><strong>R$ 29,90</strong></article>
-      <article class="offer-price"><small>Nível 4 · Git & GitHub</small><del>R$ 49,90</del><strong>R$ 29,90</strong></article>
-      <article class="offer-price"><small>Nível 5 · APIs</small><del>R$ 59,90</del><strong>R$ 39,90</strong></article>
-      <article class="offer-price"><small>Nível 6 · Banco de Dados</small><del>R$ 69,90</del><strong>R$ 49,90</strong></article>
-      <article class="offer-price"><small>Nível 7 · Autenticação e Segurança</small><del>R$ 69,90</del><strong>R$ 49,90</strong></article>
-      <article class="offer-price"><small>Nível 8 · Full Stack</small><del>R$ 79,90</del><strong>R$ 59,90</strong></article>
-      <article class="offer-price"><small>Nível 9 · SaaS e Automação</small><del>R$ 89,90</del><strong>R$ 69,90</strong></article>
-      <article class="offer-price"><small>Nível 10 · Projeto Profissional OYAG</small><del>R$ 149,00</del><strong>R$ 89,90</strong></article>
-    </div>
-    <div class="academy-actions">
-      <a class="primary" href="../login.html?mode=signup&next=/academy/curso.html">Garantir minha conta grátis</a>
-      <a class="secondary" href="../login.html?next=/academy/curso.html">Já tenho conta</a>
-    </div>
-    <p class="launch-terms">Prazo real da campanha: 31/10/2026 às 23:59 (horário de Brasília). Contas criadas após esse prazo seguem os preços regulares.</p>
+    <aside class="academy-definition">
+      <span>O que é a Academy?</span>
+      <h2>Uma plataforma de cursos práticos, não apenas uma página de programação.</h2>
+      <p>Programação é a primeira formação completa e a oferta principal neste momento. A mesma metodologia poderá receber novas trilhas voltadas a ferramentas digitais e produtividade.</p>
+    </aside>
   </section>
 
-  <section class="academy-grid" aria-label="Metodologia OYAG Academy">
-    <article><span>01</span><h2>Entenda</h2><p>Aprenda conceitos de programação com explicações progressivas e exemplos próximos da realidade.</p></article>
-    <article><span>02</span><h2>Pratique</h2><p>Resolva exercícios e escreva código para transformar teoria em habilidade prática.</p></article>
-    <article><span>03</span><h2>Comprove domínio</h2><p>Avance quando cumprir os requisitos essenciais da etapa, em vez de apenas assistir às aulas.</p></article>
+  <section class="academy-flow" aria-label="Metodologia OYAG Academy">
+    <article><span>01</span><strong>Entender</strong><p>Explicação objetiva, conceitos e exemplos aplicados.</p></article>
+    <article><span>02</span><strong>Praticar</strong><p>O aluno executa a tarefa usando a ferramenta real.</p></article>
+    <article><span>03</span><strong>Comprovar</strong><p>Checkpoints e critérios verificam se a etapa foi dominada.</p></article>
+    <article><span>04</span><strong>Evoluir</strong><p>O próximo nível é liberado conforme a progressão prevista.</p></article>
   </section>
 
   <section class="academy-section">
-    <p class="eyebrow">Trilha de aprendizagem</p>
-    <h2>Uma formação em níveis, do primeiro código à construção de sistemas.</h2>
-    <div class="academy-levels">
-      <article><strong>Nível 1 — Fundamentos</strong><p>Lógica, variáveis, operadores, decisões e primeiros algoritmos.</p></article>
-      <article><strong>Nível 2 — JavaScript</strong><p>Funções, arrays, objetos e resolução estruturada de problemas.</p></article>
-      <article><strong>Nível 3 — Web</strong><p>HTML, CSS, DOM e interação com páginas reais.</p></article>
-      <article><strong>Nível 4 — Git & GitHub</strong><p>Versionamento, branches, commits e fluxo de projeto.</p></article>
-      <article><strong>Nível 5 — APIs</strong><p>Integrações, requisições assíncronas e consumo de dados.</p></article>
-      <article><strong>Níveis avançados</strong><p>Banco de dados, autenticação, segurança, arquitetura, pagamentos e projeto final.</p></article>
+    <div class="academy-section-head">
+      <p class="eyebrow">Formação principal</p>
+      <h2>Programação do Zero ao Avançado</h2>
+      <p>A primeira trilha completa da OYAG Academy. Ela começa nos fundamentos e avança por JavaScript, web, Git, APIs, banco de dados, segurança, arquitetura, SaaS e projeto profissional.</p>
+    </div>
+    <div class="featured-course">
+      <div>
+        <span class="badge">Disponível · Nível 1 gratuito</span>
+        <h3>Aprenda programação praticando de verdade.</h3>
+        <p>A formação foi organizada em 10 níveis e 50 aulas. A proposta é reduzir a distância entre “ver a matéria” e realmente conseguir aplicar o conhecimento.</p>
+        <ul>
+          <li>10 níveis progressivos</li>
+          <li>50 aulas estruturadas</li>
+          <li>Exercícios e checkpoints</li>
+          <li>Laboratórios com validação técnica nas etapas já automatizadas</li>
+          <li>Projeto profissional no nível final</li>
+        </ul>
+        <div class="academy-actions">
+          <a class="primary" href="https://cledemilsonoliveira.com/curso-programacao/">Ver apresentação do curso</a>
+          <a class="secondary" href="./aula-demo.html">Experimentar aula</a>
+          <a class="secondary" href="./curso.html">Minha trilha</a>
+        </div>
+      </div>
+      <aside class="course-status">
+        <small>PORTA DE ENTRADA</small>
+        <strong>Grátis</strong>
+        <p>O Nível 1 — Fundamentos da Programação — é a entrada gratuita da formação. Os níveis seguintes seguem a regra de progressão e acesso configurada na plataforma.</p>
+      </aside>
     </div>
   </section>
 
-  <section class="academy-faq">
-    <h2>Perguntas frequentes</h2>
-    <details><summary>Posso testar antes de pagar?</summary><p>Sim. A OYAG Academy oferece uma experiência gratuita para você conhecer a metodologia antes de avançar para níveis pagos.</p></details>
-    <details><summary>Como funciona a liberação dos níveis?</summary><p>O conteúdo é liberado por progressão. Após concluir os requisitos de um nível, você pode contratar o próximo e continuar sua formação.</p></details>
-    <details><summary>Preciso saber programação antes de começar?</summary><p>Não. A trilha começa pelos fundamentos e foi estruturada para quem está iniciando.</p></details>
+  <section class="academy-section">
+    <div class="academy-section-head">
+      <p class="eyebrow">Próximas trilhas</p>
+      <h2>A Academy foi pensada para crescer além da programação.</h2>
+      <p>As áreas abaixo são espaços de expansão curricular. Elas ainda não estão abertas para matrícula; servem para organizar a próxima fase da OYAG Academy sem confundir conteúdo gratuito com curso estruturado.</p>
+    </div>
+    <div class="catalog-grid">
+      <article class="catalog-card"><span class="status">Em planejamento</span><h3>Excel na Prática</h3><p>Planilhas, fórmulas, tabelas, organização de dados, gráficos, produtividade e exercícios executados diretamente no Excel ou ferramenta compatível.</p><small>Computador recomendado · prática orientada</small></article>
+      <article class="catalog-card"><span class="status">Em planejamento</span><h3>Word na Prática</h3><p>Criação e formatação de documentos, estilos, tabelas, referências, revisão, modelos e produção de materiais profissionais.</p><small>Computador ou aplicativo compatível</small></article>
+      <article class="catalog-card"><span class="status">Em planejamento</span><h3>PowerPoint na Prática</h3><p>Estrutura de apresentação, slides, hierarquia visual, imagens, gráficos, animações e construção de apresentações profissionais.</p><small>Computador ou aplicativo compatível</small></article>
+    </div>
+    <div class="academy-note"><strong>Direção pedagógica:</strong> novas trilhas só devem ser publicadas quando tiverem uma jornada prática clara. A tecnologia muda conforme o curso, mas a lógica permanece: entender → executar → comprovar → evoluir.</div>
   </section>
-  <div class="academy-social" aria-label="Canais oficiais OYAG">
-    <a href="https://wa.me/5514991469159" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-    <a href="https://www.instagram.com/oyagecossistem/" target="_blank" rel="noopener noreferrer">Instagram</a>
-    <a href="https://www.youtube.com/channel/UCOuyVAZPvCYKIXzoAKfDK6g" target="_blank" rel="noopener noreferrer">YouTube</a>
-    <a href="https://www.facebook.com/Oyagecossistem/" target="_blank" rel="noopener noreferrer">Facebook</a>
-  </div>
+
+  <section class="academy-links">
+    <div>
+      <p class="eyebrow">Academy ≠ Conteúdos</p>
+      <h2>Dois caminhos diferentes, conectados entre si.</h2>
+      <p><strong>OYAG Academy</strong> é formação estruturada com trilha, prática e progressão. <strong>Conteúdos</strong> é a biblioteca pública de artigos e guias gratuitos do site.</p>
+    </div>
+    <div class="academy-actions">
+      <a class="primary" href="./">Ver cursos</a>
+      <a class="secondary" href="https://cledemilsonoliveira.com/conteudos/">Ler conteúdos gratuitos</a>
+    </div>
+  </section>
 </main>
-<script>
-(function(){
-  const el=document.querySelector('#launchCountdown');
-  if(!el)return;
-  const end=new Date('2026-11-01T02:59:59Z');
-  function tick(){
-    const ms=end-Date.now();
-    if(ms<=0){el.innerHTML='<span>Período de qualificação encerrado</span>';return}
-    const total=Math.floor(ms/1000);
-    const d=Math.floor(total/86400);
-    const h=Math.floor((total%86400)/3600);
-    const m=Math.floor((total%3600)/60);
-    el.innerHTML='<span>'+d+' dias</span><span>'+h+' horas</span><span>'+m+' min</span><span>para criar sua conta</span>';
-  }
-  tick();setInterval(tick,60000);
-})();
-</script>
 </body>
 </html>
