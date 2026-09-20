@@ -5,6 +5,15 @@
 :root{
   --ui-version:"OYAG UI v1.0";
   --ui-font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --ui-text-xs:.72rem;
+  --ui-text-sm:.82rem;
+  --ui-text-md:.95rem;
+  --ui-text-lg:1.12rem;
+  --ui-title-sm:1.28rem;
+  --ui-title-md:1.8rem;
+  --ui-title-lg:clamp(2.25rem,5vw,4.6rem);
+  --ui-line-normal:1.55;
+  --ui-line-relaxed:1.7;
 
   --ui-primary:#1677ff;
   --ui-primary-2:#7a5cff;
@@ -82,12 +91,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   outline:3px solid var(--ui-focus)!important;outline-offset:2px
 }
 
-aside{background:var(--ui-nav)!important;color:var(--ui-nav-text)!important;border-color:var(--ui-border)!important}
-aside .oyag-logo,aside .oyag-logo b,aside nav button,aside nav a{color:var(--ui-nav-text)!important}
-aside .ecosystem-back,aside .nav-group-label,aside nav button:not(.active){color:var(--ui-nav-muted)!important}
-aside nav button.active{color:#fff!important;background:linear-gradient(100deg,var(--ui-primary),var(--ui-primary-2))!important}
-html[data-theme="light"] aside nav button.active{color:#fff!important}
-html[data-theme="dark"] aside nav button.active{background:linear-gradient(100deg,rgba(22,119,255,.45),rgba(122,92,255,.30))!important}
+.shell>aside{background:var(--ui-nav)!important;color:var(--ui-nav-text)!important;border-color:var(--ui-border)!important}
+.shell>aside .oyag-logo,aside .oyag-logo b,aside nav button,aside nav a{color:var(--ui-nav-text)!important}
+.shell>aside .ecosystem-back,aside .nav-group-label,aside nav button:not(.active){color:var(--ui-nav-muted)!important}
+.shell>aside nav button.active{color:#fff!important;background:linear-gradient(100deg,var(--ui-primary),var(--ui-primary-2))!important}
+html[data-theme="light"] .shell>aside nav button.active{color:#fff!important}
+html[data-theme="dark"] .shell>aside nav button.active{background:linear-gradient(100deg,rgba(22,119,255,.45),rgba(122,92,255,.30))!important}
 
 .catalog-primary,.project-actions .primary,.ui-primary{
   background:linear-gradient(135deg,var(--ui-primary),var(--ui-primary-2))!important;
@@ -137,3 +146,163 @@ html[data-theme="dark"] .status-paused{background:#3a2c0d!important;color:#ffd98
  .ui-token-grid{grid-template-columns:1fr}
  .ui-system-actions{display:grid}.ui-system-actions button{width:100%}
 }
+
+
+/* ===== Academy coverage · OYAG UI v1.0 ===== */
+.academy-home,.course-shell,.interactive-shell,.classroom,.academy-landing{
+  background:var(--ui-bg)!important;color:var(--ui-text)!important
+}
+.topbar{
+  background:color-mix(in srgb,var(--ui-surface) 94%,transparent)!important;
+  color:var(--ui-text)!important;border-color:var(--ui-border)!important;
+  backdrop-filter:blur(16px)
+}
+.topbar .brand,.topbar .brand strong,.topbar .student strong{color:var(--ui-text-strong)!important}
+.topbar .brand small,.topbar .student small{color:var(--ui-text-muted)!important}
+.academy-global-nav a{
+  background:var(--ui-surface-2)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important
+}
+.academy-global-nav a:hover{background:var(--ui-surface)!important;border-color:var(--ui-primary)!important}
+.academy-global-nav a[data-primary="true"]{
+  background:linear-gradient(135deg,var(--ui-primary),var(--ui-primary-2))!important;color:#fff!important;border-color:transparent!important
+}
+.theme-toggle{background:var(--ui-surface-2)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important}
+
+.academy-home .academy-landing h1,
+.academy-home .academy-landing h2,
+.academy-home .academy-landing h3,
+.course-shell h1,.course-shell h2,.course-shell h3,
+.classroom h1,.classroom h2,.classroom h3,.classroom h4{
+  color:var(--ui-text-strong)!important
+}
+.academy-home .lead,.academy-home .academy-definition p,.academy-home .academy-flow p,
+.academy-home .academy-section-head p,.academy-home .featured-course p,.academy-home .catalog-card p,
+.academy-home .catalog-card small,.academy-home .academy-note,.academy-home .academy-links p,
+.course-description,.level-card-row p,.preview-empty,.preview-body dd,
+.classroom p,.classroom small,.lesson-loading,.requirements li{
+  color:var(--ui-text-muted)!important
+}
+
+.academy-definition,.academy-flow article,.catalog-card,.academy-links,
+.level-list,.lesson-preview,.level-card-row,.card,.checkpoint,.structured-practice,
+.theory-steps>div,.command-list>div,.translated-code,.academy-level-progress,.shortcut-card,.practice-checklist label{
+  background:var(--ui-surface)!important;color:var(--ui-text)!important;
+  border-color:var(--ui-border)!important;box-shadow:var(--ui-shadow-sm)!important
+}
+.level-card-row.locked,.lesson-buttons button.lesson-locked,
+.owner-preview,.locked-note,.academy-price-anchor.compact,
+.practice-status,.checkpoint-status{
+  background:var(--ui-surface-2)!important;color:var(--ui-text-muted)!important;border-color:var(--ui-border)!important
+}
+.featured-course{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--ui-primary) 18%,var(--ui-surface)),color-mix(in srgb,var(--ui-accent) 12%,var(--ui-surface)))!important;
+  border-color:color-mix(in srgb,var(--ui-accent) 45%,var(--ui-border))!important;
+  color:var(--ui-text)!important;box-shadow:var(--ui-shadow-md)!important
+}
+.course-status{
+  background:var(--ui-surface-2)!important;border-color:var(--ui-border)!important;color:var(--ui-text)!important
+}
+.course-status strong{color:var(--ui-success)!important}
+.featured-course ul{color:var(--ui-text)!important}
+.academy-flow span,.eyebrow{color:var(--ui-primary)!important}
+.catalog-card .status{color:var(--ui-warning)!important}
+.catalog-action{color:var(--ui-primary)!important}
+.academy-note{background:var(--ui-surface-2)!important;border-left-color:var(--ui-accent)!important}
+
+.lesson-buttons button,.answer-grid button,.secondary,
+.practice-checklist label,.typing-input,.practice-reflection{
+  background:var(--ui-surface)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important
+}
+.lesson-buttons button:hover,.answer-grid button:hover{border-color:var(--ui-primary)!important;background:var(--ui-surface-2)!important}
+.chip,.method span,.practice-metrics span{
+  background:color-mix(in srgb,var(--ui-accent) 12%,var(--ui-surface))!important;
+  color:color-mix(in srgb,var(--ui-accent) 68%,var(--ui-text-strong))!important
+}
+.chip.lock{background:color-mix(in srgb,var(--ui-primary-2) 12%,var(--ui-surface))!important;color:var(--ui-primary-2)!important}
+.academy-level-progressbar{background:var(--ui-surface-3)!important}
+.academy-price-anchor strong{color:var(--ui-success)!important}
+.academy-price-anchor del{color:var(--ui-text-muted)!important}
+.locked-note{border:1px solid var(--ui-border)}
+
+.interactive-sidebar,.sidebar{
+  background:var(--ui-surface-2)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important
+}
+.interactive-sidebar h1,.sidebar h1{color:var(--ui-text-strong)!important}
+.academy-back-inline{color:var(--ui-primary)!important}
+.phase{
+  background:var(--ui-surface)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important
+}
+.phase>span{background:var(--ui-surface-3)!important;color:var(--ui-text-strong)!important}
+.phase small{color:var(--ui-text-muted)!important}
+.phase.active{border-color:var(--ui-primary)!important;box-shadow:0 0 0 1px var(--ui-primary) inset!important}
+.phase.active>span{background:var(--ui-primary)!important;color:#fff!important}
+.level-card{
+  background:var(--ui-surface)!important;border-color:var(--ui-border)!important
+}
+.level-card span,.level-card small{color:var(--ui-text-muted)!important}
+.level-card strong{color:var(--ui-primary)!important}
+
+.hero{
+  background:linear-gradient(135deg,var(--ui-primary),var(--ui-primary-2))!important;color:#fff!important
+}
+.hero h2,.hero p,.hero .score span,.hero .score small{color:#fff!important}
+.hero p,.hero .score small{opacity:.86}
+.hero .score{background:rgba(255,255,255,.10)!important;border-color:rgba(255,255,255,.28)!important}
+.hero .score strong{color:#fff!important}
+
+.icon{background:color-mix(in srgb,var(--ui-accent) 14%,var(--ui-surface))!important;color:var(--ui-accent)!important}
+.icon.code{background:color-mix(in srgb,var(--ui-primary) 13%,var(--ui-surface))!important;color:var(--ui-primary)!important}
+.concepts div{border-color:var(--ui-border)!important;background:var(--ui-surface-2)!important}
+.concepts span{color:var(--ui-text-muted)!important}
+.theory-steps span{background:var(--ui-primary)!important;color:#fff!important}
+.example-box{
+  background:color-mix(in srgb,var(--ui-success) 8%,var(--ui-surface))!important;
+  border-color:color-mix(in srgb,var(--ui-success) 28%,var(--ui-border))!important
+}
+.instruction-box{
+  background:color-mix(in srgb,var(--ui-warning) 9%,var(--ui-surface))!important;
+  border-color:color-mix(in srgb,var(--ui-warning) 30%,var(--ui-border))!important
+}
+.instruction-box strong{color:var(--ui-warning)!important}
+.command-list>div>code,.translated-code>code{background:var(--ui-surface-3)!important;color:var(--ui-primary)!important}
+.translated-code{border-left-color:var(--ui-accent)!important}
+.mastery-note{background:color-mix(in srgb,var(--ui-success) 8%,var(--ui-surface))!important;border-left-color:var(--ui-success)!important}
+.mastery-note strong{color:var(--ui-success)!important}
+
+.answer-grid button.correct,.feedback.success,.practice-status.success,.checkpoint-status.complete{
+  background:color-mix(in srgb,var(--ui-success) 12%,var(--ui-surface))!important;
+  color:var(--ui-success)!important;border-color:color-mix(in srgb,var(--ui-success) 45%,var(--ui-border))!important
+}
+.answer-grid button.incorrect,.feedback.error,.practice-status.error{
+  background:color-mix(in srgb,var(--ui-danger) 11%,var(--ui-surface))!important;
+  color:var(--ui-danger)!important;border-color:color-mix(in srgb,var(--ui-danger) 42%,var(--ui-border))!important
+}
+.feedback.neutral{background:var(--ui-surface-2)!important;color:var(--ui-text)!important}
+.requirements li.done{color:var(--ui-success)!important}
+.next{background:var(--ui-surface-3)!important;color:var(--ui-text-muted)!important}
+.next.unlocked,.primary,.academy-buy,.academy-buy-card{
+  background:linear-gradient(135deg,var(--ui-primary),var(--ui-primary-2))!important;color:#fff!important
+}
+
+.typing-target,.academy-code-example,.academy-console{
+  background:#071522!important;color:#eef8ff!important;border-color:#28445d!important
+}
+.typing-target small,.academy-console strong{color:#8ccfff!important}
+.shortcut-card strong{color:var(--ui-primary)!important}
+
+/* Typography roles */
+.academy-home .academy-landing h1{font-size:var(--ui-title-lg)!important;line-height:1.03}
+.academy-home .academy-section-head h2,.course-head h1{font-size:var(--ui-title-md)!important}
+.catalog-card h3,.featured-course h3,.card-title h3{font-size:var(--ui-title-sm)!important}
+.academy-home .lead{font-size:var(--ui-text-lg)!important;line-height:var(--ui-line-relaxed)}
+.academy-home p,.course-shell p,.classroom p{line-height:var(--ui-line-normal)}
+.academy-home small,.course-shell small,.classroom small{font-size:var(--ui-text-xs)}
+.academy-home .catalog-card p,.course-shell .level-card-row p,.classroom .command-list p{font-size:var(--ui-text-md)!important}
+
+/* Claro/escuro devem manter a mesma hierarquia. */
+html[data-theme="light"] .academy-home,
+html[data-theme="light"] .course-shell,
+html[data-theme="light"] .interactive-shell{background:var(--ui-bg)!important}
+html[data-theme="dark"] .academy-home,
+html[data-theme="dark"] .course-shell,
+html[data-theme="dark"] .interactive-shell{background:var(--ui-bg)!important}
