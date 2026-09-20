@@ -47,3 +47,46 @@ footer p{text-align:left;margin:0}
   .hero{padding-left:13px;padding-right:13px}
   .section{padding-left:13px;padding-right:13px}
 }
+
+/* OYAG mobile premium refresh · 2026-09-20 */
+@media(max-width:760px){
+  body{
+    background:
+      radial-gradient(circle at 12% 5%,rgba(46,167,255,.08),transparent 24%),
+      radial-gradient(circle at 88% 12%,rgba(122,92,255,.07),transparent 28%),
+      var(--oyag-bg,#030914)
+  }
+  .topbar{
+    position:sticky;top:0;z-index:80;
+    min-height:64px;height:auto;
+    padding:9px max(11px,env(safe-area-inset-left)) 9px max(11px,env(safe-area-inset-right));
+    background:rgba(3,9,20,.9)!important;
+    border-bottom:1px solid rgba(82,145,214,.18);
+    backdrop-filter:blur(20px);
+    box-shadow:0 10px 34px rgba(0,0,0,.18)
+  }
+  .brand{min-width:0;max-width:52%;gap:9px}
+  .brand span{min-width:0}.brand strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand-mark{width:36px;height:36px;flex:0 0 36px;border-radius:11px}
+  .header-actions{gap:7px;min-width:0}
+  .header-actions .button{min-height:42px;border-radius:12px;padding:9px 11px;font-size:.7rem}
+  .hero{padding:34px 15px 44px;gap:24px}
+  .hero h1{font-size:clamp(2rem,10vw,2.7rem);line-height:1.01;text-wrap:balance}
+  .lead{font-size:.96rem;line-height:1.6}
+  .hero-actions .button{min-height:48px;border-radius:13px}
+  .hero-panel{border-radius:20px;background:rgba(9,23,40,.76);backdrop-filter:blur(12px);box-shadow:0 28px 76px rgba(0,0,0,.3)}
+  .orbit{height:220px}
+  .numbers{background:rgba(9,23,40,.94)!important;border-top:1px solid rgba(82,145,214,.15);border-bottom:1px solid rgba(82,145,214,.15)}
+  .section{padding:50px 15px}
+  .section-heading h2,.split h2,.cta h2{font-size:clamp(1.8rem,8.5vw,2.4rem);line-height:1.05;text-wrap:balance}
+  .card,.learning-card{border-radius:18px;background:linear-gradient(145deg,rgba(9,23,40,.94),rgba(11,30,50,.9));box-shadow:0 16px 48px rgba(0,0,0,.18)}
+  .card{padding:18px}.card h3{font-size:1.14rem}
+  .cta{padding:46px 15px 54px}
+  .cta .button{min-height:48px;border-radius:13px}
+  footer{padding:26px 15px max(30px,env(safe-area-inset-bottom))}
+}
+@media(max-width:360px){
+  .brand{max-width:47%}.brand strong{font-size:.75rem}
+  .header-actions .button{font-size:.64rem;padding:8px 9px}
+  .hero,.section,.cta{padding-left:12px;padding-right:12px}
+}
