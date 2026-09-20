@@ -12,3 +12,27 @@
 .shipping-review p{margin:6px 0 0;color:#405866;font-size:.8rem;line-height:1.5}
 
 .shipping-review-title{font-weight:900;font-size:.86rem;margin-bottom:8px;color:var(--navy)}
+
+
+/* Checkout mobile premium · 2026-09-20 */
+.checkout-card{
+  border-color:rgba(93,151,211,.18);
+  box-shadow:0 16px 48px rgba(0,0,0,.11)
+}
+@media(max-width:600px){
+  html,body{max-width:100%;overflow-x:hidden}
+  .checkout-page{padding:26px 13px 72px}
+  .checkout-heading h1{font-size:clamp(1.95rem,9.5vw,2.55rem);line-height:1.04;text-wrap:balance}
+  .checkout-layout{gap:13px}
+  .checkout-card{padding:17px 14px;border-radius:18px}
+  .section-title{align-items:flex-start;flex-wrap:wrap}
+  .order-line{grid-template-columns:minmax(0,1fr) auto;gap:8px}
+  .payment-selector{grid-template-columns:1fr;gap:8px}
+  .payment-selector button{min-height:46px;border-radius:12px}
+  .buyer-identification{padding:12px}
+  .buyer-identification input,.copy-code{font-size:16px;min-height:48px}
+  .payment-action{padding:13px;border-radius:13px}
+  .payment-action .button{width:100%;min-height:48px}
+  .pix-qr{max-width:190px}
+  .boleto-line{overflow-wrap:anywhere;word-break:break-word}
+}
