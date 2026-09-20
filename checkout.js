@@ -13,18 +13,29 @@ const paymentSelector=document.querySelector('#paymentSelector');
 const paymentProviderLabel=document.querySelector('#paymentProviderLabel');
 const buyerDocumentInput=document.querySelector('#buyerDocument');
 const buyerDocumentError=document.querySelector('#buyerDocumentError');
+const purchaseTerms=document.querySelector('#purchaseTerms');
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const money=(c,cur='BRL')=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:cur||'BRL'}).format(Number(c||0)/100);
 let session=null,guestToken=null,checkout=null,orders=[],items=[],shippingAddress=null;
 
 function setPaymentControls(enabled){
+ const accepted=Boolean(purchaseTerms?.checked);
+ const canPay=Boolean(enabled&&accepted);
  const buttons=paymentSelector?.querySelectorAll('button[data-method]')||[];
  buttons.forEach(btn=>{
   const method=btn.dataset.method;
-  btn.disabled=!enabled||method==='boleto';
+  btn.disabled=!canPay||method==='boleto';
  });
  if(buyerDocumentInput)buyerDocumentInput.disabled=!enabled;
+ if(purchaseTerms)purchaseTerms.disabled=!enabled;
 }
+
+purchaseTerms?.addEventListener('change',()=>{
+ if(!checkout||!orders.length)return;
+ const order=orders[0];
+ const blocked=['paid','preparing','shipped','delivered','awaiting_confirmation','completed'].includes(order?.status)||order?.payment_status==='approved';
+ if(!blocked)setPaymentControls(true);
+});
 
 function showCheckoutRecovery(message){
  statusEl.textContent=message;
@@ -238,6 +249,7 @@ async function renderPayment(){
   if(!b||b.disabled)return;
   const method=b.dataset.method;
   if(!['pix','card'].includes(method))return;
+  if(!purchaseTerms?.checked){paymentMessage.className='payment-message error';paymentMessage.textContent='Aceite os Termos de Uso e a Política de Privacidade para continuar.';purchaseTerms?.focus();return}
   if(!getBuyerIdentification(true)){buyerDocumentInput?.focus();return}
 
   paymentSelector.querySelectorAll('button').forEach(btn=>btn.disabled=true);
