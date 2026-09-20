@@ -336,3 +336,10 @@ html[data-theme="dark"] .interactive-shell{background:var(--ui-bg)!important}
 .ui-type-card[data-role="body"] strong{font-size:var(--ui-text-md)}
 .ui-type-card[data-role="title"] strong{font-size:var(--ui-title-sm)}
 @media(max-width:700px){.ui-type-grid{grid-template-columns:1fr}}
+
+/* Academy brand mark is controlled here, not by legacy dark theme files. */
+.topbar img.oyag-brand-symbol{
+  width:42px!important;height:42px!important;object-fit:contain!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;filter:drop-shadow(0 0 12px color-mix(in srgb,var(--ui-primary) 28%,transparent))
+}
