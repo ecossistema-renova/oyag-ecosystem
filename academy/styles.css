@@ -226,3 +226,189 @@
   .lesson-banner-copy>strong{font-size:.98rem}
   .lesson-banner-copy>small{font-size:.72rem}
 }
+
+
+/* ===== Academy prática aplicada v2 · Excel + Digitação ===== */
+.typing-coach{
+  display:grid;
+  gap:4px;
+  margin:0 0 14px;
+  padding:12px 14px;
+  border:1px solid #cfe9e5;
+  border-radius:13px;
+  background:#eefaf7
+}
+.typing-coach span{
+  color:#08776e;
+  font-size:.68rem;
+  font-weight:900;
+  letter-spacing:.08em
+}
+.typing-coach strong{font-size:.92rem;color:#143642}
+
+.sheet-practice{display:grid;gap:14px}
+.sheet-task{
+  display:grid;
+  gap:5px;
+  padding:14px 15px;
+  border:1px solid #cfe2d5;
+  border-radius:14px;
+  background:linear-gradient(135deg,#f4fbf6,#f8fbfc)
+}
+.sheet-task span{
+  font-size:.67rem;
+  font-weight:900;
+  letter-spacing:.09em;
+  color:#16834d
+}
+.sheet-task strong{font-size:1rem;color:#163427}
+.sheet-task small{color:#62776b;line-height:1.45}
+
+.sheet-formula-bar{
+  display:grid;
+  grid-template-columns:62px 34px minmax(0,1fr);
+  align-items:center;
+  min-height:44px;
+  border:1px solid #c9d8cf;
+  border-radius:11px;
+  overflow:hidden;
+  background:#fff
+}
+.sheet-cell-name{
+  display:grid;
+  place-items:center;
+  align-self:stretch;
+  border-right:1px solid #dbe6df;
+  background:#f3f7f4;
+  color:#284738;
+  font-size:.8rem;
+  font-weight:900
+}
+.sheet-fx{
+  display:grid;
+  place-items:center;
+  color:#16834d;
+  font-style:italic;
+  font-weight:900
+}
+.sheet-formula-bar input{
+  height:42px;
+  width:100%;
+  padding:0 11px;
+  border:0;
+  outline:0;
+  background:#fff;
+  color:#173128;
+  font:600 .9rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.sheet-formula-bar input:focus{box-shadow:inset 0 0 0 2px rgba(22,131,77,.18)}
+.sheet-formula-bar input.sheet-formula-correct{background:#eefaf3;color:#086b4b}
+
+.sheet-grid-wrap{
+  max-width:100%;
+  overflow:auto;
+  border:1px solid #cbd9d0;
+  border-radius:13px;
+  background:#fff;
+  box-shadow:0 8px 20px rgba(27,64,42,.06)
+}
+.sheet-grid{
+  width:100%;
+  min-width:560px;
+  border-collapse:separate;
+  border-spacing:0;
+  table-layout:fixed;
+  color:#173128;
+  font-size:.82rem
+}
+.sheet-grid th,
+.sheet-grid td{
+  height:42px;
+  padding:8px 10px;
+  border-right:1px solid #dfe8e2;
+  border-bottom:1px solid #dfe8e2;
+  text-align:left;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+.sheet-grid thead th{
+  height:30px;
+  padding:4px 8px;
+  text-align:center;
+  background:#edf3ef;
+  color:#607068;
+  font-size:.7rem;
+  font-weight:900
+}
+.sheet-grid tbody>tr>th{
+  width:42px;
+  padding:4px;
+  text-align:center;
+  background:#f3f7f4;
+  color:#6b7a72;
+  font-size:.7rem
+}
+.sheet-grid .sheet-corner{width:42px;background:#e8efea}
+.sheet-grid .sheet-header-cell{
+  background:#f4faf6;
+  font-weight:900;
+  color:#284738
+}
+.sheet-grid .sheet-target-cell{
+  position:relative;
+  background:#fff9dd;
+  outline:2px solid #e8a317;
+  outline-offset:-2px;
+  font-weight:900;
+  color:#875d00
+}
+.sheet-grid .sheet-target-cell::after{
+  content:"alvo";
+  position:absolute;
+  top:2px;
+  right:3px;
+  font-size:.5rem;
+  font-weight:900;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:#aa7908
+}
+.sheet-grid .sheet-target-success{
+  background:#e8f8ef;
+  outline-color:#1a9b61;
+  color:#086b4b
+}
+.sheet-grid tr:last-child td,
+.sheet-grid tr:last-child th{border-bottom:0}
+.sheet-grid th:last-child,
+.sheet-grid td:last-child{border-right:0}
+
+[data-theme="dark"] .typing-coach{
+  border-color:#174940;
+  background:#0b2824
+}
+[data-theme="dark"] .typing-coach strong{color:#dff7ee}
+[data-theme="dark"] .sheet-task{
+  border-color:#174632;
+  background:linear-gradient(135deg,#0a2016,#0b1f27)
+}
+[data-theme="dark"] .sheet-task strong{color:#e8fff0}
+[data-theme="dark"] .sheet-task small{color:#9cb6a7}
+[data-theme="dark"] .sheet-formula-bar,
+[data-theme="dark"] .sheet-formula-bar input,
+[data-theme="dark"] .sheet-grid-wrap{background:#0a1711;color:#eafff1}
+[data-theme="dark"] .sheet-cell-name,
+[data-theme="dark"] .sheet-grid thead th,
+[data-theme="dark"] .sheet-grid tbody>tr>th{background:#12221a;color:#a8bbae}
+[data-theme="dark"] .sheet-grid th,
+[data-theme="dark"] .sheet-grid td{border-color:#20352a;color:#dcebe2}
+[data-theme="dark"] .sheet-grid .sheet-header-cell{background:#10251a;color:#dff6e7}
+[data-theme="dark"] .sheet-grid .sheet-target-cell{background:#302915;color:#ffd77a}
+[data-theme="dark"] .sheet-grid .sheet-target-success{background:#0c2d1e;color:#70e0a7}
+
+@media(max-width:620px){
+  .sheet-task{padding:12px}
+  .sheet-formula-bar{grid-template-columns:52px 30px minmax(0,1fr)}
+  .sheet-grid{min-width:500px}
+}
