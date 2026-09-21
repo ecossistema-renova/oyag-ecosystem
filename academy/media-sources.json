@@ -1,0 +1,24 @@
+{
+  "module": "academy",
+  "updated_at": "2026-09-20",
+  "sources": [
+    {
+      "id": "academy-workspace-code",
+      "provider": "Pexels",
+      "author": "Daniil Komov",
+      "source_page": "https://www.pexels.com/photo/modern-workspace-with-laptop-and-code-display-34804003/",
+      "license_page": "https://www.pexels.com/license/",
+      "usage": "Academy hero background",
+      "public_image_url": "https://images.pexels.com/photos/34804003/pexels-photo-34804003/free-photo-of-modern-workspace-with-laptop-and-code-display.jpeg?auto=compress&dpr=1&w=1600"
+    },
+    {
+      "id": "academy-programming-screen",
+      "provider": "Pexels",
+      "author": "Markus Spiske",
+      "source_page": "https://www.pexels.com/photo/a-laptop-screen-with-text-4439901/",
+      "license_page": "https://www.pexels.com/license/",
+      "usage": "Programming featured course background",
+      "public_image_url": "https://images.pexels.com/photos/4439901/pexels-photo-4439901.jpeg?auto=compress&dpr=1&w=1200"
+    }
+  ]
+}
