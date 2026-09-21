@@ -1,31 +1,39 @@
 (() => {
-  const SITE='https://cledemilsonoliveira.com/';
+  const M=window.OYAG_MODULES||{};
+  const url=(key,fallback)=>M[key]?.publicUrl||fallback;
+  const SITE=url('site','https://cledemilsonoliveira.com/');
+  const ACADEMY=url('academy','https://academy.cledemilsonoliveira.com/');
+  const APP=url('app','https://app.cledemilsonoliveira.com/');
+  const MARKET=url('marketplace','https://marketplace.cledemilsonoliveira.com/');
+  const PARCERIAS=url('parcerias','https://parcerias.cledemilsonoliveira.com/');
+  const CONTEUDOS=url('conteudos','https://conteudos.cledemilsonoliveira.com/');
+
   const linksByContext={
     home:[
       ['Site oficial',SITE,'site','high'],
-      ['OYAG Ecosystem','../desktop/','ecosystem','high'],
-      ['Marketplace','../marketplace.html','marketplace','medium'],
-      ['Parcerias','https://parcerias.cledemilsonoliveira.com/','parcerias','low'],
-      ['Conteúdos',SITE+'conteudos/','conteudos','medium']
+      ['OYAG Ecosystem',APP,'ecosystem','high'],
+      ['Marketplace',MARKET,'marketplace','medium'],
+      ['Parcerias',PARCERIAS,'parcerias','low'],
+      ['Conteúdos',CONTEUDOS,'conteudos','medium']
     ],
     course:[
       ['Site oficial',SITE,'site','high'],
-      ['Academy','./','academy','high'],
-      ['OYAG Ecosystem','../desktop/','ecosystem','medium'],
-      ['Conteúdos',SITE+'conteudos/','conteudos','low'],
+      ['Academy',ACADEMY,'academy','high'],
+      ['OYAG Ecosystem',APP,'ecosystem','medium'],
+      ['Conteúdos',CONTEUDOS,'conteudos','low'],
       ['Painel OYAG','../dashboard.html','painel','medium']
     ],
     lesson:[
       ['Site oficial',SITE,'site','high'],
-      ['Academy','./','academy','high'],
+      ['Academy',ACADEMY,'academy','high'],
       ['Minha trilha','./curso.html','trilha','medium'],
-      ['OYAG Ecosystem','../desktop/','ecosystem','low']
+      ['OYAG Ecosystem',APP,'ecosystem','low']
     ],
     demo:[
       ['Site oficial',SITE,'site','high'],
-      ['Academy','./','academy','high'],
+      ['Academy',ACADEMY,'academy','high'],
       ['Curso principal',SITE+'curso-programacao/','curso','medium'],
-      ['OYAG Ecosystem','../desktop/','ecosystem','low']
+      ['OYAG Ecosystem',APP,'ecosystem','low']
     ]
   };
   document.querySelectorAll('[data-academy-nav]').forEach(nav=>{
