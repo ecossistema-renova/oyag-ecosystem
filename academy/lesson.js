@@ -101,9 +101,11 @@ async function recordProgress(score=0,theoryConfirmed=false){
 function renderQuiz(){
  const items=Array.isArray(theory.quiz)?theory.quiz:[];
  if(!items.length){
-   els.quiz.innerHTML='<div class="checkpoint-status complete">Checkpoint orientado: revise o objetivo e o critério de domínio ✓</div>';
-   els.checkpointStatus.hidden=true;quizPassed.add('auto');unlockLab();setProgress(isMastered?100:35);
-   if(!currentProgress?.theory_confirmed_at&&!isMastered)recordProgress(0,true).catch(()=>{});
+   els.quiz.innerHTML='<div class="checkpoint-status complete">Checkpoint orientado concluído ✓</div>';
+   els.checkpointStatus.hidden=true;quizPassed.add('auto');setProgress(isMastered?100:35);
+   if(practiceRequiresCheckpoint())unlockLab();
+   if(!currentProgress?.theory_confirmed_at&&!isMastered)recordProgress(0,true).catch(error=>console.error('ACADEMY_THEORY_PROGRESS',error));
+   syncCompletionAction();
    return
  }
  els.quiz.innerHTML=items.map((item,i)=>'<fieldset class="question" data-q="'+i+'"><legend>'+(i+1)+'. '+esc(item.question)+'</legend><div class="answer-grid">'+(item.options||[]).map((o,j)=>'<button type="button" data-option="'+j+'">'+esc(o)+'</button>').join('')+'</div><p class="question-feedback" aria-live="polite"></p></fieldset>').join('');
@@ -111,17 +113,18 @@ function renderQuiz(){
  els.quiz.querySelectorAll('.question').forEach(fs=>{
   fs.querySelectorAll('button').forEach(btn=>{
    btn.onclick=async()=>{
-  const i=Number(fs.dataset.q),j=Number(btn.dataset.option),item=items[i],feedback=fs.querySelector('.question-feedback');
-  fs.querySelectorAll('button').forEach(b=>b.classList.remove('correct','incorrect'));
-  if(j===Number(item.correct)){btn.classList.add('correct');quizPassed.add(i);feedback.className='question-feedback ok';feedback.textContent=item.success||'Correto! Conceito confirmado.'}
-  else{btn.classList.add('incorrect');feedback.className='question-feedback try';feedback.textContent=item.retry||'Ainda não. Revise a explicação e tente novamente.'}
-  els.checkpointStatus.textContent=quizPassed.size+' de '+items.length+' conceitos confirmados';
-  if(quizPassed.size===items.length){
-    els.checkpointStatus.classList.add('complete');
-    els.checkpointStatus.textContent='Teoria compreendida! Prática liberada ✓';
-    unlockLab();
-    await recordProgress(0,true);
-  }
+    const i=Number(fs.dataset.q),j=Number(btn.dataset.option),item=items[i],feedback=fs.querySelector('.question-feedback');
+    fs.querySelectorAll('button').forEach(b=>b.classList.remove('correct','incorrect'));
+    if(j===Number(item.correct)){btn.classList.add('correct');quizPassed.add(i);feedback.className='question-feedback ok';feedback.textContent=item.success||'Correto! Conceito confirmado.'}
+    else{btn.classList.add('incorrect');feedback.className='question-feedback try';feedback.textContent=item.retry||'Ainda não. Revise a explicação e tente novamente.'}
+    els.checkpointStatus.textContent=quizPassed.size+' de '+items.length+' conceitos confirmados';
+    if(quizPassed.size===items.length){
+      els.checkpointStatus.classList.add('complete');
+      els.checkpointStatus.textContent='Checkpoint concluído ✓';
+      if(practiceRequiresCheckpoint())unlockLab();
+      await recordProgress(0,true);
+      syncCompletionAction();
+    }
     updateProgress();
    };
   });
@@ -145,15 +148,41 @@ function editDistance(a,b){
  for(let i=1;i<=a.length;i++){cur[0]=i;for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));for(let j=0;j<=b.length;j++)prev[j]=cur[j]}
  return prev[b.length];
 }
+function practiceRequiresCheckpoint(){
+ const tests=theory.evaluator?.tests||[];
+ return Boolean(tests.length&&starter);
+}
+function theoryIsConfirmed(){
+ const items=Array.isArray(theory.quiz)?theory.quiz:[];
+ return Boolean(
+   currentProgress?.theory_confirmed_at
+   || !items.length
+   || quizPassed.size===items.length
+ );
+}
+function syncCompletionAction(){
+ if(!els.next)return;
+ if(isMastered){
+   els.next.disabled=false;
+   els.next.classList.add('unlocked');
+   els.next.textContent='Aula concluída ✓ Voltar à trilha';
+   return;
+ }
+ const ready=practicePassed&&theoryIsConfirmed();
+ els.next.disabled=!ready;
+ els.next.classList.toggle('unlocked',ready);
+ els.next.textContent=ready
+   ?'Concluir aula e registrar domínio'
+   :practicePassed
+     ?'Prática concluída · finalize o checkpoint'
+     :'Conclua a prática para avançar';
+}
 function setPracticePassed(message){
  practicePassed=true;
  const req=els.requirements?.querySelector('[data-practice-req]');if(req)req.classList.add('done');
- if(!isMastered){
-   els.next.disabled=false;els.next.classList.add('unlocked');els.next.textContent='Concluir aula e registrar domínio';
-   setProgress(Math.max(90,Number(currentProgress?.best_score||0)));
- }
  const status=els.practiceRunner?.querySelector('[data-practice-status]');
  if(status){status.className='practice-status success';status.textContent=message||'Prática validada ✓'}
+ syncCompletionAction();
  updateProgress();
 }
 function renderPracticeRunner(){
@@ -507,6 +536,8 @@ async function init(){
  isMastered=currentProgress?.status==='mastered'||Number(currentProgress?.best_score||0)>=Number(lesson.passing_score||100);
  els.lessonStatus.textContent=isMastered?'Aula concluída':isOwner?'Prévia completa':'Em estudo';
  renderTheory();renderQuiz();renderRequirements();applyExistingProgress();
+ if(!practiceRequiresCheckpoint())unlockLab();
+ syncCompletionAction();
  els.loading.hidden=true;els.app.hidden=false;
  document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>document.querySelector('#'+b.dataset.scroll)?.scrollIntoView({behavior:'smooth',block:'start'}));
  els.run.onclick=runLab;
@@ -518,6 +549,7 @@ async function init(){
    const tests=theory.evaluator?.tests||[];
    if(tests.length)return;
    if(!practicePassed){els.feedback.className='feedback error';els.feedback.innerHTML='<strong>Prática ainda não validada.</strong><span>Conclua o exercício prático antes de registrar domínio.</span>';return}
+   if(!theoryIsConfirmed()){els.feedback.className='feedback error';els.feedback.innerHTML='<strong>Falta o checkpoint.</strong><span>Agora que você praticou, confirme o conceito principal para concluir a aula.</span>';return}
    els.next.disabled=true;els.next.textContent='Salvando progresso…';
    const saved=await recordProgress(100,true);
    if(saved){location.href=courseUrl;return}
