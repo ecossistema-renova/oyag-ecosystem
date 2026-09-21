@@ -185,17 +185,116 @@ function setPracticePassed(message){
  syncCompletionAction();
  updateProgress();
 }
+function normalizeSpreadsheetFormula(value){
+ let formula=String(value||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+ formula=formula.replace(/\s+/g,'').replace(/;/g,',');
+ formula=formula.replace(/CONT\.SE\(/g,'COUNTIF(');
+ formula=formula.replace(/SOMASE\(/g,'SUMIF(');
+ formula=formula.replace(/MEDIA\(/g,'AVERAGE(');
+ formula=formula.replace(/SOMA\(/g,'SUM(');
+ formula=formula.replace(/MAXIMO\(/g,'MAX(');
+ formula=formula.replace(/MINIMO\(/g,'MIN(');
+ formula=formula.replace(/SE\(/g,'IF(');
+ return formula;
+}
+
+function renderSpreadsheetPractice(cfg){
+ const headers=Array.isArray(cfg.headers)&&cfg.headers.length?cfg.headers:['A','B','C','D'];
+ const rows=Array.isArray(cfg.rows)?cfg.rows:[];
+ const targetCell=String(cfg.target_cell||'D2').toUpperCase();
+ const accepted=(Array.isArray(cfg.accepted_formulas)?cfg.accepted_formulas:[cfg.expected_formula]).filter(Boolean).map(normalizeSpreadsheetFormula);
+ const task=String(cfg.task||'Digite a fórmula correta para preencher a célula destacada.');
+ const hint=String(cfg.hint||'Observe os endereços das células e monte a fórmula a partir dos dados da tabela.');
+ const expectedDisplay=String(cfg.expected_display??'✓');
+ const letters=headers.map((_,i)=>String.fromCharCode(65+i));
+
+ let table='<div class="sheet-grid-wrap"><table class="sheet-grid"><thead><tr><th class="sheet-corner"></th>'+
+   letters.map(letter=>'<th>'+esc(letter)+'</th>').join('')+
+   '</tr></thead><tbody>';
+
+ table+='<tr><th>1</th>'+headers.map((h,i)=>{
+   const address=letters[i]+'1';
+   const target=address===targetCell;
+   return '<td class="sheet-header-cell'+(target?' sheet-target-cell':'')+'" data-cell="'+esc(address)+'">'+
+     (target?'<span data-sheet-target>?</span>':esc(h))+
+   '</td>';
+ }).join('')+'</tr>';
+
+ rows.forEach((row,rowIndex)=>{
+   const rowNumber=rowIndex+2;
+   table+='<tr><th>'+rowNumber+'</th>';
+   headers.forEach((_,colIndex)=>{
+     const address=letters[colIndex]+rowNumber;
+     const value=Array.isArray(row)?row[colIndex]:'';
+     const target=address===targetCell;
+     table+='<td class="'+(target?'sheet-target-cell':'')+'" data-cell="'+esc(address)+'">'+
+       (target?'<span data-sheet-target>?</span>':esc(value??''))+
+     '</td>';
+   });
+   table+='</tr>';
+ });
+ table+='</tbody></table></div>';
+
+ els.practiceRunner.innerHTML=
+   '<div class="sheet-practice">'+
+     '<div class="sheet-task"><span>DESAFIO NA PLANILHA</span><strong>'+esc(task)+'</strong><small>Use a fórmula como faria no Excel. A validação considera variações equivalentes configuradas para esta atividade.</small></div>'+
+     '<div class="sheet-formula-bar"><span class="sheet-cell-name">'+esc(targetCell)+'</span><span class="sheet-fx">fx</span><input id="sheetFormulaInput" type="text" autocomplete="off" spellcheck="false" placeholder="'+esc(cfg.formula_placeholder||'=SOMA(A1:A3)')+'"></div>'+
+     table+
+     '<div class="practice-actions"><button type="button" class="primary" id="validateSheetFormula">Validar fórmula</button><button type="button" class="secondary" id="showSheetHint">Ver dica</button></div>'+
+     '<p class="practice-status" data-practice-status>Digite a fórmula na barra acima e valide.</p>'+
+   '</div>';
+
+ const input=els.practiceRunner.querySelector('#sheetFormulaInput');
+ const status=els.practiceRunner.querySelector('[data-practice-status]');
+ const target=els.practiceRunner.querySelector('[data-sheet-target]');
+ const validate=()=>{
+   const formula=normalizeSpreadsheetFormula(input.value);
+   if(!formula.startsWith('=')){
+     status.className='practice-status error';
+     status.textContent='No Excel, uma fórmula começa com =. Tente novamente.';
+     return;
+   }
+   if(accepted.includes(formula)){
+     if(target){target.textContent=expectedDisplay;target.closest('td')?.classList.add('sheet-target-success')}
+     input.classList.add('sheet-formula-correct');
+     setPracticePassed('Fórmula correta em '+targetCell+' ✓');
+   }else{
+     input.classList.remove('sheet-formula-correct');
+     status.className='practice-status error';
+     status.textContent='A fórmula ainda não corresponde ao cálculo solicitado. Confira as células usadas e tente novamente.';
+   }
+ };
+ els.practiceRunner.querySelector('#validateSheetFormula').onclick=validate;
+ els.practiceRunner.querySelector('#showSheetHint').onclick=()=>{
+   status.className='practice-status';
+   status.textContent='Dica: '+hint;
+   input.focus();
+ };
+ input.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();validate()}});
+}
+
 function renderPracticeRunner(){
  els.interactiveLab.hidden=true;
  els.structuredPractice.hidden=false;
  const mode=theory.practice_mode||'structured',cfg=theory.practice_config||{};
- if(els.structuredPracticeTitle)els.structuredPracticeTitle.textContent=mode==='typing'?'Desafio de digitação':mode==='shortcut'?'Desafio de atalho':'Prática na ferramenta';
- if(els.structuredPracticeIntro)els.structuredPracticeIntro.textContent=mode==='typing'?'Digite o texto sem colar e alcance os critérios mínimos.':mode==='shortcut'?'Ative a captura e execute a combinação solicitada.':'Execute a tarefa na ferramenta indicada e valide seu próprio resultado com o checklist.';
+ if(els.structuredPracticeTitle)els.structuredPracticeTitle.textContent=
+   mode==='typing'?'Treino de digitação':
+   mode==='shortcut'?'Desafio de atalho':
+   mode==='spreadsheet_formula'?'Laboratório de planilha':
+   'Prática na ferramenta';
+ if(els.structuredPracticeIntro)els.structuredPracticeIntro.textContent=
+   mode==='typing'?'Digite, meça precisão e velocidade e repita até alcançar o critério.':
+   mode==='shortcut'?'Execute a combinação solicitada e deixe a Academy reconhecer o atalho.':
+   mode==='spreadsheet_formula'?'Leia os dados, monte a fórmula e valide diretamente na mini-planilha.':
+   'Execute a tarefa na ferramenta indicada e valide seu resultado.';
  if(isMastered){practicePassed=true}
- if(mode==='typing'){
+ if(mode==='spreadsheet_formula'){
+   renderSpreadsheetPractice(cfg);
+ }else if(mode==='typing'){
    const target=String(cfg.target_text||theory.practice||'Pratique com atenção e precisão.');
    const minAccuracy=Number(cfg.min_accuracy||90),targetWpm=Number(cfg.target_wpm||15);
-   els.practiceRunner.innerHTML='<div class="typing-target"><small>Texto-alvo</small><p>'+esc(target)+'</p></div><div class="practice-metrics"><span>Meta: <strong>'+esc(targetWpm)+' PPM</strong></span><span>Precisão: <strong>'+esc(minAccuracy)+'%</strong></span></div><label for="typingInput">Digite aqui</label><textarea id="typingInput" class="typing-input" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><div class="practice-actions"><button type="button" class="primary" id="validateTyping">Avaliar digitação</button></div><p class="practice-status" data-practice-status>Comece a digitar para iniciar a medição.</p>';
+   const focus=String(cfg.focus||'Precisão, ritmo e postura.');
+   els.practiceRunner.innerHTML='<div class="typing-coach"><span>FOCO DESTA AULA</span><strong>'+esc(focus)+'</strong></div><div class="typing-target"><small>Texto-alvo</small><p>'+esc(target)+'</p></div><div class="practice-metrics"><span>Meta: <strong>'+esc(targetWpm)+' PPM</strong></span><span>Precisão: <strong>'+esc(minAccuracy)+'%</strong></span></div><label for="typingInput">Digite aqui</label><textarea id="typingInput" class="typing-input" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><div class="practice-actions"><button type="button" class="primary" id="validateTyping">Avaliar digitação</button></div><p class="practice-status" data-practice-status>Comece a digitar para iniciar a medição.</p>';
    const input=els.practiceRunner.querySelector('#typingInput');
    input.addEventListener('paste',e=>{e.preventDefault();const s=els.practiceRunner.querySelector('[data-practice-status]');s.className='practice-status error';s.textContent='Colar está desativado nesta prática.'});
    input.addEventListener('input',()=>{if(!practiceStartedAt)practiceStartedAt=Date.now()},{once:true});
@@ -241,7 +340,6 @@ function renderPracticeRunner(){
    els.next.textContent='Aula concluída ✓ Voltar à trilha';
  }
 }
-
 function renderRequirements(){
  const tests=theory.evaluator?.tests||[];
  if(!tests.length){
