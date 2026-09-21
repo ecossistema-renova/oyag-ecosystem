@@ -28,7 +28,7 @@ render();
 if(prefillEmail)document.querySelector('#email').value=prefillEmail;
 if(accountCreated&&!signup){
  msg.textContent=needsEmailConfirmation
-  ?'Conta criada. Confirme seu e-mail pelo link enviado e depois entre com sua senha.'
+  ?'✓ Sua conta foi criada com sucesso. Confirme seu e-mail para ativar a conta e entrar no OYAG. Verifique também a caixa de spam.'
   :'Conta criada com sucesso. Agora entre com seu e-mail e senha.';
  msg.classList.add('ok');
 }
