@@ -16,10 +16,30 @@ const els={
  feedback:$('#feedback'),requirements:$('#requirementsList'),checkpointText:$('#checkpointText'),next:$('#nextButton'),
  progressText:$('#progressText'),progressBar:$('#progressBar'),consolePanel:$('#consolePanel'),consoleOutput:$('#consoleOutput'),
  modeLabel:$('#modeLabel'),lessonStatus:$('#lessonStatus'),levelLabel:$('#levelLabel'),moduleLabel:$('#moduleLabel'),passingScore:$('#passingScore'),
- courseTitle:$('#courseTitleLabel'),backToCourse:$('#backToCourse'),structuredPracticeTitle:$('#structuredPracticeTitle'),structuredPracticeIntro:$('#structuredPracticeIntro'),practiceRunner:$('#practiceRunner')
+ courseTitle:$('#courseTitleLabel'),backToCourse:$('#backToCourse'),structuredPracticeTitle:$('#structuredPracticeTitle'),structuredPracticeIntro:$('#structuredPracticeIntro'),practiceRunner:$('#practiceRunner'),lessonBanner:$('#lessonContextBanner'),lessonBannerSymbol:$('#lessonBannerSymbol'),lessonBannerCourse:$('#lessonBannerCourse'),lessonBannerLevel:$('#lessonBannerLevel'),lessonBannerTitle:$('#lessonBannerTitle'),lessonBannerMessage:$('#lessonBannerMessage')
 };
 
 function setProgress(p){const n=Math.max(0,Math.min(100,Math.round(p)));els.progressText.textContent=n+'%';els.progressBar.style.width=n+'%'}
+function lessonVisualProfile(){
+ const courseSlug=String(courseRow?.slug||requestedCourse||'').toLowerCase();
+ if(courseSlug.includes('digitacao'))return {key:'typing',symbol:'⌨',label:'Digitação & Produtividade'};
+ if(courseSlug.includes('excel'))return {key:'excel',symbol:'▦',label:'Excel na Prática'};
+ if(courseSlug.includes('word'))return {key:'word',symbol:'W',label:'Word na Prática'};
+ if(courseSlug.includes('powerpoint'))return {key:'powerpoint',symbol:'P',label:'PowerPoint na Prática'};
+ return {key:'programming',symbol:'</>',label:'Programação'};
+}
+
+function renderLessonBanner(){
+ if(!els.lessonBanner)return;
+ const visual=lessonVisualProfile();
+ els.lessonBanner.dataset.courseTheme=visual.key;
+ els.lessonBannerSymbol.textContent=visual.symbol;
+ els.lessonBannerCourse.textContent=visual.label;
+ els.lessonBannerLevel.textContent='Nível '+(moduleRow.position||'—')+' · Aula '+(lesson.position||'—');
+ els.lessonBannerTitle.textContent=lesson.title||'Aula OYAG Academy';
+ els.lessonBannerMessage.textContent=theory.objective||theory.summary||'Aprenda, pratique e comprove seu domínio nesta etapa.';
+}
+
 function renderTheory(){
  document.title=lesson.title+' | OYAG Academy';
  if(els.courseTitle)els.courseTitle.textContent=courseRow?.title||'OYAG Academy';
@@ -31,6 +51,7 @@ function renderTheory(){
  els.levelLabel.textContent=moduleRow.position+' — '+moduleRow.title;
  els.moduleLabel.textContent=moduleRow.description||'';
  els.passingScore.textContent=(lesson.passing_score||100)+'%';
+ renderLessonBanner();
  const concepts=Array.isArray(theory.concepts)?theory.concepts:[];
  els.concepts.innerHTML=concepts.length?concepts.map(c=>'<div><span>'+esc(c.term||'Conceito')+'</span><strong>'+esc(c.title||c.value||'')+'</strong><small>'+esc(c.explanation||'')+'</small></div>').join(''):'<div><span>Objetivo</span><strong>'+esc(theory.objective||'Compreender')+'</strong><small>Use a explicação e a atividade para consolidar esta etapa.</small></div>';
  const steps=Array.isArray(theory.steps)?theory.steps:[];
