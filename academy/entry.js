@@ -25,7 +25,16 @@
     }
   }catch(_){}
 
-  if(!validSlug(course))return;
+  if(!validSlug(course)){
+    if(action==='signup'){
+      location.replace('../login.html?mode=signup&next='+encodeURIComponent('/academy/'));
+      return;
+    }
+    if(action==='login'){
+      location.replace('../login.html?next='+encodeURIComponent('/academy/'));
+    }
+    return;
+  }
 
   const next='/academy/curso.html?course='+encodeURIComponent(course);
   if(action==='signup'){
