@@ -343,3 +343,36 @@ html[data-theme="dark"] .interactive-shell{background:var(--ui-bg)!important}
   background:transparent!important;border:0!important;border-radius:0!important;
   box-shadow:none!important;filter:drop-shadow(0 0 12px color-mix(in srgb,var(--ui-primary) 28%,transparent))
 }
+
+
+/* Academy course cards · aligned media/content/footer */
+.academy-home .catalog-grid{align-items:stretch}
+.academy-home .catalog-card{
+  padding:0!important;overflow:hidden;display:flex!important;flex-direction:column!important;min-height:100%;
+  border-radius:var(--ui-radius-lg)!important
+}
+.academy-home .catalog-card-media{
+  display:block;position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--ui-surface-2);
+  border-bottom:1px solid var(--ui-border)
+}
+.academy-home .catalog-card-media img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s ease}
+.academy-home .catalog-card:hover .catalog-card-media img{transform:scale(1.018)}
+.academy-home .catalog-card-content{display:flex;flex:1;flex-direction:column;padding:18px}
+.academy-home .catalog-card-content h3{
+  min-height:3.2rem;margin:9px 0 8px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden
+}
+.academy-home .catalog-card-content>p{
+  min-height:4.65rem;margin:0 0 16px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden
+}
+.academy-home .catalog-card-footer{margin-top:auto;display:grid;gap:10px}
+.academy-home .catalog-card-footer small{
+  min-height:2.15rem;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden
+}
+.academy-home .catalog-action{
+  margin-top:0!important;min-height:44px;width:100%;display:inline-flex!important;align-items:center;justify-content:center;
+  border-radius:12px;background:linear-gradient(135deg,var(--ui-primary),var(--ui-primary-2))!important;color:#fff!important;
+  padding:10px 14px;text-align:center
+}
+@media(max-width:900px){
+  .academy-home .catalog-card-content h3,.academy-home .catalog-card-content>p,.academy-home .catalog-card-footer small{min-height:0}
+}
