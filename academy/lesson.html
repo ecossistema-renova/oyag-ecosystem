@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://epbhiygonpkzlmbbsyqv.supabase.co wss://epbhiygonpkzlmbbsyqv.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' blob: data:;">
   <meta name="robots" content="noindex,nofollow">
   <title>Aula | OYAG Academy</title>
-  <link rel="stylesheet" href="./styles.css?v=academy-ui-v1-20260920-02">
+  <link rel="stylesheet" href="./styles.css?v=academy-ui-v1-20260921-01">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../config.production.js?v=prod-20260918-02"></script>
 <link rel="stylesheet" href="./shell.css?v=academy-ui-v1-20260920-02">
@@ -45,6 +45,19 @@
   <section class="classroom">
     <div id="loadingState" class="lesson-loading">Carregando aula…</div>
     <div id="lessonApp" hidden>
+      <section id="lessonContextBanner" class="lesson-context-banner" aria-label="Resumo visual da aula">
+        <div id="lessonBannerSymbol" class="lesson-banner-symbol" aria-hidden="true">OY</div>
+        <div class="lesson-banner-copy">
+          <div class="lesson-banner-meta">
+            <span id="lessonBannerCourse">OYAG Academy</span>
+            <span id="lessonBannerLevel">Aula</span>
+          </div>
+          <strong id="lessonBannerTitle">Preparando sua aula</strong>
+          <small id="lessonBannerMessage">Conteúdo, prática e domínio em uma única etapa.</small>
+        </div>
+        <div class="lesson-banner-brand"><span>OYAG</span><small>ACADEMY</small></div>
+      </section>
+
       <div class="hero">
         <div><p id="lessonEyebrow" class="eyebrow">Aula</p><h2 id="lessonTitle">—</h2><p id="lessonSummary">—</p></div>
         <div class="score"><span>Critério</span><strong id="passingScore">100%</strong><small>dos requisitos essenciais</small></div>
@@ -98,7 +111,7 @@
   </section>
 </main>
 
-<script src="./lesson.js?v=academy-practical-engine-20260920-01"></script>
+<script src="./lesson.js?v=academy-practical-engine-20260921-01"></script>
 <script src="../modules/registry.js?v=modules-v1-20260920-01"></script>\n<script src="./shell.js?v=academy-modules-20260920-01"></script>
 </body>
 </html>
