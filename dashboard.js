@@ -373,6 +373,44 @@ async function showInterface(){
  };
 }
 
+async function showAffiliateNetwork(){
+ C.innerHTML='<div class="loading">Carregando sua Rede OYAG…</div>';
+ const {data:joined,error:joinError}=await sb.rpc('oyag_join_affiliate_program',{p_recruiter_code:null});
+ if(joinError){C.innerHTML=statePanel('Não foi possível abrir o programa de afiliados',joinError.message);return}
+ const [{data:dash,error:dashError},{data:entries,error:entriesError}]=await Promise.all([
+  sb.rpc('oyag_my_affiliate_dashboard'),
+  sb.from('oyag_commission_entitlements').select('id,beneficiary_type,rate_bps,basis_amount_cents,amount_cents,currency,state,created_at').eq('beneficiary_user_id',session.user.id).order('created_at',{ascending:false}).limit(100)
+ ]);
+ if(dashError){C.innerHTML=statePanel('Não foi possível carregar seu painel',dashError.message);return}
+ const d=dash||joined||{},t=d.totals||{},items=entriesError?[]:(entries||[]);
+ const statusLabel={pending:'Aguardando aprovação',active:'Ativo',blocked:'Bloqueado',inactive:'Inativo'}[d.status]||d.status||'Pendente';
+ let approvals=[];
+ if(['owner','platform_admin'].includes(role)){
+  const {data}=await sb.from('oyag_affiliate_profiles').select('user_id,affiliate_code,status,pix_type,created_at').eq('status','pending').order('created_at').limit(100);
+  approvals=data||[];
+ }
+ C.innerHTML=
+ '<div class="affiliate-hero"><div><p class="eyebrow">CRESCIMENTO OYAG</p><h2>Afiliados & Recrutamento</h2><p>Compartilhe seu link, acompanhe conversões e consulte suas comissões com transparência.</p></div><span class="affiliate-status '+esc(d.status||'pending')+'">'+esc(statusLabel)+'</span></div>'+
+ cards([
+  ['Pendente',formatMoney(t.pending_cents||0),'aguardando liberação'],
+  ['Liberado',formatMoney(t.released_cents||0),'autorizado para pagamento'],
+  ['Pago',formatMoney(t.paid_cents||0),'histórico confirmado'],
+  ['Recrutados',Number(t.recruits||0),'um nível'],
+  ['Conversões',Number(t.conversions||0),'aquisições atribuídas']
+ ])+
+ '<div class="affiliate-layout"><div class="panel"><div class="panel-heading"><div><p class="eyebrow">SEU LINK</p><h2>Divulgue e acompanhe</h2></div></div><p class="muted">Afiliado: 25% • Recrutador: 5% em um nível • Atribuição: 30 dias.</p><label class="affiliate-field"><span>Link pessoal</span><input id="affiliateShareUrl" value="'+esc(d.share_url||joined?.share_url||'')+'" readonly></label><div class="affiliate-actions"><button class="catalog-primary" id="affiliateCopy">Copiar link</button><button class="button secondary" id="affiliateShare">Compartilhar</button></div></div>'+
+ '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">PAGAMENTO</p><h2>Chave PIX</h2></div><span class="affiliate-status '+(d.pix_configured?'active':'pending')+'">'+(d.pix_configured?'Configurada':'Pendente')+'</span></div><form id="affiliatePixForm" class="affiliate-form"><label class="affiliate-field"><span>Tipo</span><select id="affiliatePixType" required><option value="cpf">CPF</option><option value="cnpj">CNPJ</option><option value="email">E-mail</option><option value="phone">Telefone</option><option value="random">Chave aleatória</option></select></label><label class="affiliate-field"><span>Chave PIX</span><input id="affiliatePixKey" maxlength="180" required placeholder="Informe sua chave PIX"></label><button class="catalog-primary" type="submit">Salvar chave PIX</button></form></div></div>'+
+ '<div class="panel"><div class="panel-heading"><div><p class="eyebrow">COMISSÕES</p><h2>Histórico financeiro</h2></div></div>'+
+ (items.length?'<div class="table-wrap"><table><thead><tr><th>Origem</th><th>Base RELC</th><th>%</th><th>Comissão</th><th>Data</th><th>Status</th></tr></thead><tbody>'+items.map(x=>'<tr><td>'+(x.beneficiary_type==='recruiter'?'Recrutamento':'Aquisição')+'</td><td>'+formatMoney(x.basis_amount_cents)+'</td><td>'+(Number(x.rate_bps||0)/100).toFixed(0)+'%</td><td><strong>'+formatMoney(x.amount_cents)+'</strong></td><td>'+formatDate(x.created_at)+'</td><td>'+esc(x.state)+'</td></tr>').join('')+'</tbody></table></div>':statePanel('Nenhuma comissão registrada','As aquisições válidas aparecerão aqui.'))+'</div>'+
+ (['owner','platform_admin'].includes(role)?'<div class="panel"><div class="panel-heading"><div><p class="eyebrow">CONTA DONO</p><h2>Aprovações pendentes</h2></div><span>'+approvals.length+' pendente(s)</span></div>'+(approvals.length?'<div class="table-wrap"><table><thead><tr><th>Código</th><th>Cadastro</th><th>PIX</th><th>Ação</th></tr></thead><tbody>'+approvals.map(x=>'<tr><td><strong>'+esc(x.affiliate_code)+'</strong><br><small>'+esc(x.user_id)+'</small></td><td>'+formatDate(x.created_at)+'</td><td>'+esc(x.pix_type||'Não informado')+'</td><td><button class="catalog-primary" data-approve-affiliate="'+esc(x.user_id)+'">Aprovar</button></td></tr>').join('')+'</tbody></table></div>':statePanel('Nenhuma aprovação pendente','Novas solicitações aparecerão aqui.'))+'</div>':'');
+
+ const url=d.share_url||joined?.share_url||'';
+ C.querySelector('#affiliateCopy')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(url);alert('Link de afiliado copiado.')}catch{C.querySelector('#affiliateShareUrl')?.select()}});
+ C.querySelector('#affiliateShare')?.addEventListener('click',async()=>{if(navigator.share)try{await navigator.share({title:'OYAG Ecosystem',text:'Conheça as soluções OYAG:',url})}catch{}else try{await navigator.clipboard.writeText(url);alert('Link copiado para compartilhar.')}catch{}});
+ C.querySelector('#affiliatePixForm')?.addEventListener('submit',async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;b.textContent='Salvando…';const {error}=await sb.rpc('oyag_update_my_affiliate_payout',{p_pix_type:C.querySelector('#affiliatePixType').value,p_pix_key:C.querySelector('#affiliatePixKey').value.trim()});if(error){alert(error.message);b.disabled=false;b.textContent='Salvar chave PIX';return}alert('Chave PIX salva com segurança.');showAffiliateNetwork()});
+ C.querySelectorAll('[data-approve-affiliate]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;const {error}=await sb.rpc('oyag_set_affiliate_status',{p_user_id:b.dataset.approveAffiliate,p_status:'active',p_reason:'Aprovado pela Conta Dono'});if(error){alert(error.message);b.disabled=false;return}showAffiliateNetwork()}));
+}
+
 async function show(v){
  C.innerHTML='<div class="loading">Consultando dados do OYAG…</div>';
  const names={overview:'Início',companies:'Empresas',catalog:'Produtos e serviços',units:'Unidades',network:'Rede OYAG',leads:'Leads & Pipeline',performance:'Resultados',finance:'Financeiro',agenda:'Agenda',orders:'Pedidos e entregas',alerts:'Pendências',project:'Projetos',interface:'Interface & Tema',admin:'Configurações'};
@@ -387,7 +425,8 @@ async function show(v){
  if(v==='interface'){await showInterface();return}
  if(v==='admin'){await showAdmin();return}
  if(v==='overview'){await overview();return}
- const map={companies:'organizations',units:'oyag_owner_unit_overview',network:'oyag_affiliate_memberships',alerts:'oyag_operational_alerts'};
+ if(v==='network'){await showAffiliateNetwork();return}
+ const map={companies:'organizations',units:'oyag_owner_unit_overview',alerts:'oyag_operational_alerts'};
  const table=map[v];
  if(!table){C.innerHTML=statePanel('Área disponível','Os dados desta área estão sendo preparados.');return}
  const {data,error}=await sb.from(table).select('*').limit(50);
