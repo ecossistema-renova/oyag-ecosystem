@@ -12,6 +12,35 @@ let items=[],buying=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const money=(c,cur)=>c==null?'Consulte':new Intl.NumberFormat('pt-BR',{style:'currency',currency:cur||'BRL'}).format(Number(c)/100);
 
+const ACADEMY_PUBLIC='https://academy.cledemilsonoliveira.com/';
+function academyCourseFromItem(item){
+  if(!item)return '';
+  try{
+    if(item.destination_url){
+      const u=new URL(item.destination_url,location.origin);
+      if(u.pathname.endsWith('/academy/curso.html')||u.pathname.endsWith('/curso.html')){
+        const slug=u.searchParams.get('course')||'';
+        if(/^[a-z0-9][a-z0-9-]{1,99}$/.test(slug))return slug;
+      }
+    }
+  }catch(_){}
+  return '';
+}
+function enterAcademy(item,action=''){
+  const course=academyCourseFromItem(item);
+  try{
+    if(course){
+      localStorage.setItem('oyag-academy-public-entry',JSON.stringify({
+        course,
+        action:action||'',
+        created_at:Date.now()
+      }));
+    }
+  }catch(_){}
+  location.assign(ACADEMY_PUBLIC);
+}
+
+
 const UFS=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 UFS.forEach(uf=>stateEl?.insertAdjacentHTML('beforeend','<option value="'+uf+'">'+uf+'</option>'));
 try{
@@ -139,18 +168,21 @@ async function startBuy(itemId){
  if(buying)return;
  const item=items.find(x=>x.id===itemId);
  if(!item){statusEl.textContent='Este produto não está disponível agora.';return}
+ const academyCourse=academyCourseFromItem(item);
+ if(academyCourse){
+   enterAcademy(item);
+   return
+ }
+ if(item.category==='OYAG Academy'){
+   enterAcademy(item);
+   return
+ }
  if(item.destination_url){
    const {data:{session}}=await sb.auth.getSession();
    const target=item.destination_url;
    if(session){location.assign(target);return}
    const next=target.startsWith('./')?'/'+target.slice(2):target;
    location.assign('./login.html?mode=signup&next='+encodeURIComponent(next));
-   return
- }
- if(item.category==='OYAG Academy'){
-   const {data:{session}}=await sb.auth.getSession();
-   if(session){location.assign('./academy/');return}
-   location.assign('./login.html?mode=signup&next='+encodeURIComponent('/academy/'));
    return
  }
  await openLeadModal(itemId);
