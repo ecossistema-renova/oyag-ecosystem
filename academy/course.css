@@ -1,0 +1,20 @@
+/* OYAG Academy · Course layout (colors come from OYAG UI System) */
+.course-shell{min-height:100vh;background:var(--ui-bg);color:var(--ui-text)}
+.course-wrap{max-width:1280px;margin:auto;padding:28px 22px 60px}
+.course-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:22px}
+.course-head h1{margin:4px 0 0;font-size:clamp(1.8rem,4vw,3rem)}
+.owner-preview{display:none;padding:10px 14px;border-radius:12px;background:color-mix(in srgb,var(--ui-warning) 14%,var(--ui-surface));color:var(--ui-text-strong);border:1px solid var(--ui-border);font-weight:800}.owner-preview.show{display:block}
+.course-grid{display:grid;grid-template-columns:380px 1fr;gap:18px}
+.level-list,.lesson-preview{background:var(--ui-surface);border:1px solid var(--ui-border);border-radius:20px;padding:18px}
+.level-list{display:grid;gap:12px;align-content:start}
+.level-card-row{border:1px solid var(--ui-border);border-radius:16px;padding:15px;background:var(--ui-surface)}
+.level-card-row.locked{background:var(--ui-surface-2)}
+.level-card-row h2{font-size:1rem;margin:4px 0 6px}.level-card-row p{margin:0 0 10px;font-size:.9rem;line-height:1.45}
+.level-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-size:.72rem;font-weight:800;border-radius:999px;padding:5px 9px}
+.lesson-buttons{display:grid;gap:7px}.lesson-buttons button{width:100%;text-align:left;border:1px solid var(--ui-border);border-radius:10px;background:var(--ui-surface);padding:10px 11px;color:var(--ui-text)}
+.locked-note{padding:10px;border-radius:10px;font-size:.86rem}.preview-empty{display:grid;place-items:center;min-height:420px;text-align:center}
+.preview-body h2{margin-top:4px}.preview-body dl{display:grid;gap:12px}.preview-body dt{font-weight:800}.preview-body dd{margin:3px 0 0;line-height:1.55}
+.method{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.method span{padding:7px 10px;border-radius:999px;font-weight:800}
+.preview-footer{margin-top:22px;padding-top:18px;border-top:1px solid var(--ui-border)}.preview-footer a{display:inline-block;text-decoration:none}
+@media(max-width:900px){.course-grid{grid-template-columns:1fr}.course-head{display:block}.owner-preview{margin-top:12px}}
