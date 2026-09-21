@@ -101,9 +101,11 @@ async function recordProgress(score=0,theoryConfirmed=false){
 function renderQuiz(){
  const items=Array.isArray(theory.quiz)?theory.quiz:[];
  if(!items.length){
-   els.quiz.innerHTML='<div class="checkpoint-status complete">Checkpoint orientado: revise o objetivo e o critério de domínio ✓</div>';
-   els.checkpointStatus.hidden=true;quizPassed.add('auto');unlockLab();setProgress(isMastered?100:35);
-   if(!currentProgress?.theory_confirmed_at&&!isMastered)recordProgress(0,true).catch(()=>{});
+   els.quiz.innerHTML='<div class="checkpoint-status complete">Checkpoint orientado concluído ✓</div>';
+   els.checkpointStatus.hidden=true;quizPassed.add('auto');setProgress(isMastered?100:35);
+   if(practiceRequiresCheckpoint())unlockLab();
+   if(!currentProgress?.theory_confirmed_at&&!isMastered)recordProgress(0,true).catch(error=>console.error('ACADEMY_THEORY_PROGRESS',error));
+   syncCompletionAction();
    return
  }
  els.quiz.innerHTML=items.map((item,i)=>'<fieldset class="question" data-q="'+i+'"><legend>'+(i+1)+'. '+esc(item.question)+'</legend><div class="answer-grid">'+(item.options||[]).map((o,j)=>'<button type="button" data-option="'+j+'">'+esc(o)+'</button>').join('')+'</div><p class="question-feedback" aria-live="polite"></p></fieldset>').join('');
@@ -111,17 +113,18 @@ function renderQuiz(){
  els.quiz.querySelectorAll('.question').forEach(fs=>{
   fs.querySelectorAll('button').forEach(btn=>{
    btn.onclick=async()=>{
-  const i=Number(fs.dataset.q),j=Number(btn.dataset.option),item=items[i],feedback=fs.querySelector('.question-feedback');
-  fs.querySelectorAll('button').forEach(b=>b.classList.remove('correct','incorrect'));
-  if(j===Number(item.correct)){btn.classList.add('correct');quizPassed.add(i);feedback.className='question-feedback ok';feedback.textContent=item.success||'Correto! Conceito confirmado.'}
-  else{btn.classList.add('incorrect');feedback.className='question-feedback try';feedback.textContent=item.retry||'Ainda não. Revise a explicação e tente novamente.'}
-  els.checkpointStatus.textContent=quizPassed.size+' de '+items.length+' conceitos confirmados';
-  if(quizPassed.size===items.length){
-    els.checkpointStatus.classList.add('complete');
-    els.checkpointStatus.textContent='Teoria compreendida! Prática liberada ✓';
-    unlockLab();
-    await recordProgress(0,true);
-  }
+    const i=Number(fs.dataset.q),j=Number(btn.dataset.option),item=items[i],feedback=fs.querySelector('.question-feedback');
+    fs.querySelectorAll('button').forEach(b=>b.classList.remove('correct','incorrect'));
+    if(j===Number(item.correct)){btn.classList.add('correct');quizPassed.add(i);feedback.className='question-feedback ok';feedback.textContent=item.success||'Correto! Conceito confirmado.'}
+    else{btn.classList.add('incorrect');feedback.className='question-feedback try';feedback.textContent=item.retry||'Ainda não. Revise a explicação e tente novamente.'}
+    els.checkpointStatus.textContent=quizPassed.size+' de '+items.length+' conceitos confirmados';
+    if(quizPassed.size===items.length){
+      els.checkpointStatus.classList.add('complete');
+      els.checkpointStatus.textContent='Checkpoint concluído ✓';
+      if(practiceRequiresCheckpoint())unlockLab();
+      await recordProgress(0,true);
+      syncCompletionAction();
+    }
     updateProgress();
    };
   });
@@ -145,28 +148,153 @@ function editDistance(a,b){
  for(let i=1;i<=a.length;i++){cur[0]=i;for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));for(let j=0;j<=b.length;j++)prev[j]=cur[j]}
  return prev[b.length];
 }
+function practiceRequiresCheckpoint(){
+ const tests=theory.evaluator?.tests||[];
+ return Boolean(tests.length&&starter);
+}
+function theoryIsConfirmed(){
+ const items=Array.isArray(theory.quiz)?theory.quiz:[];
+ return Boolean(
+   currentProgress?.theory_confirmed_at
+   || !items.length
+   || quizPassed.size===items.length
+ );
+}
+function syncCompletionAction(){
+ if(!els.next)return;
+ if(isMastered){
+   els.next.disabled=false;
+   els.next.classList.add('unlocked');
+   els.next.textContent='Aula concluída ✓ Voltar à trilha';
+   return;
+ }
+ const ready=practicePassed&&theoryIsConfirmed();
+ els.next.disabled=!ready;
+ els.next.classList.toggle('unlocked',ready);
+ els.next.textContent=ready
+   ?'Concluir aula e registrar domínio'
+   :practicePassed
+     ?'Prática concluída · finalize o checkpoint'
+     :'Conclua a prática para avançar';
+}
 function setPracticePassed(message){
  practicePassed=true;
  const req=els.requirements?.querySelector('[data-practice-req]');if(req)req.classList.add('done');
- if(!isMastered){
-   els.next.disabled=false;els.next.classList.add('unlocked');els.next.textContent='Concluir aula e registrar domínio';
-   setProgress(Math.max(90,Number(currentProgress?.best_score||0)));
- }
  const status=els.practiceRunner?.querySelector('[data-practice-status]');
  if(status){status.className='practice-status success';status.textContent=message||'Prática validada ✓'}
+ syncCompletionAction();
  updateProgress();
 }
+function normalizeSpreadsheetFormula(value){
+ let formula=String(value||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+ formula=formula.replace(/\s+/g,'').replace(/;/g,',');
+ formula=formula.replace(/CONT\.SE\(/g,'COUNTIF(');
+ formula=formula.replace(/SOMASE\(/g,'SUMIF(');
+ formula=formula.replace(/MEDIA\(/g,'AVERAGE(');
+ formula=formula.replace(/SOMA\(/g,'SUM(');
+ formula=formula.replace(/MAXIMO\(/g,'MAX(');
+ formula=formula.replace(/MINIMO\(/g,'MIN(');
+ formula=formula.replace(/SE\(/g,'IF(');
+ return formula;
+}
+
+function renderSpreadsheetPractice(cfg){
+ const headers=Array.isArray(cfg.headers)&&cfg.headers.length?cfg.headers:['A','B','C','D'];
+ const rows=Array.isArray(cfg.rows)?cfg.rows:[];
+ const targetCell=String(cfg.target_cell||'D2').toUpperCase();
+ const accepted=(Array.isArray(cfg.accepted_formulas)?cfg.accepted_formulas:[cfg.expected_formula]).filter(Boolean).map(normalizeSpreadsheetFormula);
+ const task=String(cfg.task||'Digite a fórmula correta para preencher a célula destacada.');
+ const hint=String(cfg.hint||'Observe os endereços das células e monte a fórmula a partir dos dados da tabela.');
+ const expectedDisplay=String(cfg.expected_display??'✓');
+ const letters=headers.map((_,i)=>String.fromCharCode(65+i));
+
+ let table='<div class="sheet-grid-wrap"><table class="sheet-grid"><thead><tr><th class="sheet-corner"></th>'+
+   letters.map(letter=>'<th>'+esc(letter)+'</th>').join('')+
+   '</tr></thead><tbody>';
+
+ table+='<tr><th>1</th>'+headers.map((h,i)=>{
+   const address=letters[i]+'1';
+   const target=address===targetCell;
+   return '<td class="sheet-header-cell'+(target?' sheet-target-cell':'')+'" data-cell="'+esc(address)+'">'+
+     (target?'<span data-sheet-target>?</span>':esc(h))+
+   '</td>';
+ }).join('')+'</tr>';
+
+ rows.forEach((row,rowIndex)=>{
+   const rowNumber=rowIndex+2;
+   table+='<tr><th>'+rowNumber+'</th>';
+   headers.forEach((_,colIndex)=>{
+     const address=letters[colIndex]+rowNumber;
+     const value=Array.isArray(row)?row[colIndex]:'';
+     const target=address===targetCell;
+     table+='<td class="'+(target?'sheet-target-cell':'')+'" data-cell="'+esc(address)+'">'+
+       (target?'<span data-sheet-target>?</span>':esc(value??''))+
+     '</td>';
+   });
+   table+='</tr>';
+ });
+ table+='</tbody></table></div>';
+
+ els.practiceRunner.innerHTML=
+   '<div class="sheet-practice">'+
+     '<div class="sheet-task"><span>DESAFIO NA PLANILHA</span><strong>'+esc(task)+'</strong><small>Use a fórmula como faria no Excel. A validação considera variações equivalentes configuradas para esta atividade.</small></div>'+
+     '<div class="sheet-formula-bar"><span class="sheet-cell-name">'+esc(targetCell)+'</span><span class="sheet-fx">fx</span><input id="sheetFormulaInput" type="text" autocomplete="off" spellcheck="false" placeholder="'+esc(cfg.formula_placeholder||'=SOMA(A1:A3)')+'"></div>'+
+     table+
+     '<div class="practice-actions"><button type="button" class="primary" id="validateSheetFormula">Validar fórmula</button><button type="button" class="secondary" id="showSheetHint">Ver dica</button></div>'+
+     '<p class="practice-status" data-practice-status>Digite a fórmula na barra acima e valide.</p>'+
+   '</div>';
+
+ const input=els.practiceRunner.querySelector('#sheetFormulaInput');
+ const status=els.practiceRunner.querySelector('[data-practice-status]');
+ const target=els.practiceRunner.querySelector('[data-sheet-target]');
+ const validate=()=>{
+   const formula=normalizeSpreadsheetFormula(input.value);
+   if(!formula.startsWith('=')){
+     status.className='practice-status error';
+     status.textContent='No Excel, uma fórmula começa com =. Tente novamente.';
+     return;
+   }
+   if(accepted.includes(formula)){
+     if(target){target.textContent=expectedDisplay;target.closest('td')?.classList.add('sheet-target-success')}
+     input.classList.add('sheet-formula-correct');
+     setPracticePassed('Fórmula correta em '+targetCell+' ✓');
+   }else{
+     input.classList.remove('sheet-formula-correct');
+     status.className='practice-status error';
+     status.textContent='A fórmula ainda não corresponde ao cálculo solicitado. Confira as células usadas e tente novamente.';
+   }
+ };
+ els.practiceRunner.querySelector('#validateSheetFormula').onclick=validate;
+ els.practiceRunner.querySelector('#showSheetHint').onclick=()=>{
+   status.className='practice-status';
+   status.textContent='Dica: '+hint;
+   input.focus();
+ };
+ input.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();validate()}});
+}
+
 function renderPracticeRunner(){
  els.interactiveLab.hidden=true;
  els.structuredPractice.hidden=false;
  const mode=theory.practice_mode||'structured',cfg=theory.practice_config||{};
- if(els.structuredPracticeTitle)els.structuredPracticeTitle.textContent=mode==='typing'?'Desafio de digitação':mode==='shortcut'?'Desafio de atalho':'Prática na ferramenta';
- if(els.structuredPracticeIntro)els.structuredPracticeIntro.textContent=mode==='typing'?'Digite o texto sem colar e alcance os critérios mínimos.':mode==='shortcut'?'Ative a captura e execute a combinação solicitada.':'Execute a tarefa na ferramenta indicada e valide seu próprio resultado com o checklist.';
+ if(els.structuredPracticeTitle)els.structuredPracticeTitle.textContent=
+   mode==='typing'?'Treino de digitação':
+   mode==='shortcut'?'Desafio de atalho':
+   mode==='spreadsheet_formula'?'Laboratório de planilha':
+   'Prática na ferramenta';
+ if(els.structuredPracticeIntro)els.structuredPracticeIntro.textContent=
+   mode==='typing'?'Digite, meça precisão e velocidade e repita até alcançar o critério.':
+   mode==='shortcut'?'Execute a combinação solicitada e deixe a Academy reconhecer o atalho.':
+   mode==='spreadsheet_formula'?'Leia os dados, monte a fórmula e valide diretamente na mini-planilha.':
+   'Execute a tarefa na ferramenta indicada e valide seu resultado.';
  if(isMastered){practicePassed=true}
- if(mode==='typing'){
+ if(mode==='spreadsheet_formula'){
+   renderSpreadsheetPractice(cfg);
+ }else if(mode==='typing'){
    const target=String(cfg.target_text||theory.practice||'Pratique com atenção e precisão.');
    const minAccuracy=Number(cfg.min_accuracy||90),targetWpm=Number(cfg.target_wpm||15);
-   els.practiceRunner.innerHTML='<div class="typing-target"><small>Texto-alvo</small><p>'+esc(target)+'</p></div><div class="practice-metrics"><span>Meta: <strong>'+esc(targetWpm)+' PPM</strong></span><span>Precisão: <strong>'+esc(minAccuracy)+'%</strong></span></div><label for="typingInput">Digite aqui</label><textarea id="typingInput" class="typing-input" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><div class="practice-actions"><button type="button" class="primary" id="validateTyping">Avaliar digitação</button></div><p class="practice-status" data-practice-status>Comece a digitar para iniciar a medição.</p>';
+   const focus=String(cfg.focus||'Precisão, ritmo e postura.');
+   els.practiceRunner.innerHTML='<div class="typing-coach"><span>FOCO DESTA AULA</span><strong>'+esc(focus)+'</strong></div><div class="typing-target"><small>Texto-alvo</small><p>'+esc(target)+'</p></div><div class="practice-metrics"><span>Meta: <strong>'+esc(targetWpm)+' PPM</strong></span><span>Precisão: <strong>'+esc(minAccuracy)+'%</strong></span></div><label for="typingInput">Digite aqui</label><textarea id="typingInput" class="typing-input" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><div class="practice-actions"><button type="button" class="primary" id="validateTyping">Avaliar digitação</button></div><p class="practice-status" data-practice-status>Comece a digitar para iniciar a medição.</p>';
    const input=els.practiceRunner.querySelector('#typingInput');
    input.addEventListener('paste',e=>{e.preventDefault();const s=els.practiceRunner.querySelector('[data-practice-status]');s.className='practice-status error';s.textContent='Colar está desativado nesta prática.'});
    input.addEventListener('input',()=>{if(!practiceStartedAt)practiceStartedAt=Date.now()},{once:true});
@@ -212,7 +340,6 @@ function renderPracticeRunner(){
    els.next.textContent='Aula concluída ✓ Voltar à trilha';
  }
 }
-
 function renderRequirements(){
  const tests=theory.evaluator?.tests||[];
  if(!tests.length){
@@ -507,6 +634,8 @@ async function init(){
  isMastered=currentProgress?.status==='mastered'||Number(currentProgress?.best_score||0)>=Number(lesson.passing_score||100);
  els.lessonStatus.textContent=isMastered?'Aula concluída':isOwner?'Prévia completa':'Em estudo';
  renderTheory();renderQuiz();renderRequirements();applyExistingProgress();
+ if(!practiceRequiresCheckpoint())unlockLab();
+ syncCompletionAction();
  els.loading.hidden=true;els.app.hidden=false;
  document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>document.querySelector('#'+b.dataset.scroll)?.scrollIntoView({behavior:'smooth',block:'start'}));
  els.run.onclick=runLab;
@@ -518,6 +647,7 @@ async function init(){
    const tests=theory.evaluator?.tests||[];
    if(tests.length)return;
    if(!practicePassed){els.feedback.className='feedback error';els.feedback.innerHTML='<strong>Prática ainda não validada.</strong><span>Conclua o exercício prático antes de registrar domínio.</span>';return}
+   if(!theoryIsConfirmed()){els.feedback.className='feedback error';els.feedback.innerHTML='<strong>Falta o checkpoint.</strong><span>Agora que você praticou, confirme o conceito principal para concluir a aula.</span>';return}
    els.next.disabled=true;els.next.textContent='Salvando progresso…';
    const saved=await recordProgress(100,true);
    if(saved){location.href=courseUrl;return}

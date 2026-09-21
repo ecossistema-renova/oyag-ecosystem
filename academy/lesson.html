@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://epbhiygonpkzlmbbsyqv.supabase.co wss://epbhiygonpkzlmbbsyqv.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' blob: data:;">
   <meta name="robots" content="noindex,nofollow">
   <title>Aula | OYAG Academy</title>
-  <link rel="stylesheet" href="./styles.css?v=academy-ui-v1-20260921-01">
+  <link rel="stylesheet" href="./styles.css?v=academy-ui-v1-20260921-02">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../config.production.js?v=prod-20260918-02"></script>
 <link rel="stylesheet" href="./shell.css?v=academy-ui-v1-20260920-02">
@@ -34,8 +34,8 @@
 
     <nav id="lessonPhases" class="phases" aria-label="Fases da aula">
       <button class="phase active" data-scroll="theorySection"><span>1</span><div><strong>Entender</strong><small>Conceitos e exemplos</small></div></button>
-      <button class="phase" data-scroll="checkpointSection"><span>2</span><div><strong>Validar</strong><small>Checkpoint de teoria</small></div></button>
-      <button class="phase" data-scroll="labSection"><span>3</span><div><strong>Praticar</strong><small>Laboratório</small></div></button>
+      <button class="phase" data-scroll="labSection"><span>2</span><div><strong>Praticar</strong><small>Exercício interativo</small></div></button>
+      <button class="phase" data-scroll="checkpointSection"><span>3</span><div><strong>Validar</strong><small>Checkpoint curto</small></div></button>
       <button class="phase" data-scroll="requirementsSection"><span>4</span><div><strong>Comprovar</strong><small>Critérios de domínio</small></div></button>
     </nav>
 
@@ -75,13 +75,6 @@
         </section>
       </article>
 
-      <section id="checkpointSection" class="checkpoint" aria-labelledby="checkpointTitle">
-        <p class="eyebrow">Validar</p><h4 id="checkpointTitle">Confirme o que você entendeu</h4>
-        <p>Responda ao checkpoint para liberar a prática quando a aula tiver laboratório interativo.</p>
-        <div id="quizContainer"></div>
-        <div id="checkpointStatus" class="checkpoint-status">Preparando checkpoint…</div>
-      </section>
-
       <article id="labSection" class="lab card">
         <div class="card-title"><span class="icon code">&lt;/&gt;</span><div><p class="eyebrow">Praticar</p><h3>Laboratório da aula</h3></div></div>
         <p id="practiceText"></p>
@@ -101,6 +94,13 @@
         </div>
       </article>
 
+      <section id="checkpointSection" class="checkpoint" aria-labelledby="checkpointTitle">
+        <p class="eyebrow">Validar</p><h4 id="checkpointTitle">Confirme o que você entendeu</h4>
+        <p>Depois de praticar, responda a este checkpoint curto para confirmar o conceito principal.</p>
+        <div id="quizContainer"></div>
+        <div id="checkpointStatus" class="checkpoint-status">Preparando checkpoint…</div>
+      </section>
+
       <article id="requirementsSection" class="requirements card">
         <div class="card-title"><span class="icon">✓</span><div><p class="eyebrow">Comprovar domínio</p><h3>Critérios da aula</h3></div></div>
         <ul id="requirementsList"></ul>
@@ -111,7 +111,7 @@
   </section>
 </main>
 
-<script src="./lesson.js?v=academy-practical-engine-20260921-01"></script>
+<script src="./lesson.js?v=academy-practical-engine-20260921-02"></script>
 <script src="../modules/registry.js?v=modules-v1-20260920-01"></script>\n<script src="./shell.js?v=academy-modules-20260920-01"></script>
 </body>
 </html>
