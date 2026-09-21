@@ -502,3 +502,19 @@ html[data-theme="light"] .auth-card .msg.ok{background:#e7f9f4;color:#08745e;bor
 .pipeline-status{display:inline-flex;align-items:center;padding:6px 9px;border:1px solid var(--line);border-radius:999px;font-size:.7rem;font-weight:850;white-space:nowrap}.pipeline-status.paid{color:#32d583;background:rgba(50,213,131,.1);border-color:rgba(50,213,131,.25)}.pipeline-status.released{color:#4eb8ff;background:rgba(78,184,255,.1);border-color:rgba(78,184,255,.25)}.pipeline-status.pending{color:#f5ad42;background:rgba(245,173,66,.1);border-color:rgba(245,173,66,.25)}.pipeline-status.overdue,.pipeline-status.cancelled{color:#ff7373;background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.25)}
 .pipeline-deadline{font-size:.75rem;font-weight:750;color:var(--muted);white-space:nowrap}.pipeline-deadline.overdue{color:#ff7373}.pipeline-pay-action{min-height:36px;padding:0 11px;font-size:.7rem;white-space:nowrap}.pipeline-no-action{color:var(--muted)}
 @media(max-width:800px){.asaas-referral-card{grid-template-columns:auto 1fr}.asaas-referral-action{grid-column:1/-1;width:100%}.pipeline-panel .panel-heading{display:grid;gap:10px}}
+
+/* Cadastro: convite opcional para conta Asaas */
+.asaas-signup{margin:16px 0;padding:14px;border:1px solid rgba(38,214,196,.28);border-radius:14px;background:linear-gradient(135deg,rgba(38,214,196,.1),rgba(46,167,255,.08))}.asaas-signup[hidden]{display:none}.asaas-signup span{display:block;color:var(--cyan);font-size:.65rem;font-weight:900;letter-spacing:.1em}.asaas-signup strong{display:block;margin:6px 0;color:#fff;font-size:.88rem;line-height:1.35}.asaas-signup p{margin:0 0 10px;color:var(--muted);font-size:.75rem;line-height:1.45}.asaas-signup a{display:inline-flex;color:#6fe8d8;font-size:.78rem;font-weight:900;text-decoration:none}.asaas-signup a:hover{text-decoration:underline}
+.asaas-welcome-modal{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px}.asaas-welcome-backdrop{position:absolute;inset:0;background:rgba(1,7,15,.82);backdrop-filter:blur(8px)}.asaas-welcome-card{position:relative;z-index:1;width:min(470px,94vw);padding:30px;border:1px solid rgba(38,214,196,.3);border-radius:22px;background:radial-gradient(circle at 100% 0,rgba(38,214,196,.17),transparent 34%),linear-gradient(145deg,#0b2336,#04101d);color:#fff;box-shadow:0 28px 80px rgba(0,0,0,.55)}.asaas-welcome-card>span{color:#67e7d4;font-size:.68rem;font-weight:900;letter-spacing:.12em}.asaas-welcome-card h2{margin:9px 0 10px;font-size:1.35rem;line-height:1.25}.asaas-welcome-card p{margin:0 0 20px;color:#bed1dc;font-size:.85rem;line-height:1.55}.asaas-welcome-card>a{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:12px;background:linear-gradient(100deg,#0aaea0,#2688ff);color:#fff;text-decoration:none;font-size:.84rem;font-weight:900}.asaas-welcome-close{position:absolute;top:12px;right:14px;border:0;background:transparent;color:#bcd0da;font-size:1.5rem;cursor:pointer}.asaas-welcome-later{display:block;margin:12px auto 0;border:0;background:transparent;color:#a8bdc8;font-size:.76rem;font-weight:800;cursor:pointer}
+html[data-theme="light"] .asaas-signup strong{color:#102535}
+
+/* Painel: navegação fixa e rolagem somente no conteúdo */
+@media(min-width:801px){
+ .shell{height:100vh;min-height:0;overflow:hidden}
+ .shell>aside{height:100vh;overflow-y:auto;overscroll-behavior:contain}
+ .shell>.workspace{height:100vh;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+}
+@media(max-width:800px){
+ .shell{height:auto;min-height:100vh;overflow:visible}
+ .shell>aside,.shell>.workspace{height:auto;overflow:visible}
+}
