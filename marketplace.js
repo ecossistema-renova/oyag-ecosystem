@@ -29,7 +29,7 @@ function academyCourseFromItem(item){
 function enterAcademy(item,action=''){
   const course=academyCourseFromItem(item);
   try{
-    if(course){
+    if(course||action){
       localStorage.setItem('oyag-academy-public-entry',JSON.stringify({
         course,
         action:action||'',
@@ -170,11 +170,13 @@ async function startBuy(itemId){
  if(!item){statusEl.textContent='Este produto não está disponível agora.';return}
  const academyCourse=academyCourseFromItem(item);
  if(academyCourse){
-   enterAcademy(item);
+   const {data:{session}}=await sb.auth.getSession();
+   enterAcademy(item,session?'':'signup');
    return
  }
  if(item.category==='OYAG Academy'){
-   enterAcademy(item);
+   const {data:{session}}=await sb.auth.getSession();
+   enterAcademy(item,session?'':'signup');
    return
  }
  if(item.destination_url){
