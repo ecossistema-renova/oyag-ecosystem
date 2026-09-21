@@ -27,3 +27,28 @@
 .academy-links p{margin:6px 0 0;line-height:1.5}.academy-links .academy-actions{margin:0}
 @media(max-width:900px){.academy-hero,.featured-course{grid-template-columns:1fr}.academy-flow{grid-template-columns:1fr 1fr}.catalog-grid{grid-template-columns:1fr 1fr}.academy-links{display:block}.academy-links .academy-actions{margin-top:18px}}
 @media(max-width:620px){.academy-landing{padding:46px 17px 64px}.academy-flow,.catalog-grid{grid-template-columns:1fr}.academy-nav{gap:6px}.academy-nav a{font-size:.84rem}}
+
+
+/* Academy licensed visual layer · Pexels */
+.academy-hero{position:relative;isolation:isolate;padding:34px;border-radius:28px;overflow:hidden;border:1px solid var(--ui-border);box-shadow:var(--ui-shadow-md)}
+.academy-hero:before{content:"";position:absolute;inset:0;z-index:-2;background-image:url("https://images.pexels.com/photos/34804003/pexels-photo-34804003/free-photo-of-modern-workspace-with-laptop-and-code-display.jpeg?auto=compress&dpr=1&w=1600");background-size:cover;background-position:center 48%}
+.academy-hero:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(3,12,22,.96) 0%,rgba(5,21,35,.9) 48%,rgba(5,23,37,.66) 100%)}
+.academy-hero h1{color:#fff!important;text-shadow:0 2px 20px rgba(0,0,0,.4)}
+.academy-hero .lead{color:#d7e8f2!important}
+.academy-definition{background:rgba(5,20,33,.76)!important;color:#f3f8fc!important;border-color:rgba(255,255,255,.16)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.academy-definition p{color:#cfe0ea!important}
+.academy-definition span{background:rgba(92,238,216,.15);color:#8ff0e0}
+
+.featured-course{position:relative;isolation:isolate;overflow:hidden;border:1px solid var(--ui-border);box-shadow:var(--ui-shadow-md)}
+.featured-course:before{content:"";position:absolute;inset:0;z-index:-2;background-image:url("https://images.pexels.com/photos/4439901/pexels-photo-4439901.jpeg?auto=compress&dpr=1&w=1200");background-size:cover;background-position:center}
+.featured-course:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(5,25,40,.97) 0%,rgba(6,38,54,.94) 57%,rgba(4,23,35,.78) 100%)}
+.featured-course,.featured-course h3,.featured-course li{color:#f6fbff!important}
+.featured-course p{color:#d5e6ef!important}
+.course-status{background:rgba(4,18,29,.82)!important;color:#f5fbff!important;border:1px solid rgba(255,255,255,.14)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.course-status p{color:#c9dbe5!important}
+.course-status strong{color:#7ef0b4!important}
+
+@media(max-width:700px){
+  .academy-hero{padding:24px 18px}
+  .academy-hero:after{background:linear-gradient(180deg,rgba(3,12,22,.96),rgba(5,22,36,.84))}
+}
