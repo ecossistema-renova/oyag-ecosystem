@@ -143,3 +143,24 @@ html[data-theme="dark"]{color-scheme:dark}
 html[data-theme="dark"] .market,
 html[data-theme="light"] .market{background:transparent!important}
 @media(max-width:600px){.market{padding:28px 14px 74px!important}}
+
+
+/* Marketplace badge contrast fix */
+.market-card .market-badges{
+  display:flex!important;flex-wrap:wrap!important;gap:6px!important;align-items:flex-start!important;
+  padding-right:88px!important
+}
+.market-card .market-badge{
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.28)!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.35)!important;
+  font-weight:950!important;
+  letter-spacing:.01em!important
+}
+.market-card .market-badge.featured{background:#0b67d8!important}
+.market-card .market-badge.promo{background:#b91f43!important}
+.market-card .market-badge.free{background:#08745f!important}
+@media(max-width:520px){
+  .market-card .market-badges{padding-right:74px!important;gap:5px!important}
+  .market-card .market-badge{font-size:.62rem!important;padding:5px 8px!important}
+}
