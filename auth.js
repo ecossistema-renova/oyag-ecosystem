@@ -22,8 +22,8 @@ function safeNext(){
  }catch{return './dashboard.html'}
 }
 const afterAuth=safeNext();
-const f=document.querySelector('#authForm'),t=document.querySelector('#title'),s=document.querySelector('#submit'),toggle=document.querySelector('#toggle'),msg=document.querySelector('#msg'),signupFields=document.querySelector('#signupFields'),consents=document.querySelector('#consents'),password=document.querySelector('#password'),togglePassword=document.querySelector('#togglePassword'),forgot=document.querySelector('#forgotPassword');
-function render(){t.textContent=signup?'Criar conta':'Entrar';s.textContent=signup?'Criar conta':'Entrar';toggle.textContent=signup?'Já tenho conta':'Ainda não tenho conta';signupFields.hidden=!signup;consents.hidden=!signup;forgot.hidden=signup;password.autocomplete=signup?'new-password':'current-password'}
+const f=document.querySelector('#authForm'),t=document.querySelector('#title'),s=document.querySelector('#submit'),toggle=document.querySelector('#toggle'),msg=document.querySelector('#msg'),signupFields=document.querySelector('#signupFields'),consents=document.querySelector('#consents'),password=document.querySelector('#password'),togglePassword=document.querySelector('#togglePassword'),forgot=document.querySelector('#forgotPassword'),asaasSignup=document.querySelector('#asaasSignup');
+function render(){t.textContent=signup?'Criar conta':'Entrar';s.textContent=signup?'Criar conta':'Entrar';toggle.textContent=signup?'Já tenho conta':'Ainda não tenho conta';signupFields.hidden=!signup;consents.hidden=!signup;asaasSignup.hidden=!signup;forgot.hidden=signup;password.autocomplete=signup?'new-password':'current-password'}
 render();
 if(prefillEmail)document.querySelector('#email').value=prefillEmail;
 if(accountCreated&&!signup){
@@ -31,6 +31,14 @@ if(accountCreated&&!signup){
   ?'✓ Sua conta foi criada com sucesso. Confirme seu e-mail para ativar a conta e entrar no OYAG. Verifique também a caixa de spam.'
   :'Conta criada com sucesso. Agora entre com seu e-mail e senha.';
  msg.classList.add('ok');
+ const modal=document.createElement('div');
+ modal.className='asaas-welcome-modal';
+ modal.innerHTML='<div class="asaas-welcome-backdrop"></div><section class="asaas-welcome-card" role="dialog" aria-modal="true" aria-labelledby="asaasWelcomeTitle"><button class="asaas-welcome-close" type="button" aria-label="Fechar">×</button><span>PRÓXIMO PASSO OPCIONAL</span><h2 id="asaasWelcomeTitle">Crie sua conta no Asaas para movimentar suas comissões</h2><p>Sua conta OYAG foi criada. Se desejar, abra também uma conta no Asaas para organizar o recebimento e a movimentação das suas comissões.</p><a href="https://www.asaas.com/r/823b5bfe-e5e3-4d5f-85a0-ee2975dd102d" target="_blank" rel="noopener noreferrer sponsored">Criar minha conta no Asaas ↗</a><button class="asaas-welcome-later" type="button">Agora não</button></section>';
+ document.body.appendChild(modal);
+ const closeAsaasModal=()=>modal.remove();
+ modal.querySelector('.asaas-welcome-close').onclick=closeAsaasModal;
+ modal.querySelector('.asaas-welcome-later').onclick=closeAsaasModal;
+ modal.querySelector('.asaas-welcome-backdrop').onclick=closeAsaasModal;
 }
 toggle.onclick=()=>{signup=!signup;render();msg.textContent='';msg.classList.remove('ok')};
 togglePassword.onclick=()=>{const show=password.type==='password';password.type=show?'text':'password';togglePassword.textContent=show?'🙈':'👁';togglePassword.setAttribute('aria-label',show?'Ocultar senha':'Mostrar senha')};
