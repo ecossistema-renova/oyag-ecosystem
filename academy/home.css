@@ -52,3 +52,100 @@
   .academy-hero{padding:24px 18px}
   .academy-hero:after{background:linear-gradient(180deg,rgba(3,12,22,.96),rgba(5,22,36,.84))}
 }
+
+
+/* Academy hero visual correction · 2026-09-20 */
+.academy-home .academy-landing{padding-top:38px}
+.academy-home .academy-hero{
+  position:relative;
+  isolation:isolate;
+  min-height:500px;
+  padding:48px 42px;
+  border:1px solid rgba(109,172,231,.22);
+  border-radius:28px;
+  overflow:hidden;
+  background:#06111e!important;
+  color:#f7fbff!important;
+  box-shadow:0 26px 70px rgba(0,0,0,.24);
+}
+.academy-home .academy-hero:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background-image:url("https://images.pexels.com/photos/34804003/pexels-photo-34804003/free-photo-of-modern-workspace-with-laptop-and-code-display.jpeg?auto=compress&dpr=1&w=1600");
+  background-size:cover;
+  background-position:center 48%;
+  filter:saturate(.9) brightness(.68) contrast(1.08);
+  transform:scale(1.015);
+}
+.academy-home .academy-hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:
+    linear-gradient(90deg,rgba(2,9,18,.98) 0%,rgba(3,14,25,.95) 44%,rgba(4,18,31,.84) 70%,rgba(5,20,32,.76) 100%)!important;
+}
+.academy-home .academy-hero > div{position:relative;z-index:1}
+.academy-home .academy-hero .eyebrow{color:#79d8ff!important}
+.academy-home .academy-hero h1,
+html[data-theme="light"] .academy-home .academy-hero h1,
+html[data-theme="dark"] .academy-home .academy-hero h1{
+  color:#fff!important;
+  background:none!important;
+  -webkit-background-clip:border-box!important;
+  background-clip:border-box!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:0 3px 26px rgba(0,0,0,.58)!important;
+  max-width:720px;
+}
+.academy-home .academy-hero .lead,
+html[data-theme="light"] .academy-home .academy-hero .lead,
+html[data-theme="dark"] .academy-home .academy-hero .lead{
+  color:#dceaf3!important;
+  max-width:700px;
+  text-shadow:0 2px 14px rgba(0,0,0,.46);
+}
+.academy-home .academy-definition,
+html[data-theme="light"] .academy-home .academy-definition,
+html[data-theme="dark"] .academy-home .academy-definition{
+  background:rgba(5,18,31,.82)!important;
+  color:#f7fbff!important;
+  border:1px solid rgba(117,203,255,.25)!important;
+  box-shadow:0 24px 60px rgba(0,0,0,.33)!important;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.academy-home .academy-definition h2{color:#fff!important}
+.academy-home .academy-definition p{color:#d4e5ef!important}
+.academy-home .academy-definition span{
+  background:rgba(46,167,255,.17)!important;
+  color:#9adfff!important;
+  border:1px solid rgba(106,211,255,.24);
+}
+.academy-home .academy-hero .primary{
+  background:linear-gradient(135deg,#158cff,#685cff)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+  box-shadow:0 14px 34px rgba(21,140,255,.27)!important;
+}
+.academy-home .academy-hero .secondary{
+  background:rgba(7,24,40,.84)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.24)!important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.academy-home .academy-hero .secondary:hover{
+  background:rgba(15,45,70,.96)!important;
+  border-color:rgba(104,204,255,.5)!important;
+}
+@media(max-width:900px){
+  .academy-home .academy-hero{min-height:auto;padding:36px 24px}
+}
+@media(max-width:620px){
+  .academy-home .academy-landing{padding-top:20px}
+  .academy-home .academy-hero{padding:28px 18px}
+  .academy-home .academy-hero h1{font-size:clamp(2.1rem,11vw,3.4rem)}
+}
