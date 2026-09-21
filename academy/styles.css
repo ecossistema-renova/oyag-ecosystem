@@ -106,3 +106,123 @@
 .practice-checklist{display:grid;gap:9px;margin:14px 0}.practice-checklist label{display:flex;gap:10px;align-items:flex-start;margin:0;padding:11px 12px;border:1px solid #dbe6ec;border-radius:12px;background:#fff;font-size:.9rem}.practice-checklist input{margin-top:3px}
 .catalog-action{display:inline-flex;margin-top:14px;text-decoration:none;font-weight:900;color:#7ee9db}
 @media(max-width:700px){.practice-metrics{display:grid}.shortcut-card strong{font-size:1.55rem}}
+
+
+/* ===== Context banner por aula · 2026-09-21 ===== */
+.lesson-loading[hidden],
+#lessonApp[hidden],
+.structured-practice[hidden],
+.academy-console[hidden],
+#exampleBlock[hidden]{display:none!important}
+
+.lesson-context-banner{
+  --lesson-accent:#29d3c2;
+  --lesson-accent-2:#3f6dff;
+  position:relative;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  margin:0 0 14px;
+  min-height:92px;
+  padding:15px 18px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--lesson-accent) 34%,transparent);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 85% 0%,color-mix(in srgb,var(--lesson-accent-2) 22%,transparent),transparent 34%),
+    linear-gradient(135deg,#071b2b 0%,#0b2740 58%,#0a1f35 100%);
+  color:#fff;
+  box-shadow:0 12px 28px rgba(4,24,39,.15)
+}
+.lesson-context-banner::after{
+  content:"";
+  position:absolute;
+  right:116px;
+  top:-42px;
+  width:150px;
+  height:150px;
+  border:1px solid color-mix(in srgb,var(--lesson-accent) 18%,transparent);
+  border-radius:50%;
+  box-shadow:0 0 0 20px color-mix(in srgb,var(--lesson-accent) 4%,transparent),0 0 0 42px color-mix(in srgb,var(--lesson-accent) 3%,transparent);
+  pointer-events:none
+}
+.lesson-banner-symbol{
+  position:relative;
+  z-index:1;
+  width:58px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  border:1px solid color-mix(in srgb,var(--lesson-accent) 48%,transparent);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--lesson-accent) 22%,#061826),color-mix(in srgb,var(--lesson-accent-2) 18%,#071b2b));
+  color:#fff;
+  font-weight:950;
+  font-size:1.05rem;
+  letter-spacing:-.04em;
+  box-shadow:inset 0 0 22px color-mix(in srgb,var(--lesson-accent) 10%,transparent)
+}
+.lesson-banner-copy{position:relative;z-index:1;min-width:0}
+.lesson-banner-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.lesson-banner-meta span{
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:3px 8px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--lesson-accent) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--lesson-accent) 20%,transparent);
+  color:color-mix(in srgb,var(--lesson-accent) 75%,white);
+  font-size:.64rem;
+  font-weight:900;
+  letter-spacing:.07em;
+  text-transform:uppercase
+}
+.lesson-banner-copy>strong{
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:1.1rem;
+  line-height:1.25
+}
+.lesson-banner-copy>small{
+  display:block;
+  max-width:760px;
+  margin-top:4px;
+  color:#b8ccda;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:.78rem
+}
+.lesson-banner-brand{
+  position:relative;
+  z-index:1;
+  display:grid;
+  justify-items:end;
+  gap:1px;
+  padding-left:14px;
+  border-left:1px solid rgba(255,255,255,.12)
+}
+.lesson-banner-brand span{font-size:.84rem;font-weight:950;letter-spacing:.12em}
+.lesson-banner-brand small{font-size:.52rem;font-weight:850;letter-spacing:.24em;color:var(--lesson-accent)}
+.lesson-context-banner[data-course-theme="typing"]{--lesson-accent:#2ad7c6;--lesson-accent-2:#2978ff}
+.lesson-context-banner[data-course-theme="programming"]{--lesson-accent:#6ee7ff;--lesson-accent-2:#7358ff}
+.lesson-context-banner[data-course-theme="excel"]{--lesson-accent:#49d17d;--lesson-accent-2:#0b8461}
+.lesson-context-banner[data-course-theme="word"]{--lesson-accent:#56a8ff;--lesson-accent-2:#3159d7}
+.lesson-context-banner[data-course-theme="powerpoint"]{--lesson-accent:#ff9b58;--lesson-accent-2:#cf4c32}
+
+@media(max-width:700px){
+  .lesson-context-banner{
+    grid-template-columns:auto minmax(0,1fr);
+    min-height:84px;
+    padding:13px 14px;
+    border-radius:15px
+  }
+  .lesson-banner-symbol{width:48px;height:48px;border-radius:13px;font-size:.9rem}
+  .lesson-banner-brand{display:none}
+  .lesson-banner-copy>strong{font-size:.98rem}
+  .lesson-banner-copy>small{font-size:.72rem}
+}
