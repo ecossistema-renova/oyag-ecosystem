@@ -518,3 +518,87 @@ html[data-theme="light"] .asaas-signup strong{color:#102535}
  .shell{height:auto;min-height:100vh;overflow:visible}
  .shell>aside,.shell>.workspace{height:auto;overflow:visible}
 }
+
+
+/* ===== Afiliados · materiais compactos v2 · 2026-09-21 ===== */
+.creative-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.creative-card{
+  border-radius:16px;
+  box-shadow:0 8px 24px rgba(5,18,42,.08);
+}
+.creative-preview{
+  aspect-ratio:auto;
+  min-height:148px;
+  height:148px;
+  justify-content:flex-end;
+  padding:16px 16px 14px;
+  overflow:hidden;
+}
+.creative-preview>img{
+  top:14px;
+  left:14px;
+  width:44px;
+  height:44px;
+}
+.creative-preview span{
+  font-size:.6rem;
+  letter-spacing:.1em;
+}
+.creative-preview strong{
+  max-width:92%;
+  margin:6px 0 8px;
+  font-size:1rem;
+  line-height:1.15;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.creative-preview small{
+  padding:5px 8px;
+  font-size:.62rem;
+}
+.creative-info{
+  padding:14px;
+}
+.creative-info h3{
+  margin:5px 0 7px;
+  font-size:.9rem;
+}
+.creative-info p{
+  min-height:0;
+  margin:0 0 12px;
+  font-size:.73rem;
+  line-height:1.45;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.creative-format{
+  font-size:.59rem;
+}
+.creative-actions{
+  gap:7px;
+}
+.creative-actions button{
+  min-height:36px;
+  padding:7px 9px;
+  font-size:.7rem;
+}
+@media(min-width:1500px){
+  .creative-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:1050px){
+  .creative-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .creative-grid{grid-template-columns:1fr}
+  .creative-preview{
+    height:132px;
+    min-height:132px;
+  }
+}
