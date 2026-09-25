@@ -1,30 +1,34 @@
-# OYAG Ecosystem
+# OYAG Ecosystem — repositório público legado
 
-Plataforma central oficial do OYAG Ecosystem.
+> **Não usar este repositório como fonte de desenvolvimento do produto.**
 
-## Stack
-- GitHub como fonte oficial do código e histórico técnico
-- GitHub Pages para publicação web atual
-- Supabase Auth + PostgreSQL + RLS
-- Domínio próprio sob controle do OYAG
+O desenvolvimento oficial do OYAG Ecosystem foi consolidado no repositório privado:
 
-## Ambientes oficiais
-- Repositório público: `oyag-ecosystem/oyag-ecosystem`
-- Repositório core: `oyag-ecosystem/oyag-ecosystem-core`
-- Domínio público: `https://oyag.cledemilsonoliveira.com`
-- Supabase Project Ref: `epbhiygonpkzlmbbsyqv`
-- Branch de publicação atual: `gh-pages`
+`oyag-ecosystem/oyag-ecosystem-core`
 
-## Arquitetura
+## Situação
 
-`Usuário → oyag.cledemilsonoliveira.com → GitHub Pages → Supabase`
+Este repositório público contém uma versão histórica da interface e permanece disponível apenas para preservar histórico e evitar quebra de referências antigas.
 
-O GitHub mantém código, documentação e histórico técnico. O Supabase fornece autenticação, banco de dados e políticas de acesso.
+Ele **não é** a fonte oficial do sistema, não deve receber módulos novos e não deve conter lógica sensível.
 
-## Princípios
+## Produção
 
-**Segurança → Integridade dos dados → Funcionamento → Integração → Performance → Experiência visual → Escala.**
+- Aplicação oficial: `https://oyag.cledemilsonoliveira.com`
+- Hospedagem: Cloudflare Pages
+- Backend: Supabase
+- Código-fonte oficial: repositório privado `oyag-ecosystem-core`
 
 ## Segurança
 
-Nunca versionar chaves privadas, `service_role`, access tokens, senhas ou arquivos de ambiente com segredos. O frontend usa apenas a URL do projeto e a chave publicável do Supabase.
+Nunca adicionar aqui:
+
+- chaves privadas;
+- service role;
+- tokens;
+- credenciais;
+- lógica administrativa sensível;
+- regras de autorização;
+- integrações internas do OYAG.
+
+Áreas públicas do produto são publicadas a partir do core privado e expostas somente por rotas e APIs controladas.
